@@ -18,8 +18,8 @@
 namespace woodman
 {
 
-	const std::string TEXT_SHADER_SOURCE_FILE_PATH = "Shaders\\Text";
-	const std::string SDF_FONT_SHADER_SOURCE_FILE_PATH = "Shaders\\SDFFont";
+	const std::string TEXT_SHADER_SOURCE_FILE_PATH = ASSETS + "Shaders\\Text";
+	const std::string SDF_FONT_SHADER_SOURCE_FILE_PATH = ASSETS + "Shaders\\SDFFont";
 
 	struct sdf_glyph
 	{
@@ -32,7 +32,7 @@ namespace woodman
 
 	Shader Font::s_Shader, Font::s_SDFShader;
 	std::map<HashedString, std::shared_ptr<Font> > Font::Fonts;
-	std::string Font::s_FontDirectory("Fonts\\");
+	std::string Font::s_FontDirectory(ASSETS + "Fonts\\");
 
 	Font::Font( const HashedString& fontName ) : m_name( fontName ) 
 	{

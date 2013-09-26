@@ -14,7 +14,7 @@
 namespace woodman
 {
 
-	const std::string ASSETS("Assets\\");
+	
 
 	class Texture
 	{

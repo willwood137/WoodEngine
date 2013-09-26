@@ -196,36 +196,6 @@
   <ItemGroup>
     <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag" />
     <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.vert" />
-    <None Include="Shaders\Billboard.frag" />
-    <None Include="Shaders\Billboard.vert" />
-    <None Include="Shaders\Console.frag" />
-    <None Include="Shaders\Console.vert" />
-    <None Include="Shaders\LevelTiles.frag" />
-    <None Include="Shaders\LevelTiles.vert" />
-    <None Include="Shaders\LevelTileSelected.frag" />
-    <None Include="Shaders\LevelTileSelected.vert" />
-    <None Include="Shaders\RenderModel.frag" />
-    <None Include="Shaders\RenderModel.vert" />
-    <None Include="Shaders\SDFFont.frag" />
-    <None Include="Shaders\SDFFont.vert" />
-    <None Include="Shaders\TerrainGrid.frag" />
-    <None Include="Shaders\TerrainGrid.vert" />
-    <None Include="Shaders\Text.frag" />
-    <None Include="Shaders\Text.vert" />
-    <None Include="Shaders\TextCursor.frag" />
-    <None Include="Shaders\TextCursor.vert" />
-    <None Include="Shaders\UIWindow.frag" />
-    <None Include="Shaders\UIWindow.vert" />
-    <None Include="Shaders\UI\CanvasBackground.frag" />
-    <None Include="Shaders\UI\CanvasBackground.vert" />
-    <None Include="Shaders\UI\LineShader.frag" />
-    <None Include="Shaders\UI\LineShader.vert" />
-    <None Include="Shaders\UI\LinkNode.frag" />
-    <None Include="Shaders\UI\LinkNode.vert" />
-    <None Include="Shaders\UI\MouseMenu.frag" />
-    <None Include="Shaders\UI\MouseMenu.vert" />
-    <None Include="Shaders\UI\NodeBox.frag" />
-    <None Include="Shaders\UI\NodeBox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

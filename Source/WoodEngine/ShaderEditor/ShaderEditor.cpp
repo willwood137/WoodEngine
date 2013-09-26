@@ -9,9 +9,9 @@ namespace woodman
 {
 	ShaderEditor::ShaderEditor(EventSystem* eventsystem )
 		: UIController(eventsystem),
-		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1400.0f, 900.0f) ), (ASSETS + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15)		) ),
-		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (ASSETS + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
-		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (ASSETS + "divider_background.jpg"), Vector2i(200, 900), Vector2i(10, 10)	) ),
+		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1400.0f, 900.0f) ), (TEXTURES_PATH + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15)		) ),
+		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
+		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(200, 900), Vector2i(10, 10)	) ),
 		m_vertexToFragmentRatio(1.0f),
 		m_vertexToFramentRatioGoal(1.0f)
 	{

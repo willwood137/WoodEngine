@@ -24,7 +24,7 @@ namespace woodman
 
 	void UINodeBox::Initialize()
 	{
-		m_nodeBoxShader = Shader::CreateOrGetShader("Shaders\\UI\\NodeBox");
+		m_nodeBoxShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\NodeBox");
 
 		Texture::TextureFormat tf;
 		tf.MagFilter = GL_LINEAR;

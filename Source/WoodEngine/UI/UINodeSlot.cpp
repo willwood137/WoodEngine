@@ -21,7 +21,7 @@ namespace woodman
 
 	void UINodeSlot::Initialize()
 	{
-		m_slotShader = Shader::CreateOrGetShader("Shaders\\UI\\LinkNode");
+		m_slotShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LinkNode");
 	}
 
 	void UINodeSlot::render(std::shared_ptr<UIMouse> currentMouse)

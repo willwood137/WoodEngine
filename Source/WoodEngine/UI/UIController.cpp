@@ -24,7 +24,7 @@ namespace woodman
 			(*it)->Initialize();
 		}
 
-		m_mouse->mouseMenuShader = Shader::CreateOrGetShader("Shaders\\UI\\MouseMenu");
+		m_mouse->mouseMenuShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\MouseMenu");
 	}
 
 	void UIController::KeyDown(unsigned int key)

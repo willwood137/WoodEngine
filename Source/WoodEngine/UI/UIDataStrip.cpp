@@ -18,7 +18,7 @@ namespace woodman
 
 	void UIDataStrip::Initialize()
 	{
-		m_lineStripShader = Shader::CreateOrGetShader("Shaders\\UI\\LineShader");
+		m_lineStripShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LineShader");
 		Texture::TextureFormat tf;
 		tf.MagFilter = GL_LINEAR;
 		tf.MinFilter = GL_LINEAR;

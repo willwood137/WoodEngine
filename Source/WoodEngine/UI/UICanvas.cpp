@@ -26,7 +26,7 @@ namespace woodman
 	{
 		p_eventSystem->RegisterObjectForEvent(this, &UICanvas::catchMouseWheel, "MouseWheel" );
 
-		m_backgroundShader = Shader::CreateOrGetShader("Shaders\\UI\\CanvasBackground");
+		m_backgroundShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\CanvasBackground");
 
 		Texture::TextureFormat tf;
 		tf.MagFilter = GL_LINEAR;

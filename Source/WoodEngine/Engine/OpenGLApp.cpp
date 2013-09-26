@@ -195,12 +195,7 @@ namespace woodman
 		m_font = Font::CreateOrGetFont( HASHED_STRING_tahoma );
 		Font::LoadShader();
  		m_devConsole.initialize();
- 
- 		m_model.loadData();
- 
 		Shader::LoadQuadBuffer();
- 		
- 		
  		m_shaderEditor.Initialize( );
 
 

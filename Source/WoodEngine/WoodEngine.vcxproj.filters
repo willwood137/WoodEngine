@@ -41,9 +41,6 @@
     <Filter Include="ShaderEditor\ShaderNodes">
       <UniqueIdentifier>{66f48938-7510-4dec-a4ac-b6b32ef0e1fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{ba527493-d220-4131-9bf8-bebb451f91a1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -298,96 +295,6 @@
     </None>
     <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag">
       <Filter>ShaderEditor\ShaderEditorUI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\LineShader.frag">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\LineShader.vert">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\NodeBox.frag">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\NodeBox.vert">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\TextCursor.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\TextCursor.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\UIWindow.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\UIWindow.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Billboard.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Billboard.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Console.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Console.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\LevelTiles.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\LevelTiles.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\LevelTileSelected.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\LevelTileSelected.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\RenderModel.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\RenderModel.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\SDFFont.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\SDFFont.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\TerrainGrid.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\TerrainGrid.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Text.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\Text.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\LinkNode.vert">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\LinkNode.frag">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\CanvasBackground.vert">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\CanvasBackground.frag">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\MouseMenu.frag">
-      <Filter>UI\Shaders</Filter>
-    </None>
-    <None Include="Shaders\UI\MouseMenu.vert">
-      <Filter>UI\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

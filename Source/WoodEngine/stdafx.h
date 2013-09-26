@@ -46,6 +46,8 @@
 #include "Utility\Utility.hpp"
 
 const woodman::Vector2i ScreenSize(1600, 900);
+const std::string ASSETS("..\\..\\Assets\\");
+const std::string TEXTURES_PATH(ASSETS + "Textures\\");
 
 
 
