@@ -1,0 +1,393 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{473d8237-8527-4b7a-afd9-a7163f64ec35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{be3133db-b7e7-4e39-8e8f-74724b81c54f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{21b43195-68f9-4245-a58d-2e6732b433c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{e0e632e2-b1a6-43c6-8351-d87d63872567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libs">
+      <UniqueIdentifier>{73b81dd1-25a7-40c0-b92f-2ad2afe093b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{70f0958d-9d9f-42dd-943c-a072501cae8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderEditor">
+      <UniqueIdentifier>{601048e9-f8fc-4d59-b428-42afaa8d9524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderEditor\ShaderEditorUI">
+      <UniqueIdentifier>{58967876-047e-4954-ae9b-3019572308f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderEditor\ShaderEditorUI\Shaders">
+      <UniqueIdentifier>{2e61e57d-cfb5-4e11-906e-f86445624512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{61232f84-ac98-4d35-aa95-8de61a29fd8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Shaders">
+      <UniqueIdentifier>{afbf8333-f90f-4f87-a874-f918effc039d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderEditor\ShaderNodes">
+      <UniqueIdentifier>{66f48938-7510-4dec-a4ac-b6b32ef0e1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{ba527493-d220-4131-9bf8-bebb451f91a1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utility\ProfileSection.hpp">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ConsoleRedirector.hpp">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="WoodEngine.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Utility.hpp">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Texture.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Shader.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\OpenGLApp.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Model.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\HashedString.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Font.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EventSystem.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EntityOperator.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\DevConsole.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Clock.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Camera.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\pugixml.hpp">
+      <Filter>Libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\pugiconfig.hpp">
+      <Filter>Libs</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector4.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector3.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector2.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix4.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MetaShader.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ComponentSystem.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ComponentOperator.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\PhysicsComponentSystem.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\RenderComponentSystem.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEditor\ShaderNode.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEditor\ShaderEditor.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEditor\ShaderInstance.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEditor\NodeInstance.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UINodeBox.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UICanvas.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\AABB2D.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIWidget.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIStyle.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIDataStrip.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UINodeSlot.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIMouse.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIController.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Utility\ConsoleRedirector.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="WoodEngine.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\Utility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Texture.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\stb_image.c">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Shader.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\OpenGLApp.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Model.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Font.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\DevConsole.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Clock.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\pugixml.cpp">
+      <Filter>Libs</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MetaShader.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ComponentOperator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\PhysicsComponentSystem.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\ShaderEditor.cpp">
+      <Filter>ShaderEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\NodeInstance.cpp">
+      <Filter>ShaderEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\ShaderInstance.cpp">
+      <Filter>ShaderEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UINodeBox.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UICanvas.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIWidget.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIStyle.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIDataStrip.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UINodeSlot.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIController.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIMouse.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WoodEngine.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="WoodEngine.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Engine\ConsoleCommands.xml">
+      <Filter>Engine</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Math.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
+    <Xml Include="UI\DefaultStyle.xml">
+      <Filter>UI</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Core.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.vert">
+      <Filter>ShaderEditor\ShaderEditorUI\Shaders</Filter>
+    </None>
+    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag">
+      <Filter>ShaderEditor\ShaderEditorUI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\LineShader.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\LineShader.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\NodeBox.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\NodeBox.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\TextCursor.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\TextCursor.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\UIWindow.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\UIWindow.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Billboard.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Billboard.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Console.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Console.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LevelTiles.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LevelTiles.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LevelTileSelected.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LevelTileSelected.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\RenderModel.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\RenderModel.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\SDFFont.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\SDFFont.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\TerrainGrid.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\TerrainGrid.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Text.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Text.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\LinkNode.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\LinkNode.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\CanvasBackground.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\CanvasBackground.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\MouseMenu.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="Shaders\UI\MouseMenu.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

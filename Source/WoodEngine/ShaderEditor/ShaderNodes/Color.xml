@@ -1,0 +1,18 @@
+<ShaderEditor>
+
+  <NodeDefinition name="GrayScale" category ="Color" canBeVertex="true" canBeFrag="true">
+
+    <Input name="Color">
+      <dataType type ="vector" size="4"/>
+    </Input>
+    <Output name="GrayScale">
+      <dataType type="vector" size="2"/>
+      <ShaderCode>
+        vec2( $Color$.r * .299 + $Color$.g * .587 + $Color$.b * .114, $Color$.a ); 
+      </ShaderCode>
+    </Output>
+
+
+  </NodeDefinition>
+
+</ShaderEditor>

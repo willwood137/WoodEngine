@@ -1,0 +1,7 @@
+<UIStyle>
+  <Title size="24" color="1.0 1.0 0.0 1.0" buffer="20"/>
+  <SubTitle size="16" color="1.0 1.0 1.0 1.0" buffer="10" />
+  <NodeBox CornerSize="20" BorderLength="10" />
+  <Line Width ="6" Buffer ="50"/>
+  <MouseMenu TextSize ="16" Height="20" width="180" lineWidth="2" backgroundColor="1.0 0.8 0.6 1.0" textColor="0.0 0.0 0.0 1.0" lineColor="0.0 0.0 0.0 1.0" />
+</UIStyle>

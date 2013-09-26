@@ -1,0 +1,81 @@
+<ShaderEditor>
+  
+  <NodeDefinition name="Standard_Vertex_Info" category ="Core" canBeVertex="true" canBeFrag="false">
+    
+    <Output name="Position">
+      <dataType type="vector" size="3"/>
+      <Attribute name="position" />
+    </Output>
+    <Output name="Normal">
+      <dataType type="vector" size="3"/>
+      <Attribute name="normal" />
+    </Output>
+
+    <Output name="Texture_Coordinates">
+      <dataType type="vector" size="3"/>
+      <Attribute name="uv" />
+    </Output>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="Final_Position" category ="Core" canBeVertex="true" canBeFrag="false">
+
+    <Input name="Position">
+      <dataType> vec4 </dataType>
+      <GLVariable name ="gl_Position" />
+    </Input>
+    
+  </NodeDefinition>
+
+  <NodeDefinition name="ModelViewProjection_Matrix" category ="Core" canBeVertex="true" canBeFrag="false">
+
+    <Output name="MVP">
+      <dataType type="matrix" rows="4" columns="4" />
+      <Uniform name="mvp" />
+    </Output>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="TextureSampler" category ="Core" canBeVertex="false" canBeFrag="true">
+
+    <Input name="UV">
+      <dataType type="vector" size="2" />
+    </Input>
+
+    <Output name="Color">
+      <dataType type="vector" size="4" />
+      <Shader_Code>sampler2D(0, $UV )</Shader_Code>
+    </Output>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="OutputColor" category ="Core" canBeVertex="false" canBeFrag="true">
+
+    <Input name="OutputColor">
+      <dataType type="vector" size="4" />
+      <Out name="OutputColor" />
+    </Input>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="UV_To_Fragment" category ="Core" canBeVertex="true" canBeFrag="false">
+
+    <Input name="UV">
+      <dataType type="vector" size="2" />
+      <Varying name="uv" />
+    </Input>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="Fragment_UV" category ="Core" canBeVertex="false" canBeFrag="true">
+
+    <Output name="UV">
+      <dataType type="vector" size="2" />
+      <Varying name="uv" />
+    </Output>
+
+  </NodeDefinition>
+
+
+
+</ShaderEditor>

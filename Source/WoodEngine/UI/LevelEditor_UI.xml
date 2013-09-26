@@ -1,0 +1,84 @@
+<UI>
+  <Window type="ButtonBar" name="Category">
+    <AttachTo>BottomLeft</AttachTo>
+    <AttachFrom>BottomLeft</AttachFrom>
+    <DrawBorderOnEdges>false</DrawBorderOnEdges>
+    <MaxHeight>2</MaxHeight>
+    <MaxWidth>2</MaxWidth>
+    <ButtonStartPosition>TopLeft</ButtonStartPosition>
+    <ButtonDirection>right</ButtonDirection>
+    <ButtonSize x=".13" y=".16"/>
+    <ButtonSpacing x=".013" y=".016"/>
+    <Border length=".04" barTextureFile="UISide.png" cornerTextureFile="UICorner.png" backgroundTexturefile="UIBackground.png"/>
+
+    <Button name="Tile" >
+      <Texture file="button_floor_tile.png"/>
+      <LinkWindow name="Tile"/>
+    </Button>
+    <Window type="ButtonBar" name="Tile">
+      <AttachTo>BottomRight</AttachTo>
+      <Tags>Hidden</Tags>
+      <Button name="TileBasic" style="Default">
+        <Texture file="button_floor_tile.png"/>
+        <LinkWindow name="TileBasic"/>
+      </Button>
+      <Window type="ButtonBar" name="TileAdvanced">
+        <Tags>Hidden</Tags>
+        <AttachTo>BottomRight</AttachTo>
+        <MaxWidth>6</MaxWidth>
+        <Button name="Start Point" style="Default">
+          <Texture file="button_floor_start_tile.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Start"/>
+          </Event>
+        </Button>
+        <Button name="End Point" style="Default">
+          <Texture file="button_floor_end_tile.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="End"/>
+          </Event>
+        </Button>
+      </Window>
+      <Window type="ButtonBar" name="TileBasic">
+        <Tags>Hidden</Tags>
+        <AttachTo>BottomRight</AttachTo>
+        <MaxWidth>6</MaxWidth>
+        <Button name="StoneTile" style="Default">
+          <Texture file="button_floor_tile.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Stone Tile"/>
+          </Event>
+        </Button>
+        <Button name="Grass" style="Default">
+          <Texture file="button_floor_Grass.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Grass"/>
+          </Event>
+        </Button>
+        <Button name="Wall" style="Default">
+          <Texture file="button_Wall.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Stone Wall"/>
+          </Event>
+        </Button>
+        <Button name="Pit" style="Default">
+          <Texture file="button_floor_spike_pit.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Spike Pit"/>
+          </Event>
+        </Button>
+        <Button name="Erase" style="Default">
+          <Texture file="button_eraser.png"/>
+          <Event event="SetTileInfo" call="Push">
+            <ParamString name="TileType" value="Blank"/>
+          </Event>
+        </Button>
+      </Window>
+      <Button name="TileAdvanced" style="Default">
+        <Texture file="button_floor_start_tile.png"/>
+        <LinkWindow name="TileAdvanced"/>
+      </Button>
+
+    </Window>
+  </Window>
+</UI>

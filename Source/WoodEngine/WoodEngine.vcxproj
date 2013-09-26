@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E22EBEB6-A7CB-40A7-9765-29E4034F7034}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>WoodEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>Libs\</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>..\stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>libs\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>Libs\</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>..\stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>libs\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Components\PhysicsComponentSystem.hpp" />
+    <ClInclude Include="Components\RenderComponentSystem.hpp" />
+    <ClInclude Include="Engine\Camera.hpp" />
+    <ClInclude Include="Engine\Clock.hpp" />
+    <ClInclude Include="Engine\ComponentOperator.hpp" />
+    <ClInclude Include="Engine\ComponentSystem.hpp" />
+    <ClInclude Include="Engine\DevConsole.hpp" />
+    <ClInclude Include="Engine\EntityOperator.hpp" />
+    <ClInclude Include="Engine\EventSystem.hpp" />
+    <ClInclude Include="Engine\Font.hpp" />
+    <ClInclude Include="Engine\HashedString.hpp" />
+    <ClInclude Include="Engine\MetaShader.hpp" />
+    <ClInclude Include="Engine\Model.hpp" />
+    <ClInclude Include="Engine\OpenGLApp.hpp" />
+    <ClInclude Include="Engine\Shader.hpp" />
+    <ClInclude Include="Engine\Texture.hpp" />
+    <ClInclude Include="libs\pugiconfig.hpp" />
+    <ClInclude Include="libs\pugixml.hpp" />
+    <ClInclude Include="Math\AABB2D.hpp" />
+    <ClInclude Include="Math\Matrix4.hpp" />
+    <ClInclude Include="Math\Vector2.hpp" />
+    <ClInclude Include="Math\Vector3.hpp" />
+    <ClInclude Include="Math\Vector4.hpp" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ShaderEditor\NodeInstance.hpp" />
+    <ClInclude Include="ShaderEditor\ShaderEditor.hpp" />
+    <ClInclude Include="ShaderEditor\ShaderInstance.hpp" />
+    <ClInclude Include="ShaderEditor\ShaderNode.hpp" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="UI\UICanvas.hpp" />
+    <ClInclude Include="UI\UIController.hpp" />
+    <ClInclude Include="UI\UIDataStrip.hpp" />
+    <ClInclude Include="UI\UIMouse.hpp" />
+    <ClInclude Include="UI\UINodeBox.hpp" />
+    <ClInclude Include="UI\UINodeSlot.hpp" />
+    <ClInclude Include="UI\UIStyle.hpp" />
+    <ClInclude Include="UI\UIWidget.hpp" />
+    <ClInclude Include="Utility\ConsoleRedirector.hpp" />
+    <ClInclude Include="Utility\ProfileSection.hpp" />
+    <ClInclude Include="Utility\Utility.hpp" />
+    <ClInclude Include="WoodEngine.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Components\PhysicsComponentSystem.cpp" />
+    <ClCompile Include="Engine\Camera.cpp" />
+    <ClCompile Include="Engine\Clock.cpp" />
+    <ClCompile Include="Engine\ComponentOperator.cpp" />
+    <ClCompile Include="Engine\DevConsole.cpp" />
+    <ClCompile Include="Engine\Font.cpp" />
+    <ClCompile Include="Engine\MetaShader.cpp" />
+    <ClCompile Include="Engine\Model.cpp" />
+    <ClCompile Include="Engine\OpenGLApp.cpp" />
+    <ClCompile Include="Engine\Shader.cpp" />
+    <ClCompile Include="Engine\stb_image.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Engine\Texture.cpp" />
+    <ClCompile Include="libs\pugixml.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\NodeInstance.cpp" />
+    <ClCompile Include="ShaderEditor\ShaderEditor.cpp" />
+    <ClCompile Include="ShaderEditor\ShaderInstance.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="UI\UICanvas.cpp" />
+    <ClCompile Include="UI\UIController.cpp" />
+    <ClCompile Include="UI\UIDataStrip.cpp" />
+    <ClCompile Include="UI\UIMouse.cpp" />
+    <ClCompile Include="UI\UINodeBox.cpp" />
+    <ClCompile Include="UI\UINodeSlot.cpp" />
+    <ClCompile Include="UI\UIStyle.cpp" />
+    <ClCompile Include="UI\UIWidget.cpp" />
+    <ClCompile Include="Utility\ConsoleRedirector.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Utility\Utility.cpp" />
+    <ClCompile Include="WoodEngine.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WoodEngine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico" />
+    <Image Include="WoodEngine.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Engine\ConsoleCommands.xml" />
+    <Xml Include="ShaderEditor\ShaderNodes\Color.xml" />
+    <Xml Include="ShaderEditor\ShaderNodes\Core.xml" />
+    <Xml Include="ShaderEditor\ShaderNodes\Math.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="UI\DefaultStyle.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag" />
+    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.vert" />
+    <None Include="Shaders\Billboard.frag" />
+    <None Include="Shaders\Billboard.vert" />
+    <None Include="Shaders\Console.frag" />
+    <None Include="Shaders\Console.vert" />
+    <None Include="Shaders\LevelTiles.frag" />
+    <None Include="Shaders\LevelTiles.vert" />
+    <None Include="Shaders\LevelTileSelected.frag" />
+    <None Include="Shaders\LevelTileSelected.vert" />
+    <None Include="Shaders\RenderModel.frag" />
+    <None Include="Shaders\RenderModel.vert" />
+    <None Include="Shaders\SDFFont.frag" />
+    <None Include="Shaders\SDFFont.vert" />
+    <None Include="Shaders\TerrainGrid.frag" />
+    <None Include="Shaders\TerrainGrid.vert" />
+    <None Include="Shaders\Text.frag" />
+    <None Include="Shaders\Text.vert" />
+    <None Include="Shaders\TextCursor.frag" />
+    <None Include="Shaders\TextCursor.vert" />
+    <None Include="Shaders\UIWindow.frag" />
+    <None Include="Shaders\UIWindow.vert" />
+    <None Include="Shaders\UI\CanvasBackground.frag" />
+    <None Include="Shaders\UI\CanvasBackground.vert" />
+    <None Include="Shaders\UI\LineShader.frag" />
+    <None Include="Shaders\UI\LineShader.vert" />
+    <None Include="Shaders\UI\LinkNode.frag" />
+    <None Include="Shaders\UI\LinkNode.vert" />
+    <None Include="Shaders\UI\MouseMenu.frag" />
+    <None Include="Shaders\UI\MouseMenu.vert" />
+    <None Include="Shaders\UI\NodeBox.frag" />
+    <None Include="Shaders\UI\NodeBox.vert" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

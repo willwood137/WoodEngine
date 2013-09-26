@@ -1,0 +1,11 @@
+<ConsoleCommands>
+  <Command name="cammode" event="CamMode" args="Mode" help="sets the camera to a certain mode, 0 = Set camera(default), 1 = FreeLook"/>
+  <Command name="caminfo" event="CamInfo" help="Displays info about the camera"/>
+  <Command name="save" event="save" args="file" help="Saves a file"/>
+  <Command name="load" event="load" args="file" help="Loads a file"/>
+  <Command name="play" event="play" args="file" help="Plays a level from a file"/>
+  <Command help="Displays all clocks and their times" event="ClockOut" name="Clocks"/>
+  <Command help="sets a clocks time scale" event="SetTimeScale" name="SetClockTimeScale" args="Name Scale"/>
+  <Command help="adds an alarm to the application clock" event="AddAlarm" name="AddAlarm" args="TimeSeconds"/>
+  <Command help="Shows Profile Stats" event="Stats" name="Stats"/>
+ </ConsoleCommands>

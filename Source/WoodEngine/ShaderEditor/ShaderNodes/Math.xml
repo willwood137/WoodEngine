@@ -1,0 +1,50 @@
+<ShaderEditor>
+  <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="Numerator"/>
+    <Input name="Denominator"/>
+    <Output name="Division">
+      <Shader_Code>$Numerator / $Denominator</Shader_Code>
+    </Output>
+    
+  </NodeDefinition>
+  
+  <NodeDefinition name="Sum" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="A"/>
+    <Input name="B"/>
+    <Output name="Sum">
+      <Shader_Code>$A + $B</Shader_Code>
+    </Output>
+  </NodeDefinition>
+
+  <NodeDefinition name="Multiply" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="A"/>
+    <Input name="B"/>
+    <Output name="Sum">
+      <Shader_Code>$A * $B</Shader_Code>
+    </Output>
+  </NodeDefinition>
+
+  <NodeDefinition name="GreyScale" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="ColorIn">
+      <dataType type="vector" size="4"/>
+    </Input>
+    <Output name="GrayScale">
+      <Shader_Code></Shader_Code>
+    </Output>
+  </NodeDefinition>
+
+  <NodeDefinition name="Transform_Vector" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="Vector">
+      <dataType type="vector" />
+    </Input>
+    <Input name="Matrix">
+      <dataType type="matrix" />
+    </Input>
+    <Output name="OutVector">
+      <dataType type="vector" size="4"/>
+      <Shader_Code>$Matrix * vec4( $Vector , 1.0)</Shader_Code>
+    </Output>
+  </NodeDefinition>
+  
+  
+</ShaderEditor>
