@@ -150,13 +150,10 @@ namespace woodman
 
 		for(auto it = m_attributes.begin(); it != m_attributes.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else
-				typePrefix = "mat";
+			typePrefix = "vec";
 
 			std::stringstream ss;
-			ss << it->second.typeSize;
+			ss << clamp<unsigned int>( it->second.typeSize, 2, 3);
 			typePrefix.append(ss.str());
 
 			vertexFile << "in " << typePrefix << " a_" << it->second.name.m_string <<";\n";
@@ -285,8 +282,24 @@ namespace woodman
 						insertString += tempString + " ";
 					}
 				}
+
+				std::string typePrefix;
+
+				if(link->pType == PROPERTYTYPE_VECTOR)
+					typePrefix = "vec";
+				else if(link->pType == PROPERTYTYPE_SAMPLER2D)
+					typePrefix = "sampler2D";
+				else
+					typePrefix = "mat";
+
+				if(link->pType != PROPERTYTYPE_SAMPLER2D)
+				{
+					std::stringstream ss;
+					ss << link->typeSize;
+					typePrefix.append(ss.str());
+				}
 				
-				ss << "vec4 " << link->m_uniqueID.m_string << " = " << insertString << ";\n";
+				ss <<typePrefix << " " << link->m_uniqueID.m_string << " = " << insertString << ";\n";
 				compilation += ss.str();
 			}
 		}
@@ -332,15 +345,15 @@ namespace woodman
 			{
 				linkA = tempLink;
 				linkA->pType = linkAInfo.pType;
-				linkA->typeSize = linkAInfo.typeSize;
+				linkA->typeSize = clamp<unsigned int>(linkAInfo.typeSize, 1, 4);
 			}
 
 			tempLink = (it->second)->getLinkByID(linkBInfo.name);
 			if(tempLink != nullptr)
 			{
-				linkB = tempLink;
-				linkB->pType = linkBInfo.pType;
-				linkB->typeSize = linkBInfo.typeSize;
+ 				linkB = tempLink;
+ 				linkB->pType = linkBInfo.pType;
+ 				linkB->typeSize = clamp<unsigned int>(linkBInfo.typeSize, 1, 4);
 			}
 
 			if(linkA != nullptr && linkB != nullptr)

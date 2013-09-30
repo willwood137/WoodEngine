@@ -9,7 +9,6 @@ out vec4 OutputColor;
 
 void main(void)
 {
-vec4 TextureSampler_0_Color = texture2D( u_diffuse , v_uv ) ;
-OutputColor = TextureSampler_0_Color;
+OutputColor = GrayScale_0_GrayScale;
 
 }

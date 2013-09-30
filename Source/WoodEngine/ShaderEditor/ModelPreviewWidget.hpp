@@ -28,10 +28,13 @@ namespace woodman
 		void updateShader( const std::string& shaderFilePath );
 
 
+		bool m_focus;
+
 	private:
 		std::shared_ptr<Model> m_model;
 		std::shared_ptr<Texture> m_backgroundTexture;
 		std::shared_ptr<Shader> m_previewShader;
 		std::shared_ptr<Camera> m_camera;
+
 	};
 }

@@ -8,7 +8,7 @@ namespace woodman
 		: UIWidget(ParentCanvas, parentWidget, name, uniqueID),
 		m_camera(new Camera(Vector3f(0.0f, 0.0f, -20.0f) ) )
 	{
-		
+		m_focus = false;
 	}
 
 	void ModelPreviewWidget::loadBackgroundTexture( const std::string& texturePath )
@@ -38,6 +38,8 @@ namespace woodman
 
 	void ModelPreviewWidget::render(std::shared_ptr<UIMouse> currentMouse)
 	{
+		if(!m_focus)
+			return;
 
 		drawOrigin(m_camera.get());
 
@@ -94,6 +96,9 @@ namespace woodman
 				}
 
 			}
+
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
 		}
 	}
 

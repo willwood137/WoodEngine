@@ -57,6 +57,7 @@ namespace woodman
 
 
 		float m_distance;
+		Vector2i m_mousePos;
 
 		CameraMode m_mode;
 	};

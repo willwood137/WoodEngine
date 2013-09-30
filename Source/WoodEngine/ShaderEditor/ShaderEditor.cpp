@@ -29,9 +29,11 @@ namespace woodman
 		UIController::Initialize();
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
+		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchAddNode, "AddNode");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchCompile, "Compile");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchPreview, "Preview");
+		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchKeyDown, "KeyDown");
 
 
 		//create Menu
@@ -88,7 +90,23 @@ namespace woodman
 
 	void ShaderEditor::update(const Vector2f& MouseScreenPosition )
 	{
-		UIController::update(MouseScreenPosition);
+		if(!m_previewMode)
+			UIController::update(MouseScreenPosition);
+		else
+		{
+			m_mouse->prevScreenPosition = m_mouse->screenPosition;
+			m_mouse->screenPosition = MouseScreenPosition;
+
+			m_mouse->hoveringWidget = getUIWidgetatPoint(MouseScreenPosition);
+
+			if(m_mouse->isPressed)
+			{
+				if(m_mouse->selectedWidget != nullptr)
+				{
+					m_mouse->selectedWidget->MouseDrag(m_mouse);
+				}
+			}
+		}
 
 		setCanvasSpace();
 	}
@@ -536,7 +554,26 @@ namespace woodman
 	void ShaderEditor::catchPreview(NamedPropertyContainer& parameters)
 	{
 		m_previewMode = !m_previewMode;
+		m_previewWidget->m_focus = m_previewMode;
 
 		m_previewWidget->updateShader("ShaderTest");
+	}
+
+	void ShaderEditor::catchKeyDown(NamedPropertyContainer& parameters)
+	{
+
+		unsigned int key; 
+		parameters.getNamedData(HashedString("Key"), key);
+
+		if(key=='P')
+		{
+			m_previewMode = !m_previewMode;
+			m_previewWidget->m_focus = m_previewMode;
+
+			m_previewWidget->updateShader("ShaderTest");
+		}
+
+
+
 	}
 }

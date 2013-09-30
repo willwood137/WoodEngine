@@ -127,7 +127,7 @@ namespace woodman
 		{
 			if(slot->getDataType()->type == m_propertyType )
 			{
-				slot->setDataSize( m_typeSize );
+				//slot->setDataSize( m_typeSize );
 
 				if(m_dragEndPoint)
 				{

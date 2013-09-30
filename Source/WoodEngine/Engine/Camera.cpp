@@ -19,6 +19,7 @@ namespace woodman
 	Camera::Camera(){ }
 
 	Camera::Camera( Vector3f& Origin)
+		: m_mousePos(0, 0)
 	{
 		m_origin = Origin;
 	}
@@ -77,23 +78,26 @@ namespace woodman
 		const float MOUSE_YAW_POWER = 0.2f;
 		const float MOUSE_PITCH_POWER = 0.2f;
 
+		if(isKeyDown('C'))
+		{
 
-		POINT mousePos;
-		GetCursorPos( &mousePos );
+			POINT mousePos;
+			GetCursorPos( &mousePos );
 
-		float mouseDeltaX( mousePos.x - (float)MOUSE_CENTER_X );
-		float mouseDeltaY( mousePos.y - (float)MOUSE_CENTER_Y );
-
-
-
-		// Update camera yaw.
-		//
-		rotation.y = mouseDeltaX * MOUSE_YAW_POWER;
-		rotation.x = mouseDeltaY * MOUSE_PITCH_POWER;
+			float mouseDeltaX( mousePos.x - (float)MOUSE_CENTER_X );
+			float mouseDeltaY( mousePos.y - (float)MOUSE_CENTER_Y );
 
 
+			SetCursorPos( MOUSE_CENTER_X, MOUSE_CENTER_Y);
 
-		SetCursorPos( MOUSE_CENTER_X, MOUSE_CENTER_Y );
+			m_mousePos = Vector2i(mousePos.x, mousePos.y);
+
+			// Update camera yaw.
+			//
+			rotation.y = mouseDeltaX * MOUSE_YAW_POWER;
+			rotation.x = mouseDeltaY * MOUSE_PITCH_POWER;
+
+		}
 
 
 
@@ -127,6 +131,7 @@ namespace woodman
 		}
 
 		impulse.Normalize();
+		
 
 	}
 

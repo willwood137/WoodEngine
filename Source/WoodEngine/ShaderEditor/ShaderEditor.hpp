@@ -42,6 +42,7 @@ namespace woodman
 		void catchAddNode(NamedPropertyContainer& parameters);
 		void catchCompile(NamedPropertyContainer& parameters);
 		void catchPreview(NamedPropertyContainer& parameters);
+		void catchKeyDown(NamedPropertyContainer& parameters);
 
 		void SyncUIAndShaderInstance();
 
