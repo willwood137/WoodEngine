@@ -48,6 +48,15 @@ namespace woodman
 					attrib.offsetOf = ModelChild.attribute("offsetOf").as_uint();
 					m_attributes.emplace_back(attrib);
 				}
+				else if(_stricmp("Material", s.c_str() ) == 0)
+				{
+					//this is an attribute add it
+					std::shared_ptr<Material> mat(new Material());
+					mat->name = ModelChild.attribute("name").as_string();
+				
+					mat->Texture = Texture::CreateOrGetTexture(TEXTURES_PATH + ModelChild.attribute("fileName").as_string() );
+					m_materials.insert(mat);
+				}
 				else if(_stricmp("Batch", s.c_str() ) == 0)
 				{
 					//this is triangle batch data
@@ -93,5 +102,17 @@ namespace woodman
 		return nullptr;
 	}
 
+	std::shared_ptr<Texture> Model::getMaterialTexture( const std::string& MaterialName )
+	{
+		for(auto it = m_materials.begin(); it != m_materials.end(); it++)
+		{
+			if(_stricmp(MaterialName.c_str(), (*it)->name.c_str()) == 0)
+			{
+				return (*it)->Texture;
+			}
+		}
+
+		return nullptr;
+	}
 
 }

@@ -5,6 +5,8 @@
 
 #include "..\Engine\Shader.hpp"
 
+#include "..\Utility\Utility.hpp"
+
 namespace woodman
 {
 	class UINodeSlot : public UIWidget
@@ -15,7 +17,8 @@ namespace woodman
 			const std::string& name,
 			HashedString uniqueID, 
 			const Vector2f& canvasCoordinates,
-			bool exitSlot);
+			bool exitSlot,
+			std::shared_ptr<DataType> dType);
 
 		bool getExitSlot() const;
 
@@ -41,13 +44,38 @@ namespace woodman
 			return m_partnerSlot;
 		}
 
+		void setDataType(std::shared_ptr<DataType> dType)
+		{
+			m_parentDataType = dType;
+			m_dataTypeSize = dType->maxSize;
+		}
+
+		void setDataSize(unsigned int size)
+		{
+			m_dataTypeSize = size;
+		}
+
+		std::shared_ptr<DataType> getDataType()
+		{
+			return m_parentDataType;
+		}
+		
+		unsigned int getTypeSize()
+		{
+			return m_dataTypeSize;
+		}
+
 	private:
 		//null if unpaired
 		std::shared_ptr<UINodeSlot>	m_partnerSlot;
 		std::shared_ptr<UIDataStrip>  m_dataStrip;
 		bool		m_exitSlot;
 
+		std::shared_ptr<DataType> m_parentDataType;
+		unsigned int m_dataTypeSize;
+
 		std::shared_ptr<Shader> m_slotShader;
 
+		
 	};
 }

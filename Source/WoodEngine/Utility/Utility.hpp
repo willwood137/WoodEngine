@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <set>
+#include <list>
+#include <memory>
 
 #include "..\Math\Vector2.hpp"
 #include "..\Math\Vector3.hpp"
@@ -13,9 +16,34 @@
 
 namespace woodman
 {
+	enum PropertyType
+	{
+		PROPERTYTYPE_VECTOR,
+		PROPERTYTYPE_MATRIX,
+		PROPERTYTYPE_SAMPLER2D,
+		PROPERTYTYPE_STRING,
+		PROPERTYTYPE_LIST,
+		PROPERTYTYPE_SIZE,
+	};
+
+	struct PropertyList
+	{
+		PropertyType type;
+		std::string name;		
+		std::list< std::shared_ptr<PropertyList> > children;
+	};
+
+	struct DataType
+	{
+		PropertyType type;
+		unsigned int minSize;
+		unsigned int maxSize;
+		std::set<std::shared_ptr< DataType > > smartSizeReferences;
+	};
+
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	unsigned int readStringFromFile(std::string& outString, std::ifstream& in, unsigned int offset);
+	//unsigned int readStringFromFile(std::string& outString, std::ifstream& in, unsigned int offset);
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

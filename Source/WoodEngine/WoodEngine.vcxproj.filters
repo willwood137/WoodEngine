@@ -172,6 +172,9 @@
     <ClInclude Include="UI\UIController.hpp">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderEditor\ModelPreviewWidget.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
@@ -257,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="UI\UIMouse.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\ModelPreviewWidget.cpp">
+      <Filter>ShaderEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

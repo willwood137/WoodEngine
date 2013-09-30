@@ -147,6 +147,18 @@ namespace woodman
 	}
 
 	template <typename T_ObjType>
+	inline Matrix4<T_ObjType>& Matrix4<T_ObjType>::Transpose()
+	{
+		std::swap(m_Matrix[1], m_Matrix[4]);
+		std::swap(m_Matrix[2], m_Matrix[8]);
+		std::swap(m_Matrix[6], m_Matrix[9]);
+		std::swap(m_Matrix[14], m_Matrix[11]);
+		std::swap(m_Matrix[13], m_Matrix[7]);
+		std::swap(m_Matrix[12], m_Matrix[3]);
+		return *this;
+	}
+
+	template <typename T_ObjType>
 	inline Matrix4<T_ObjType>& Matrix4<T_ObjType>::TransposeRotation()
 	{
 		std::swap(m_Matrix[1], m_Matrix[4]);

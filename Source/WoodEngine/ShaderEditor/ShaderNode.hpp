@@ -6,31 +6,17 @@
 #include <string>
 #include <array>
 
+#include "../Utility/Utility.hpp"
+
 namespace woodman
 {
 
-	enum PropertyType
-	{
-		PROPERTYTYPE_FLOAT,
-		PROPERTYTYPE_VECTOR,
-		PROPERTYTYPE_MATRIX,
-		PROPERTYTYPE_STRING,
-		PROPERTYTYPE_LIST,
-		PROPERTYTYPE_SIZE,
-	};
 
-
-	struct PropertyList
-	{
-		PropertyType type;
-		std::string name;		
-		std::list< std::shared_ptr<PropertyList> > children;
-	};
 
 	struct NodeLink
 	{
 		std::string name;
-		PropertyType type;
+		std::shared_ptr<DataType> typeData;
 		std::string ShaderCode;
 		std::string attributeName;
 		std::string uniformName;
@@ -41,6 +27,18 @@ namespace woodman
 
 	 struct ShaderNode
 	 {
+		 std::shared_ptr<NodeLink> getLinkByName(const std::string& name)
+		 {
+			 for(auto it = inLinks.begin(); it != inLinks.end(); ++it)
+			 {
+				 if( (*it)->name.compare(name) == 0)
+				 {
+					 return (*it);
+				 }
+			 }
+			 return nullptr;
+		 }
+
 		std::string name;
 		std::string category;
 		std::list< std::shared_ptr<PropertyList> > propertyLists;

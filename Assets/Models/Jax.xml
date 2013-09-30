@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Model_Header>
+<Model name="Jax" VertexSize="32">
+  <Material name="Diffuse" fileName="zax.png"/>
+  <Attribute name="Position" numValues="3" offsetOf="0" />
+  <Attribute name="Normal" numValues="3" offsetOf="12" />
+  <Attribute name="uv" numValues="2" offsetOf="24" />
+  <Batch OffsetStart="0" numVerts="5533" numIndices="13326" />
+</Model>
+</Model_Header>

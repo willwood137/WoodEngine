@@ -8,21 +8,24 @@
 namespace woodman
 {
 	
-	class Camera : public EventRecipient<Camera>
+	class Camera
 	{
 	public:
 
 		enum CameraMode
 		{
-			CAMERAMODE_OVERLORD,
-			CAMERAMODE_FREE,
-			CAMERAMODE_SIZE,
+			Spectator = 0,
+			FirstPerson,
+			ThirdPerson,
+			ThirdPersonChase,
+			Last,
 		};
 
-		Camera(const Vector3f& position, Vector3f& target, EventSystem* eventsystem, Clock* parentClock);
-		
-		void initialize();
-		void update( );
+		explicit Camera();
+		Camera(Vector3f& Origin);
+		~Camera();
+
+		void update( float delta );
 
 
 		const Vector3f& getPosition() const { return m_position; }
@@ -31,37 +34,29 @@ namespace woodman
 		void setRotation( const Vector3f& rotation ) {m_rotationAngles = rotation; }
 		void lockMouse();
 		void unlockMouse();
-		void setTarget( const Vector3f& Target) { m_target = Target;}
-		Vector3f& getTarget() { return m_target;}
+		void setOrigin( Vector3f& Origin) { m_origin = Origin;}
+		const Vector3f& getOrigin( ) const { return m_origin;}
 		Matrix4f& getMatrix() { return m_matrix;}
-		void setMode(NamedPropertyContainer& parameters);
-		void catchCamInfo(NamedPropertyContainer& parameters);
-		void catchRMouseDown(NamedPropertyContainer& parameters);
-		void catchMouseWheel(NamedPropertyContainer& parameters);
 
-		
-		
-		
-		
+
+
+
 	protected:
 
 		void updateInput(Vector3f& impulse, Vector3f& rotation);
-		
+
 
 	private:
 
-		Camera();
 		Vector3f m_rotationAngles;
 		Vector3f m_position;
-		Vector3f m_target;
 		Vector3f m_velocity;
-		float m_length;
+		Vector3f m_origin;
 
 		Matrix4f m_matrix;
-		float m_distance;
 
-		Vector2i m_mousePos;
-		Clock m_clock;
+
+		float m_distance;
 
 		CameraMode m_mode;
 	};

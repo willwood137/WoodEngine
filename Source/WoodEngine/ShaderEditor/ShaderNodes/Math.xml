@@ -1,25 +1,40 @@
 <ShaderEditor>
   <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="Numerator"/>
-    <Input name="Denominator"/>
-    <Output name="Division">
+    <Input name="Numerator">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
+    <Input name="Denominator">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
+    <Output name="Result">
+      <dataType  type ="vector" smartSize="$Numerator"/>
       <Shader_Code>$Numerator / $Denominator</Shader_Code>
     </Output>
     
   </NodeDefinition>
   
   <NodeDefinition name="Sum" category="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="A"/>
-    <Input name="B"/>
+    <Input name="A">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
+    <Input name="B">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
     <Output name="Sum">
+      <dataType type="vector" smartSize="$A"/>
       <Shader_Code>$A + $B</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Multiply" category="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="A"/>
-    <Input name="B"/>
+    <Input name="A">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
+    <Input name="B">
+      <dataType type="vector" minSize="1" maxSize="4"/>
+    </Input>
     <Output name="Sum">
+      <dataType type="vector" smartSize="$A"/>
       <Shader_Code>$A * $B</Shader_Code>
     </Output>
   </NodeDefinition>
@@ -29,19 +44,20 @@
       <dataType type="vector" size="4"/>
     </Input>
     <Output name="GrayScale">
+      <dataType type="vector" size="4"/>
       <Shader_Code></Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Transform_Vector" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="Vector">
-      <dataType type="vector" />
+      <dataType type="vector" minSize="4" maxSize="4"/>
     </Input>
     <Input name="Matrix">
-      <dataType type="matrix" />
+      <dataType type="matrix" minSize ="4" maxSize="4"/>
     </Input>
     <Output name="OutVector">
-      <dataType type="vector" size="4"/>
+      <dataType type="vector" smartSize="$Vector"/>
       <Shader_Code>$Matrix * vec4( $Vector , 1.0)</Shader_Code>
     </Output>
   </NodeDefinition>

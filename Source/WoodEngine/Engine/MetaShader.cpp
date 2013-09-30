@@ -38,7 +38,7 @@ namespace woodman
 			{
 				//this is triangle batch data
 				Uniform uni;
-				uni.dType = (DataType)(ModelChild.attribute("DataType").as_uint());
+				//uni.dType = (DataType)(ModelChild.attribute("DataType").as_uint());
 				uni.numValues = ModelChild.attribute("numValues").as_uint();
 				uni.name = ModelChild.attribute("Name").as_string();
 
@@ -129,27 +129,27 @@ namespace woodman
 
 	void MetaShader::render( Model* modelToRender )
 	{
-		glUseProgram(m_shaderID);
-		unsigned int vertexSize = modelToRender->getVertexSize();
-		for(auto it = m_attributes.begin(); it!= m_attributes.end(); ++it)
-		{
-			VertexAttribute* attrib = nullptr;
-			attrib = modelToRender->getVertexAttribute(it->name);
-			glVertexAttribPointer(it->id, it->numValues, GL_FLOAT, GL_FALSE,
-				vertexSize,	reinterpret_cast< void* >(attrib->offsetOf) );
-			glEnableVertexAttribArray(it->id);
-		}
-
-		// Render Calls
-
-		//get Batch Data
-		std::vector<BatchData>* ModelBatchData = modelToRender->getBatchData();
-
-		for(auto it = ModelBatchData->begin(); it != ModelBatchData->end(); ++it)
-		{
-			glBindBuffer( GL_ARRAY_BUFFER, it->idVBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, it->idIBO );
-			glDrawElements( GL_TRIANGLES, it->numIndices, GL_UNSIGNED_INT, 0 ); 
-		}
+// 		glUseProgram(m_shaderID);
+// 		unsigned int vertexSize = modelToRender->getVertexSize();
+// 		for(auto it = m_attributes.begin(); it!= m_attributes.end(); ++it)
+// 		{
+// 			VertexAttribute* attrib = nullptr;
+// 			attrib = modelToRender->getVertexAttribute(it->name);
+// 			glVertexAttribPointer(it->id, it->numValues, GL_FLOAT, GL_FALSE,
+// 				vertexSize,	reinterpret_cast< void* >(attrib->offsetOf) );
+// 			glEnableVertexAttribArray(it->id);
+// 		}
+// 
+// 		// Render Calls
+// 
+// 		//get Batch Data
+// 		std::vector<BatchData>* ModelBatchData = modelToRender->getBatchData();
+// 
+// 		for(auto it = ModelBatchData->begin(); it != ModelBatchData->end(); ++it)
+// 		{
+// 			glBindBuffer( GL_ARRAY_BUFFER, it->idVBO );
+// 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, it->idIBO );
+// 			glDrawElements( GL_TRIANGLES, it->numIndices, GL_UNSIGNED_INT, 0 ); 
+// 		}
 	}
 }

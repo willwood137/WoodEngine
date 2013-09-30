@@ -3,6 +3,7 @@
 #include "ShaderNode.hpp"
 #include "ShaderInstance.hpp"
 #include "NodeInstance.hpp"
+#include "ModelPreviewWidget.hpp"
 
 #include "..\engine\HashedString.hpp"
 
@@ -40,6 +41,7 @@ namespace woodman
 		virtual void KeyDown(unsigned int key);
 		void catchAddNode(NamedPropertyContainer& parameters);
 		void catchCompile(NamedPropertyContainer& parameters);
+		void catchPreview(NamedPropertyContainer& parameters);
 
 		void SyncUIAndShaderInstance();
 
@@ -59,6 +61,9 @@ namespace woodman
 		std::shared_ptr<UICanvas> m_vertexCanvas;
 		std::shared_ptr<UICanvas> m_fragmentCanvas;
 		std::shared_ptr<UICanvas> m_dividerCanvas;
+		std::shared_ptr<ModelPreviewWidget> m_previewWidget;
+
+		bool m_previewMode;
 
 	};
 }

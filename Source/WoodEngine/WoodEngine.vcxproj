@@ -111,6 +111,7 @@
     <ClInclude Include="Math\Vector3.hpp" />
     <ClInclude Include="Math\Vector4.hpp" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ShaderEditor\ModelPreviewWidget.hpp" />
     <ClInclude Include="ShaderEditor\NodeInstance.hpp" />
     <ClInclude Include="ShaderEditor\ShaderEditor.hpp" />
     <ClInclude Include="ShaderEditor\ShaderInstance.hpp" />
@@ -150,6 +151,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ShaderEditor\ModelPreviewWidget.cpp" />
     <ClCompile Include="ShaderEditor\NodeInstance.cpp" />
     <ClCompile Include="ShaderEditor\ShaderEditor.cpp" />
     <ClCompile Include="ShaderEditor\ShaderInstance.cpp" />

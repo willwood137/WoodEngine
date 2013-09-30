@@ -18,22 +18,22 @@ namespace woodman
 	//
 	// return length of string;
 	//
-	unsigned int readStringFromFile(std::string& outString, std::ifstream& in, unsigned int offset)
-	{
-		if(offset != 0)
-			in.seekg(offset, std::ios::beg);
-
-		unsigned int stringLength;
-
-		in.read(reinterpret_cast<char*>(&stringLength), sizeof(unsigned int) );
-		if( stringLength > 0)
-		{
-			outString.resize(stringLength);
-			in.read(reinterpret_cast<char*>(&outString[0]), sizeof(char)*stringLength );
-		}
-
-		return stringLength;
-	}
+// 	unsigned int readStringFromFile(std::string& outString, std::ifstream& in, unsigned int offset)
+// 	{
+// 		if(offset != 0)
+// 			in.seekg(offset, std::ios::beg);
+// 
+// 		unsigned int stringLength;
+// 
+// 		in.read(reinterpret_cast<char*>(&stringLength), sizeof(unsigned int) );
+// 		if( stringLength > 0)
+// 		{
+// 			outString.resize(stringLength);
+// 			in.read(reinterpret_cast<char*>(&outString[0]), sizeof(char)*stringLength );
+// 		}
+// 
+// 		return stringLength;
+// 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

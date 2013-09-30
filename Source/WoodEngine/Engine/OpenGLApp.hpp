@@ -50,7 +50,6 @@ namespace woodman
 		ShaderEditor m_shaderEditor;
 
 
-		Model m_model;
 		MetaShader m_shader;
 		
 		double m_remainingUpdateTime;

@@ -2,9 +2,16 @@
 
 #include "HashedString.hpp"
 
+#include "..\Math\Vector2.hpp"
+#include "..\Math\Vector3.hpp"
+#include "..\Math\Vector4.hpp"
+#include "..\Math\Matrix4.hpp"
+
 #include <map>
 #include <memory>
 #include <set>
+
+#include "Model.hpp"
 
 namespace woodman
 {
@@ -20,6 +27,7 @@ namespace woodman
 		};
 
 		Shader(const std::string& filepath);
+
 		Shader() {}
 		
 		bool loadShader( const std::string& filepath );
@@ -30,6 +38,15 @@ namespace woodman
 
 		unsigned int getAttributeID(const HashedString& attributeName) const;
 		unsigned int getUniformID(const HashedString& uniformName) const;
+
+		bool setUpAttrbituesFromModel(std::shared_ptr<Model> model);
+
+		bool SetUniformFloat(const HashedString& uniformName, float value);
+		bool SetUniformInt(const HashedString& uniformName, int value);
+		bool SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Value);
+		bool SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Value);
+		bool SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Value);
+		bool SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrix);
 
 		bool setAttribute( const HashedString& attributeName, 
 			const unsigned int numValues, 
@@ -56,6 +73,8 @@ namespace woodman
 
 		static std::shared_ptr<Shader> CreateOrGetShader( 
 			const std::string& ShaderPath );
+
+		static void DestroyShader( std::shared_ptr<Shader>& pShader );
 
 		static unsigned int QuadBufferID;
 

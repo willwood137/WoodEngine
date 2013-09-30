@@ -6,13 +6,9 @@
       <dataType type="vector" size="3"/>
       <Attribute name="position" />
     </Output>
-    <Output name="Normal">
-      <dataType type="vector" size="3"/>
-      <Attribute name="normal" />
-    </Output>
-
+   
     <Output name="Texture_Coordinates">
-      <dataType type="vector" size="3"/>
+      <dataType type="vector" size="2"/>
       <Attribute name="uv" />
     </Output>
 
@@ -21,7 +17,7 @@
   <NodeDefinition name="Final_Position" category ="Core" canBeVertex="true" canBeFrag="false">
 
     <Input name="Position">
-      <dataType> vec4 </dataType>
+      <dataType type="vector" size="4"/>
       <GLVariable name ="gl_Position" />
     </Input>
     
@@ -30,8 +26,17 @@
   <NodeDefinition name="ModelViewProjection_Matrix" category ="Core" canBeVertex="true" canBeFrag="false">
 
     <Output name="MVP">
-      <dataType type="matrix" rows="4" columns="4" />
+      <dataType type="matrix" size="4" />
       <Uniform name="mvp" />
+    </Output>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="Diffuse" category ="Core" canBeVertex="false" canBeFrag="true">
+
+    <Output name="diffuse">
+      <dataType type="sampler2D" size="1" />
+      <Uniform name="diffuse" />
     </Output>
 
   </NodeDefinition>
@@ -42,9 +47,13 @@
       <dataType type="vector" size="2" />
     </Input>
 
+    <Input name ="Texture">
+      <dataType type = "sampler2D" size ="1" />
+    </Input>
+    
     <Output name="Color">
       <dataType type="vector" size="4" />
-      <Shader_Code>sampler2D(0, $UV )</Shader_Code>
+      <Shader_Code>texture2D( $Texture , $UV )</Shader_Code>
     </Output>
 
   </NodeDefinition>

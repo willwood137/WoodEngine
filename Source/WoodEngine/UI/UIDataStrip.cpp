@@ -9,10 +9,14 @@ namespace woodman
 	UIDataStrip::UIDataStrip(std::shared_ptr<UICanvas> ParentCanvas,
 		std::shared_ptr<UIWidget> parentWidget,
 		const std::string& name,
-		HashedString uniqueID)
+		HashedString uniqueID,
+		PropertyType pType,
+		unsigned int typeSize)
 		:UIWidget(ParentCanvas, parentWidget, name, uniqueID),
 		m_startVector(30.0f, 0.0f),
-		m_endVector(-30.0f, 0.0f)
+		m_endVector(-30.0f, 0.0f),
+		m_propertyType(pType),
+		m_typeSize(typeSize)
 	{
 	}
 
@@ -121,21 +125,25 @@ namespace woodman
 
 		if( slot != nullptr)
 		{
+			if(slot->getDataType()->type == m_propertyType )
+			{
+				slot->setDataSize( m_typeSize );
 
-			if(m_dragEndPoint)
-			{
-				if(!slot->getExitSlot())
+				if(m_dragEndPoint)
 				{
-					m_endTarget = slot;
-					slot->setDataStrip(std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
+					if(!slot->getExitSlot())
+					{
+						m_endTarget = slot;
+						slot->setDataStrip(std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
+					}
 				}
-			}
-			else
-			{
-				if(slot->getExitSlot())
+				else
 				{
-					m_startTarget = slot;
-					slot->setDataStrip( std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_endTarget) );
+					if(slot->getExitSlot())
+					{
+						m_startTarget = slot;
+						slot->setDataStrip( std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_endTarget) );
+					}
 				}
 			}
 		}

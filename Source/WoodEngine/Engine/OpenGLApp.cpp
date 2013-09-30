@@ -121,7 +121,6 @@ namespace woodman
 		m_appClock( HashedString("AppClock"), 1.0, &m_eventSystem ),
 		m_remainingUpdateTime(0.0),
 		m_devConsole(&m_eventSystem, "Engine\\ConsoleCommands.xml"),
-		m_model("test_box.xml"),
 		m_shader("ModelShader"),
 		m_shaderEditor(&m_eventSystem)
 	{
@@ -273,9 +272,9 @@ namespace woodman
 		RECT clientRect;
 		GetClientRect( m_hWnd, &clientRect );
 		const double aspectRatio = static_cast< float >(clientRect.right ) / clientRect.bottom;
-// 		glMatrixMode( GL_PROJECTION );
-// 		glLoadIdentity();
-// 		gluPerspective( 45., aspectRatio, 1, 1200. );
+ 		glMatrixMode( GL_PROJECTION );
+ 		glLoadIdentity();
+ 		gluPerspective( 45., aspectRatio, 1, 1200. );
 
 
 		//render

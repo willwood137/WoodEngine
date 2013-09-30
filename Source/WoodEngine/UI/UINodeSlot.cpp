@@ -12,11 +12,13 @@ namespace woodman
 		const std::string& name,
 		HashedString uniqueID, 
 		const Vector2f& canvasCoordinates,
-		bool exitSlot)
+		bool exitSlot,
+		std::shared_ptr<DataType> dType)
 		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates),
-		m_exitSlot(exitSlot)
+		m_exitSlot(exitSlot),
+		m_parentDataType(dType)
 	{
-
+		m_dataTypeSize = m_parentDataType->maxSize;
 	}
 
 	void UINodeSlot::Initialize()
@@ -143,7 +145,9 @@ namespace woodman
 				m_parentCanvas, 
 				nullptr, 
 				"lineSTRIP",
-				HashedString("DataStrip") ) );
+				HashedString("DataStrip"),
+				m_parentDataType->type,
+				m_dataTypeSize) );
 
 			if(m_exitSlot)
 			{

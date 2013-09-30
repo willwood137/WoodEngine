@@ -20,7 +20,9 @@ namespace woodman
 		UIDataStrip(std::shared_ptr<UICanvas> ParentCanvas,
 			std::shared_ptr<UIWidget> parentWidget,
 			const std::string& name,
-			HashedString uniqueID);
+			HashedString uniqueID,
+			PropertyType pType,
+			unsigned int typeSize);
 
 		bool isPointInBounds(const Vector2f& point);
 
@@ -46,6 +48,10 @@ namespace woodman
 		Vector2f m_startVector;
 		Vector2f m_endPoint;
 		Vector2f m_endVector;
+
+		PropertyType m_propertyType;
+		unsigned int m_typeSize;
+
 
 		std::shared_ptr<UIWidget> m_startTarget;
 		std::shared_ptr<UIWidget> m_endTarget;

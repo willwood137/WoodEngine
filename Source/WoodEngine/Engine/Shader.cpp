@@ -293,4 +293,121 @@ namespace woodman
 
 		return result;
 	}
+
+	void Shader::DestroyShader( std::shared_ptr<Shader>& pShader )
+	{
+		if(pShader != 0)
+		{
+			if(pShader.use_count() <= 2 )
+			{
+				glDeleteProgram(pShader->m_shaderID);
+				Shaders.erase(pShader);
+				pShader = 0;
+
+			}
+			else
+			{
+				// Shader is still being used by another object
+				pShader = 0;
+
+			}
+		}
+		PROMISES( pShader == 0 );
+	}
+
+	bool Shader::SetUniformFloat(const HashedString& uniformName, float value)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniform1f(m_uniforms[uniformName], value);
+			return true;
+		}
+
+		return false;
+	}
+
+
+	bool Shader::SetUniformInt(const HashedString& uniformName, int value)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniform1i(m_uniforms[uniformName], value);
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Value)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniform2fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec2Value ) );
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Value)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniform3fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec3Value ) );
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Value)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniform4fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec4Value ) );
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Shader::SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrix)
+	{
+		if(m_uniforms.find(uniformName) != m_uniforms.end() )
+		{
+			glUniformMatrix4fv(m_uniforms[uniformName], 1, false, reinterpret_cast<GLfloat*>( &matrix ) );
+			return true;
+		}
+
+		return false;
+	}
+
+
+	bool Shader::setUpAttrbituesFromModel(std::shared_ptr<Model> model)
+	{
+
+		bool good = true;
+		for(auto attributeIt = m_attributes.begin(); attributeIt != m_attributes.end(); ++attributeIt)
+		{
+			std::string attributeName = attributeIt->first.m_string.substr(2);
+			VertexAttribute* modelAttribute = model->getVertexAttribute(attributeName);
+
+			if(modelAttribute == nullptr)
+			{
+				//this model file does not have the given attribute
+				good = false;
+			}
+			else
+			{
+
+
+				glVertexAttribPointer(attributeIt->second, modelAttribute->numValues, GL_FLOAT, GL_FALSE,
+					model->getVertexSize(),	reinterpret_cast< void* >(modelAttribute->offsetOf) );
+				glEnableVertexAttribArray(attributeIt->second);
+			}
+		}
+
+		return good;
+	}
+
 }

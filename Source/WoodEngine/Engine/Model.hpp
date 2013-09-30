@@ -7,7 +7,6 @@
 #include <array>
 #include <string>
 #include "Texture.hpp"
-#include "Shader.hpp"
 #include "Camera.hpp"
 
 
@@ -28,6 +27,12 @@ namespace woodman
 		std::string Name;
 	};
 
+	struct Material
+	{
+		std::string name;
+		std::shared_ptr<Texture> Texture;
+	};
+
 	class Model
 	{
 	public:
@@ -37,6 +42,8 @@ namespace woodman
 		bool loadData();
 		VertexAttribute* getVertexAttribute(const std::string& AttributeName);
 		
+		std::shared_ptr<Texture> getMaterialTexture( const std::string& MaterialName );
+
 		unsigned int getVertexSize()
 		{
 			return m_vertexSize;
@@ -55,6 +62,7 @@ namespace woodman
 		unsigned int m_vertexSize;
 		std::vector<BatchData> m_batchDatas;
 		std::vector<VertexAttribute> m_attributes;
+		std::set<std::shared_ptr<Material>> m_materials; 
 
 
 

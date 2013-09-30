@@ -16,6 +16,7 @@
 #include "Engine\Clock.hpp"
 #include <string>
 
+using namespace std;
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   HINSTANCE hPrevInstance,
@@ -26,7 +27,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	int resultCode;
-
 
 
 	try

@@ -4,6 +4,7 @@
 #include "..\Libs\pugixml.hpp"
 #include "..\Math\AABB2D.hpp"
 #include "..\UI\UINodeBox.hpp"
+#include "..\Utility\Utility.hpp"
 
 namespace woodman
 {
@@ -13,7 +14,8 @@ namespace woodman
 		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
 		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(200, 900), Vector2i(10, 10)	) ),
 		m_vertexToFragmentRatio(1.0f),
-		m_vertexToFramentRatioGoal(1.0f)
+		m_vertexToFramentRatioGoal(1.0f),
+		m_previewMode(false)
 	{
 		m_canvases.insert(m_vertexCanvas);
 		m_canvases.insert(m_dividerCanvas);
@@ -29,6 +31,7 @@ namespace woodman
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchAddNode, "AddNode");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchCompile, "Compile");
+		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchPreview, "Preview");
 
 
 		//create Menu
@@ -58,12 +61,26 @@ namespace woodman
 			m_mouse->MainMenu->subMenus[0]->subMenus.push_back(catMenu);
 		}
 
+		std::shared_ptr<MouseMenu> PreviewMenu(new MouseMenu());
+		PreviewMenu->name = "Preview";
+		PreviewMenu->EventToFire = "Preview";
+		m_mouse->MainMenu->subMenus.push_back(PreviewMenu);
+
 		std::shared_ptr<MouseMenu> CompileMenu(new MouseMenu());
 		CompileMenu->name = "Compile";
 		CompileMenu->EventToFire = "Compile";
-
-
 		m_mouse->MainMenu->subMenus.push_back(CompileMenu);
+
+
+		
+
+
+		m_previewWidget = std::shared_ptr<ModelPreviewWidget>(new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) );
+
+		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
+		
+		UIWidget::RegisterUIWidget(m_previewWidget);
+		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
 	}
 
 
@@ -113,7 +130,19 @@ namespace woodman
 
 	void ShaderEditor::render()
 	{
-		UIController::render();
+		if(m_previewMode)
+		{
+			m_previewWidget->render(m_mouse);
+
+			if(m_mouse->menuOpen)
+			{
+				m_mouse->render();
+			}
+		}
+		else
+		{
+			UIController::render();
+		}
 	}
 
 
@@ -163,12 +192,64 @@ namespace woodman
 
 							
 							newLink->name = dataNode.attribute("name").as_string();
-							newLink->type = PROPERTYTYPE_FLOAT;
+							//newLink->type = PROPERTYTYPE_FLOAT;
 						
 							pugi::xml_node codeNode = dataNode.first_child();
 							while(codeNode)
 							{
-								if( std::string(codeNode.name()).compare(std::string("Attribute")) == 0)
+								if(std::string(codeNode.name()).compare(std::string("dataType")) == 0)
+								{
+									std::shared_ptr<DataType> dType(new DataType() );
+									
+									std::string sType = codeNode.attribute("type").as_string();
+
+									if(sType.compare("vector") == 0)
+									{
+										dType->type = PROPERTYTYPE_VECTOR;
+									}
+									else if( sType.compare("matrix") == 0)
+									{
+										dType->type = PROPERTYTYPE_MATRIX;
+									}
+									else if( sType.compare("sampler2D") == 0)
+									{
+										dType->type = PROPERTYTYPE_SAMPLER2D;
+									}
+
+									//get sizes
+									pugi::xml_attribute attrib = codeNode.first_attribute();
+
+									while(attrib)
+									{
+
+										if(std::string(attrib.name()).compare("minSize") == 0)
+										{
+											dType->minSize = attrib.as_uint();
+										}
+										else if(std::string(attrib.name()).compare("maxSize") == 0)
+										{
+											dType->maxSize = attrib.as_uint();
+										}
+										else if(std::string(attrib.name()).compare("size") == 0)
+										{
+											dType->minSize = attrib.as_uint();
+											dType->maxSize = dType->minSize;
+										}
+										else if(std::string(attrib.name()).compare("smartSize") == 0)
+										{
+											std::string linkName = attrib.as_string();
+											std::shared_ptr<NodeLink> refLink = currentDefinition->getLinkByName(linkName.substr(1));
+											if(refLink != nullptr)
+												dType->smartSizeReferences.insert(refLink->typeData);
+										}
+									
+										attrib = attrib.next_attribute();
+									}
+
+									newLink->typeData = dType;
+								}
+
+								else if( std::string(codeNode.name()).compare(std::string("Attribute")) == 0)
 								{
 									newLink->attributeName = codeNode.attribute("name").as_string();
 								}
@@ -334,7 +415,8 @@ namespace woodman
 				numOutSlots++;
 			}
 
-			std::shared_ptr<UIWidget> newSlot( new UINodeSlot(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), (it->second)->exitNode ) );
+			
+			std::shared_ptr<UIWidget> newSlot( new UINodeSlot(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), (it->second)->exitNode, (it->second)->parentLink->typeData ) );
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
 			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
@@ -430,14 +512,31 @@ namespace woodman
 			if(asNodeSlot != nullptr)
 			{
 				
+
 				//this is a nodeslot, if it has a partner then hook it up with the instance
 				if(asNodeSlot->getPartnerSlot() != nullptr)
 				{
-					m_shaderInstance.linkSlots(  asNodeSlot->getUniqueID(), asNodeSlot->getPartnerSlot()->getUniqueID() );
+					variableInfo infoA, infoB;
+					infoA.name = asNodeSlot->getUniqueID();
+					infoA.typeSize = asNodeSlot->getTypeSize();
+					infoA.pType = asNodeSlot->getDataType()->type;
+
+
+					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
+					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
+					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
+
+					m_shaderInstance.linkSlots( infoA, infoB );
 				}
 			}
 		}
+	}
 
 
+	void ShaderEditor::catchPreview(NamedPropertyContainer& parameters)
+	{
+		m_previewMode = !m_previewMode;
+
+		m_previewWidget->updateShader("ShaderTest");
 	}
 }

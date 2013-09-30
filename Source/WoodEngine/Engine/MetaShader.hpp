@@ -1,3 +1,5 @@
+#pragma once
+
 
 #include <string>
 #include <vector>
@@ -12,12 +14,6 @@ namespace woodman
 		std::string name;
 		unsigned int numValues;
 		unsigned int id;
-	};
-
-	enum DataType
-	{
-		DATATYPE_FLOAT,
-		DATATYPE_MATRIX,
 	};
 
 	struct Uniform

@@ -3,6 +3,7 @@
 #include "ShaderNode.hpp"
 #include "../Math/Vector2.hpp"
 #include "../Engine/HashedString.hpp"
+#include "../Utility/Utility.hpp"
 
 #include <memory>
 #include <vector>
@@ -35,6 +36,9 @@ namespace woodman
 		
 		// what this is connecting to
 		std::shared_ptr<NodeLinkInstance> partnerLinkInstance;
+
+		PropertyType pType;
+		unsigned int typeSize;
 
 		bool exitNode;
 	};
