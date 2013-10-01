@@ -5,6 +5,10 @@
 #include "../Engine/HashedString.hpp"
 #include "../Utility/Utility.hpp"
 
+
+#include "../Ui/UINodeSlot.hpp"
+#include "../Ui/UINodeBox.hpp"
+
 #include <memory>
 #include <vector>
 #include <map>
@@ -20,10 +24,21 @@ namespace woodman
 		SHADER_TYPE_SIZE
 	};
 
+	struct variableInfo
+	{
+		variableInfo() : VariableName("") {}
+		variableInfo(HashedString _name) : VariableName(_name) {}
 
-	struct NodeLinkInstance
+		HashedString VariableName;
+		std::string variablePrefix;
+	};
+
+	struct NodeLinkInstance : public NodeSlotCallBackInfoBase
 	{
 		NodeLinkInstance(HashedString uniqueID) : m_uniqueID(uniqueID) {}
+
+		//CallBackFunctions
+		virtual void CallBackLinkToNodeSlot(std::shared_ptr<NodeSlotCallBackInfoBase> partner); 
 
 		HashedString m_uniqueID;
 		std::string m_linkName;
@@ -37,10 +52,13 @@ namespace woodman
 		// what this is connecting to
 		std::shared_ptr<NodeLinkInstance> partnerLinkInstance;
 
+		variableInfo varInfo;
+
 		PropertyType pType;
 		unsigned int typeSize;
 
 		bool exitNode;
+		unsigned int lastCompile;
 	};
 
 	class NodeInstance
@@ -67,7 +85,7 @@ namespace woodman
 		{
 			return m_uniqueID;
 		}
-		void CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation);
+		void CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation, unsigned int compileID);
 
 
 	private:

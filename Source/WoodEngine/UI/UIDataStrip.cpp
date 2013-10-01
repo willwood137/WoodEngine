@@ -129,12 +129,14 @@ namespace woodman
 			{
 				//slot->setDataSize( m_typeSize );
 
+				//if dragging the endpoint, then should only connect to entrance slots
 				if(m_dragEndPoint)
 				{
 					if(!slot->getExitSlot())
 					{
 						m_endTarget = slot;
 						slot->setDataStrip(std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
+						UINodeSlot::PairNodeSlots(slot, std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
 					}
 				}
 				else
@@ -143,6 +145,7 @@ namespace woodman
 					{
 						m_startTarget = slot;
 						slot->setDataStrip( std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_endTarget) );
+						UINodeSlot::PairNodeSlots( std::dynamic_pointer_cast<UINodeSlot>(m_endTarget), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
 					}
 				}
 			}

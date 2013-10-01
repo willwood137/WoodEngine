@@ -7,9 +7,7 @@
     </Input>
     <Output name="GrayScale">
       <dataType type="vector" size="2"/>
-      <ShaderCode>
-        vec2( $Color.r * .299 + $Color.g * .587 + $Color.b * .114, $Color.a ); 
-      </ShaderCode>
+      <Shader_Code>vec2( $Color .r * .299 + $Color .g * .587 + $Color .b * .114, $Color .a )</Shader_Code>
     </Output>
 
 

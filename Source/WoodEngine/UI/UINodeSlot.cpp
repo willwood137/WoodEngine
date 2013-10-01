@@ -13,10 +13,12 @@ namespace woodman
 		HashedString uniqueID, 
 		const Vector2f& canvasCoordinates,
 		bool exitSlot,
-		std::shared_ptr<DataType> dType)
+		std::shared_ptr<DataType> dType,
+		std::shared_ptr<NodeSlotCallBackInfoBase> callbackRecipient)
 		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates),
 		m_exitSlot(exitSlot),
-		m_parentDataType(dType)
+		m_parentDataType(dType),
+		m_callBackRecipient(callbackRecipient)
 	{
 		m_dataTypeSize = m_parentDataType->maxSize;
 	}
@@ -123,8 +125,10 @@ namespace woodman
 		if(m_dataStrip != nullptr)
 		{
 			if(m_partnerSlot != nullptr)
+			{	
 				m_partnerSlot->m_dataStrip = nullptr;
-	
+				unPair();
+			}
 			m_parentCanvas->UnRegisterUIWidget(m_dataStrip);
 			m_dataStrip = nullptr;
 		}
@@ -206,4 +210,27 @@ namespace woodman
 			}
 		}
 	}
+
+	void UINodeSlot::unPair()
+	{
+		if(m_partnerSlot != nullptr)
+		{
+
+			m_callBackRecipient->CallBackLinkToNodeSlot(nullptr);
+			m_partnerSlot->m_callBackRecipient->CallBackLinkToNodeSlot(nullptr);
+
+			m_partnerSlot->m_partnerSlot = nullptr;
+			m_partnerSlot = nullptr;
+		}
+	}
+
+	 void UINodeSlot::PairNodeSlots(std::shared_ptr<UINodeSlot> outSlot, std::shared_ptr<UINodeSlot> inSlot)
+	 {
+		 outSlot->m_partnerSlot = inSlot;
+		 outSlot->m_callBackRecipient->CallBackLinkToNodeSlot(inSlot->m_callBackRecipient);
+
+
+		 inSlot->m_partnerSlot = outSlot;
+		 inSlot->m_callBackRecipient->CallBackLinkToNodeSlot(outSlot->m_callBackRecipient);
+	 }
 }

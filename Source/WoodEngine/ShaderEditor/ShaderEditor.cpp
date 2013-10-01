@@ -434,7 +434,7 @@ namespace woodman
 			}
 
 			
-			std::shared_ptr<UIWidget> newSlot( new UINodeSlot(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), (it->second)->exitNode, (it->second)->parentLink->typeData ) );
+			std::shared_ptr<UIWidget> newSlot( new UINodeSlot(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), (it->second)->exitNode, (it->second)->parentLink->typeData, it->second ) );
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
 			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
@@ -534,15 +534,15 @@ namespace woodman
 				//this is a nodeslot, if it has a partner then hook it up with the instance
 				if(asNodeSlot->getPartnerSlot() != nullptr)
 				{
-					variableInfo infoA, infoB;
-					infoA.name = asNodeSlot->getUniqueID();
-					infoA.typeSize = asNodeSlot->getTypeSize();
-					infoA.pType = asNodeSlot->getDataType()->type;
-
-
-					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
-					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
-					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
+ 					variableInfo infoA, infoB;
+// 					infoA.name = asNodeSlot->getUniqueID();
+// 					infoA.typeSize = asNodeSlot->getTypeSize();
+// 					infoA.pType = asNodeSlot->getDataType()->type;
+// 
+// 
+// 					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
+// 					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
+// 					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
 
 					m_shaderInstance.linkSlots( infoA, infoB );
 				}

@@ -9,6 +9,13 @@
 
 namespace woodman
 {
+
+	struct NodeSlotCallBackInfoBase
+	{
+		virtual void CallBackLinkToNodeSlot(std::shared_ptr<NodeSlotCallBackInfoBase> partner) = 0;
+	};
+
+	
 	class UINodeSlot : public UIWidget
 	{
 	public:
@@ -18,14 +25,14 @@ namespace woodman
 			HashedString uniqueID, 
 			const Vector2f& canvasCoordinates,
 			bool exitSlot,
-			std::shared_ptr<DataType> dType);
+			std::shared_ptr<DataType> dType,
+			std::shared_ptr<NodeSlotCallBackInfoBase> callbackRecipient);
 
 		bool getExitSlot() const;
 
 		void setDataStrip(std::shared_ptr<UIDataStrip> strip, std::shared_ptr<UINodeSlot> partner)
 		{
 			m_dataStrip = strip;
-			m_partnerSlot = partner;
 		}
 
 		virtual void Initialize();
@@ -39,6 +46,9 @@ namespace woodman
  		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
 // 		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
 
+		void unPair();
+		
+		
 		std::shared_ptr<UINodeSlot> getPartnerSlot()
 		{
 			return m_partnerSlot;
@@ -65,6 +75,9 @@ namespace woodman
 			return m_dataTypeSize;
 		}
 
+		static void PairNodeSlots(std::shared_ptr<UINodeSlot> outSlot, std::shared_ptr<UINodeSlot> inSlot);
+
+
 	private:
 		//null if unpaired
 		std::shared_ptr<UINodeSlot>	m_partnerSlot;
@@ -75,6 +88,10 @@ namespace woodman
 		unsigned int m_dataTypeSize;
 
 		std::shared_ptr<Shader> m_slotShader;
+
+		std::shared_ptr<NodeSlotCallBackInfoBase> m_callBackRecipient;
+
+		
 
 		
 	};

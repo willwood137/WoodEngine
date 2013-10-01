@@ -50,41 +50,53 @@ namespace woodman
 		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
 		{
 			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* links = it->second->getUINodeLinkInstances();
+
 			for(auto LinkIt = links->begin(); LinkIt != links->end(); ++LinkIt)
 			{
-				variableInfo info( LinkIt->second->m_uniqueID);
-				info.typeSize = LinkIt->second->typeSize;
-				info.pType = LinkIt->second->pType;
+				std::stringstream ss;
+				
+				ss << clamp<unsigned int>(LinkIt->second->typeSize, 1, 4);
+				std::string sizeString(ss.str());
+
+				switch( LinkIt->second->pType)
+				{
+				case PROPERTYTYPE_SAMPLER2D:
+					LinkIt->second->varInfo.variablePrefix = "sampler2D";
+					break;
+				case PROPERTYTYPE_MATRIX:
+					LinkIt->second->varInfo.variablePrefix = "mat" + sizeString;
+					break;
+				default:
+				case PROPERTYTYPE_VECTOR:
+					LinkIt->second->varInfo.variablePrefix = "vec" + sizeString;
+					break;
+				}
 
 				//setup each links linkName
 				if(!LinkIt->second->parentLink->attributeName.empty() )
 				{
-					info.name = HashedString( LinkIt->second->parentLink->attributeName);
-					m_attributes.insert( std::make_pair(info.name, info) );
-					LinkIt->second->m_linkName = "a_" + LinkIt->second->parentLink->attributeName;
+					LinkIt->second->varInfo.VariableName = HashedString("a_" + LinkIt->second->parentLink->attributeName);
+					m_attributes.insert( std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 				}
 				else if(!LinkIt->second->parentLink->OpenGLName.empty() )
 				{
-					LinkIt->second->m_linkName = LinkIt->second->parentLink->OpenGLName;
+					LinkIt->second->varInfo.VariableName = HashedString(LinkIt->second->parentLink->OpenGLName);
 
 					//also use this as a starting point
 					GLLinks.insert(LinkIt->second);
 				}
 				else if(!LinkIt->second->parentLink->outName.empty() )
 				{
-
-					info.name = HashedString( LinkIt->second->parentLink->outName);
-					LinkIt->second->m_linkName = LinkIt->second->parentLink->outName;
-					m_outputs.insert(std::make_pair(info.name, info) );
+					LinkIt->second->varInfo.VariableName = HashedString(LinkIt->second->parentLink->outName);
+					m_outputs.insert(std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 
 					//also use this as a starting point
 					GLLinks.insert(LinkIt->second);
 				}
 				else if(!LinkIt->second->parentLink->varyingName.empty() )
 				{
-					info.name = HashedString( LinkIt->second->parentLink->varyingName );
-					m_varying.insert( std::make_pair(info.name, info) );
-					LinkIt->second->m_linkName = "v_" + LinkIt->second->parentLink->varyingName;
+					LinkIt->second->varInfo.VariableName = HashedString("v_" + LinkIt->second->parentLink->varyingName);
+					m_varying.insert( std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 
 					//also use this as a starting point
 					if(!LinkIt->second->exitNode)
@@ -92,15 +104,12 @@ namespace woodman
 				}
 				else if(!LinkIt->second->parentLink->uniformName.empty() )
 				{
-					info.name = HashedString( LinkIt->second->parentLink->uniformName);
-					m_uniforms.insert(std::make_pair(info.name, info) );
-
-					LinkIt->second->m_linkName = "u_" + LinkIt->second->parentLink->uniformName;
-
+					LinkIt->second->varInfo.VariableName = HashedString("u_" + LinkIt->second->parentLink->uniformName);
+					m_uniforms.insert(std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 				}
 				else
 				{
-					LinkIt->second->m_linkName = LinkIt->second->m_uniqueID.m_string;
+					LinkIt->second->varInfo.VariableName = LinkIt->second->m_uniqueID.m_string;
 				}
 				
 					
@@ -109,14 +118,17 @@ namespace woodman
 			}
 		}
 		//now compile it
-
+		m_compileCounter++;
 		for(auto it = GLLinks.begin(); it != GLLinks.end(); it++)
 		{
 			if( (*it)->parentNodeInstance->getShaderType() == SHADER_TYPE_VERTEX)
-				CompileLink((*it), vertexCode);
-
-			if( (*it)->parentNodeInstance->getShaderType() == SHADER_TYPE_FRAGMENT)
-				CompileLink((*it), fragmentCode);
+			{
+				(*it)->parentNodeInstance->CompileLink((*it), vertexCode, m_compileCounter);
+			}
+			else if( (*it)->parentNodeInstance->getShaderType() == SHADER_TYPE_FRAGMENT)
+			{
+				(*it)->parentNodeInstance->CompileLink((*it), fragmentCode, m_compileCounter);
+			}
 		}
 
 		//now put it all together
@@ -130,49 +142,22 @@ namespace woodman
 
 		for(auto it = m_uniforms.begin(); it != m_uniforms.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else if(it->second.pType == PROPERTYTYPE_SAMPLER2D)
-				typePrefix = "sampler2D";
-			else
-				typePrefix = "mat";
-
-			if(it->second.pType != PROPERTYTYPE_SAMPLER2D)
-			{
-				std::stringstream ss;
-				ss << it->second.typeSize;
-				typePrefix.append(ss.str());
-			}
-			vertexFile << "uniform " << typePrefix << " u_" << it->second.name.m_string <<";\n";
+			
+			vertexFile << "uniform " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		vertexFile << "\n";
 
 		for(auto it = m_attributes.begin(); it != m_attributes.end(); ++it)
 		{
-			typePrefix = "vec";
-
-			std::stringstream ss;
-			ss << clamp<unsigned int>( it->second.typeSize, 2, 3);
-			typePrefix.append(ss.str());
-
-			vertexFile << "in " << typePrefix << " a_" << it->second.name.m_string <<";\n";
+			vertexFile << "in " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		vertexFile << "\n";
 
 		for(auto it = m_varying.begin(); it != m_varying.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else
-				typePrefix = "mat";
-
-			std::stringstream ss;
-			ss << it->second.typeSize;
-			typePrefix.append(ss.str());
-
-			vertexFile << "out " << typePrefix << " v_" << it->second.name.m_string <<";\n";
+			vertexFile << "out " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		vertexFile << "void main(void)\n{\n";
@@ -186,181 +171,147 @@ namespace woodman
 
 		for(auto it = m_uniforms.begin(); it != m_uniforms.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else if(it->second.pType == PROPERTYTYPE_SAMPLER2D)
-				typePrefix = "sampler2D";
-			else
-				typePrefix = "mat";
-			
-			if(it->second.pType != PROPERTYTYPE_SAMPLER2D)
-			{
-				std::stringstream ss;
-				ss << it->second.typeSize;
-				typePrefix.append(ss.str());
-			}
-			fragFile << "uniform " << typePrefix << " u_" << it->second.name.m_string <<";\n";
+			fragFile << "uniform " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		fragFile << "\n";
 
 		for(auto it = m_varying.begin(); it != m_varying.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else
-				typePrefix = "mat";
-
-			std::stringstream ss;
-			ss << it->second.typeSize;
-			typePrefix.append(ss.str());
-
-			fragFile << "in " << typePrefix << " v_" << it->second.name.m_string <<";\n";
+			fragFile << "in " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		fragFile << "\n";
 
 		for(auto it = m_outputs.begin(); it != m_outputs.end(); ++it)
 		{
-			if(it->second.pType == PROPERTYTYPE_VECTOR)
-				typePrefix = "vec";
-			else
-				typePrefix = "mat";
-
-			std::stringstream ss;
-			ss << it->second.typeSize;
-			typePrefix.append(ss.str());
-
-			fragFile << "out " << typePrefix << " " << it->second.name.m_string <<";\n";
+			fragFile << "out " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		fragFile << "\n";
 
 		fragFile << "void main(void)\n{\n";
 		fragFile << fragmentCode << "\n}";
-
-
-
 	}
 
 
-	void ShaderInstance::CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation)
-	{
-		//we need to resolve this before we can compile this
-
-		if( link->exitNode )
-		{
-			if( !link->parentLink->ShaderCode.empty() )
-			{
-				//this has shader code put it in!
-				std::stringstream ss, shaderCodeParse(link->parentLink->ShaderCode);
-
-				std::string tempString, insertString;
-
-				while(shaderCodeParse.good())
-				{
-
-				shaderCodeParse >> tempString;
-
-					if(tempString[0] == '$')
-					{
-						//this is a variable, get its value
-						std::shared_ptr<NodeLinkInstance> tempLinkInstance = link->parentNodeInstance->getLinkInstanceByName(tempString.substr(1));
-
-						if(tempLinkInstance != nullptr)
-						{
-							if(tempLinkInstance->partnerLinkInstance != nullptr)
-							{
-								CompileLink(tempLinkInstance, compilation);
-							}
-
-							insertString += tempLinkInstance->m_linkName + " ";
-						}
-					}
-					else
-					{
-						insertString += tempString + " ";
-					}
-				}
-
-				std::string typePrefix;
-
-				if(link->pType == PROPERTYTYPE_VECTOR)
-					typePrefix = "vec";
-				else if(link->pType == PROPERTYTYPE_SAMPLER2D)
-					typePrefix = "sampler2D";
-				else
-					typePrefix = "mat";
-
-				if(link->pType != PROPERTYTYPE_SAMPLER2D)
-				{
-					std::stringstream ss;
-					ss << link->typeSize;
-					typePrefix.append(ss.str());
-				}
-				
-				ss <<typePrefix << " " << link->m_uniqueID.m_string << " = " << insertString << ";\n";
-				compilation += ss.str();
-			}
-		}
-		else
-		{
-			//we are an Input Node
-			if(link->partnerLinkInstance != nullptr)
-			{
-				CompileLink(link->partnerLinkInstance, compilation);
-				link->m_linkName = link->partnerLinkInstance->m_linkName;
-			}
-
-			if(link->parentLink->OpenGLName.compare("") != 0)
-			{
-				//so we have a openGL variable here USE IT
-				compilation += link->parentLink->OpenGLName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-			}
-			else if(!link->parentLink->varyingName.empty())
-			{
-				//so we have a openGL variable here USE IT
-				compilation += "v_" + link->parentLink->varyingName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-			}
-			else if(!link->parentLink->outName.empty())
-			{
-				//so we have a openGL variable here USE IT
-				compilation += link->parentLink->outName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-			}
-		}
-	}
+// 	void ShaderInstance::CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation)
+// 	{
+// 		//we need to resolve this before we can compile this
+// 
+// 		if( link->exitNode )
+// 		{
+// 			if( !link->parentLink->ShaderCode.empty() )
+// 			{
+// 				//this has shader code put it in!
+// 				std::stringstream ss, shaderCodeParse(link->parentLink->ShaderCode);
+// 
+// 				std::string tempString, insertString;
+// 
+// 				while(shaderCodeParse.good())
+// 				{
+// 
+// 				shaderCodeParse >> tempString;
+// 
+// 					if(tempString[0] == '$')
+// 					{
+// 						//this is a variable, get its value
+// 						std::shared_ptr<NodeLinkInstance> tempLinkInstance = link->parentNodeInstance->getLinkInstanceByName(tempString.substr(1));
+// 
+// 						if(tempLinkInstance != nullptr)
+// 						{
+// 							if(tempLinkInstance->partnerLinkInstance != nullptr)
+// 							{
+// 								CompileLink(tempLinkInstance, compilation);
+// 							}
+// 
+// 							insertString += tempLinkInstance->m_linkName + " ";
+// 						}
+// 					}
+// 					else
+// 					{
+// 						insertString += tempString + " ";
+// 					}
+// 				}
+// 
+// 				std::string typePrefix;
+// 
+// 				if(link->pType == PROPERTYTYPE_VECTOR)
+// 					typePrefix = "vec";
+// 				else if(link->pType == PROPERTYTYPE_SAMPLER2D)
+// 					typePrefix = "sampler2D";
+// 				else
+// 					typePrefix = "mat";
+// 
+// 				if(link->pType != PROPERTYTYPE_SAMPLER2D)
+// 				{
+// 					std::stringstream ss;
+// 					ss << link->typeSize;
+// 					typePrefix.append(ss.str());
+// 				}
+// 				
+// 				ss <<typePrefix << " " << link->m_uniqueID.m_string << " = " << insertString << ";\n";
+// 				compilation += ss.str();
+// 			}
+// 		}
+// 		else
+// 		{
+// 			//we are an Input Node
+// 			if(link->partnerLinkInstance != nullptr)
+// 			{
+// 				CompileLink(link->partnerLinkInstance, compilation);
+// 				link->m_linkName = link->partnerLinkInstance->m_linkName;
+// 			}
+// 
+// 			if(link->parentLink->OpenGLName.compare("") != 0)
+// 			{
+// 				//so we have a openGL variable here USE IT
+// 				compilation += link->parentLink->OpenGLName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
+// 			}
+// 			else if(!link->parentLink->varyingName.empty())
+// 			{
+// 				//so we have a openGL variable here USE IT
+// 				compilation += "v_" + link->parentLink->varyingName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
+// 			}
+// 			else if(!link->parentLink->outName.empty())
+// 			{
+// 				//so we have a openGL variable here USE IT
+// 				compilation += link->parentLink->outName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
+// 			}
+// 		}
+// 	}
 
 	
 
 	void ShaderInstance::linkSlots(const variableInfo& linkAInfo, const variableInfo& linkBInfo  )
 	{
-		std::shared_ptr<NodeLinkInstance> linkA, linkB;
-
-		//first find slot A and B
-		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
-		{
-			std::shared_ptr<NodeLinkInstance> tempLink;
-			tempLink = (it->second)->getLinkByID(linkAInfo.name);
-			if(tempLink != nullptr)
-			{
-				linkA = tempLink;
-				linkA->pType = linkAInfo.pType;
-				linkA->typeSize = clamp<unsigned int>(linkAInfo.typeSize, 1, 4);
-			}
-
-			tempLink = (it->second)->getLinkByID(linkBInfo.name);
-			if(tempLink != nullptr)
-			{
- 				linkB = tempLink;
- 				linkB->pType = linkBInfo.pType;
- 				linkB->typeSize = clamp<unsigned int>(linkBInfo.typeSize, 1, 4);
-			}
-
-			if(linkA != nullptr && linkB != nullptr)
-				break;
-		}
-
-		linkA->partnerLinkInstance = linkB;
-		linkB->partnerLinkInstance = linkA;
+// 		std::shared_ptr<NodeLinkInstance> linkA, linkB;
+// 
+// 		//first find slot A and B
+// 		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
+// 		{
+// 			std::shared_ptr<NodeLinkInstance> tempLink;
+// 			tempLink = (it->second)->getLinkByID(linkAInfo.name);
+// 			if(tempLink != nullptr)
+// 			{
+// 				linkA = tempLink;
+// 				linkA->pType = linkAInfo.pType;
+// 				linkA->typeSize = clamp<unsigned int>(linkAInfo.typeSize, 1, 4);
+// 			}
+// 
+// 			tempLink = (it->second)->getLinkByID(linkBInfo.name);
+// 			if(tempLink != nullptr)
+// 			{
+//  				linkB = tempLink;
+//  				linkB->pType = linkBInfo.pType;
+//  				linkB->typeSize = clamp<unsigned int>(linkBInfo.typeSize, 1, 4);
+// 			}
+// 
+// 			if(linkA != nullptr && linkB != nullptr)
+// 				break;
+// 		}
+// 
+// 		linkA->partnerLinkInstance = linkB;
+// 		linkB->partnerLinkInstance = linkA;
 	}
 }

@@ -188,8 +188,12 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Engine\ConsoleCommands.xml" />
-    <Xml Include="ShaderEditor\ShaderNodes\Color.xml" />
-    <Xml Include="ShaderEditor\ShaderNodes\Core.xml" />
+    <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Core.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="ShaderEditor\ShaderNodes\Math.xml">
       <SubType>Designer</SubType>
     </Xml>
