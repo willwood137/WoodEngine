@@ -402,7 +402,7 @@ namespace woodman
 
 			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* nodeLinks = nodeIt->second->getUINodeLinkInstances();
 
-			for(auto linkIt = nodeLinks->begin(); linkIt != nodeLinks->(); ++linkIt)
+			for(auto linkIt = nodeLinks->begin(); linkIt != nodeLinks->end(); ++linkIt)
 			{
 
 			}
