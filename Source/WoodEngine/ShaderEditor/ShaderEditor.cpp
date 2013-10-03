@@ -204,7 +204,36 @@ namespace woodman
 					pugi::xml_node dataNode = DefinitionNode.first_child();
 					while(dataNode)
 					{
-						if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
+						if(std::string(dataNode.name()).compare(std::string("Function") ) == 0 )
+						{
+							FunctionDefinition def;
+
+							def.functionCode = dataNode.first_child().value();
+
+							def.dType = std::shared_ptr<DataType>(new DataType());
+
+							std::string sType = dataNode.attribute("returnType").as_string();
+
+							if(sType.compare("vector") == 0)
+							{
+								def.dType->type = PROPERTYTYPE_VECTOR;
+							}
+							else if( sType.compare("matrix") == 0)
+							{
+								def.dType->type = PROPERTYTYPE_MATRIX;
+							}
+							else if( sType.compare("sampler2D") == 0)
+							{
+								def.dType->type = PROPERTYTYPE_SAMPLER2D;
+							}
+
+							def.dType->maxSize = dataNode.attribute("returnSize").as_uint();
+							def.dType->minSize = def.dType->maxSize;
+
+							currentDefinition->functions.push_back(def);
+
+						}
+						else if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
 						{
 							std::shared_ptr<NodeLink> newLink(new NodeLink);
 

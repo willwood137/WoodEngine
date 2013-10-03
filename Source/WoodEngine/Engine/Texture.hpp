@@ -36,8 +36,8 @@ namespace woodman
 			bool MipMapTexture;
 
 			TextureFormat()
-				: MagFilter(GL_NEAREST),
-				MinFilter(GL_NEAREST_MIPMAP_LINEAR),
+				: MagFilter(GL_LINEAR),
+				MinFilter(GL_LINEAR_MIPMAP_NEAREST),
 				WrapS(GL_REPEAT),
 				WrapT(GL_REPEAT),
 				MipMapTexture(true)

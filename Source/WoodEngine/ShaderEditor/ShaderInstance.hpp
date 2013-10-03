@@ -29,6 +29,7 @@ namespace woodman
 
 		unsigned int m_compileCounter;
 		
+		
 		std::map<HashedString, variableInfo> m_attributes;
 		std::map<HashedString, variableInfo> m_uniforms;
 		std::map<HashedString, variableInfo> m_varying;

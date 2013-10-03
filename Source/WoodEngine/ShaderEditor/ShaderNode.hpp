@@ -11,7 +11,11 @@
 namespace woodman
 {
 
-
+	struct FunctionDefinition
+	{
+		std::string functionCode;
+		std::shared_ptr<DataType> dType;
+	};
 
 	struct NodeLink
 	{
@@ -23,6 +27,7 @@ namespace woodman
 		std::string varyingName;
 		std::string OpenGLName;
 		std::string outName;
+
 	};
 
 	 struct ShaderNode
@@ -44,6 +49,7 @@ namespace woodman
 		std::list< std::shared_ptr<PropertyList> > propertyLists;
 		std::vector<std::shared_ptr<NodeLink> > inLinks;
 		std::vector<std::shared_ptr<NodeLink> > outLinks;
+		std::vector<FunctionDefinition> functions;
 		bool canBeVert;
 		bool canBeFrag;
 	 };

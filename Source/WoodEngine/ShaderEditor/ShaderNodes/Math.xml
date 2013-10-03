@@ -1,5 +1,13 @@
 <ShaderEditor>
   <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
+    
+    <Function returnType ="Vector" returnSize ="4">
+vec4 Division( vec4 numerator, vec4 denominator )
+{
+  return vec4(numerator / denominator);
+}
+    </Function>
+
     <Input name="Numerator">
       <dataType type="vector" minSize="1" maxSize="4"/>
     </Input>
@@ -8,7 +16,7 @@
     </Input>
     <Output name="Result">
       <dataType  type ="vector" smartSize="$Numerator"/>
-      <Shader_Code>$Numerator / $Denominator</Shader_Code>
+      <Shader_Code>Division( $Numerator , $Denominator )</Shader_Code>
     </Output>
     
   </NodeDefinition>

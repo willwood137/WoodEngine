@@ -44,11 +44,33 @@ namespace woodman
 	void ShaderInstance::Compile()
 	{
 		std::string vertexCode, fragmentCode;
+		std::vector<std::string> functions;
+		std::set<HashedString> compiledDefinitions;
 
 		//go through and find each node that has a openGL variable or a varying
 		std::set<std::shared_ptr<NodeLinkInstance> > GLLinks;
 		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
 		{
+			//check if we need to add the Definition
+			std::shared_ptr<ShaderNode> nodeDef = it->second->getDefinitionNode();
+
+			HashedString nodeDefName(nodeDef->name);
+
+
+
+			if(compiledDefinitions.find(nodeDefName) == compiledDefinitions.end() )
+			{
+				compiledDefinitions.insert(nodeDefName);
+
+				for(auto funcIt = nodeDef->functions.begin(); funcIt != nodeDef->functions.end(); ++funcIt)
+				{
+					functions.push_back( (*funcIt).functionCode );
+
+				}
+			}
+
+
+
 			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* links = it->second->getUINodeLinkInstances();
 
 			for(auto LinkIt = links->begin(); LinkIt != links->end(); ++LinkIt)
@@ -160,7 +182,12 @@ namespace woodman
 			vertexFile << "out " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
-		vertexFile << "void main(void)\n{\n";
+		for(auto funcIt = functions.begin(); funcIt != functions.end(); ++funcIt)
+		{
+			vertexFile << "\n" << *funcIt;
+		}
+
+		vertexFile << "\nvoid main(void)\n{\n";
 		vertexFile << vertexCode << "\n}";
 
 
@@ -190,7 +217,12 @@ namespace woodman
 
 		fragFile << "\n";
 
-		fragFile << "void main(void)\n{\n";
+		for(auto funcIt = functions.begin(); funcIt != functions.end(); ++funcIt)
+		{
+			fragFile << "\n" << *funcIt;
+		}
+
+		fragFile << "\nvoid main(void)\n{\n";
 		fragFile << fragmentCode << "\n}";
 	}
 

@@ -2,15 +2,20 @@
 
   <NodeDefinition name="GrayScale" category ="Color" canBeVertex="true" canBeFrag="true">
 
+    <Function returnType ="Vector" returnSize ="4">
+      vec4 GrayScale( vec4 Color )
+      {
+        float grayValue = Color.r * .2989 + Color.g * .5870 + Color.b * .1140;
+        return vec4(grayValue, grayValue, grayValue, Color.a);
+      }
+    </Function>
     <Input name="Color">
       <dataType type ="vector" size="4"/>
     </Input>
     <Output name="GrayScale">
-      <dataType type="vector" size="2"/>
-      <Shader_Code>vec2( $Color .r * .299 + $Color .g * .587 + $Color .b * .114, $Color .a )</Shader_Code>
+      <dataType type="vector" size="4"/>
+      <Shader_Code>GrayScale( $Color )</Shader_Code>
     </Output>
-
-
   </NodeDefinition>
 
 </ShaderEditor>

@@ -70,6 +70,10 @@ namespace woodman
 		void render();
 		void update();
 		SHADER_TYPE getShaderType() { return m_shaderType;}
+		std::shared_ptr<ShaderNode> getDefinitionNode()
+		{
+			return m_referenceNode;
+		}
 
 
 		// Getters

@@ -143,8 +143,8 @@ namespace woodman
 			Texture::TextureFormat tf;
 
 			tf.MagFilter = GL_LINEAR;
-			tf.MinFilter = GL_LINEAR;
-			tf.MipMapTexture = false;
+			tf.MinFilter = GL_LINEAR_MIPMAP_LINEAR;
+			tf.MipMapTexture = true;
 
 			m_fontTexture = Texture::CreateOrGetTexture(s_FontDirectory + fontName.m_string + ".png", tf);
 
@@ -269,8 +269,8 @@ namespace woodman
 			Texture::TextureFormat tf;
 
 			tf.MagFilter = GL_LINEAR;
-			tf.MinFilter = GL_LINEAR;
-			tf.MipMapTexture = false;
+			tf.MinFilter = GL_LINEAR_MIPMAP_LINEAR;
+			tf.MipMapTexture = true;
 
 			m_fontTexture = Texture::CreateOrGetTexture(s_FontDirectory + fontName.m_string + ".png", tf);
 
