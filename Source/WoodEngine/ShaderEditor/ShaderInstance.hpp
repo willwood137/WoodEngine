@@ -21,10 +21,15 @@ namespace woodman
 		void Compile();
 		//void CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation);
 		void linkSlots( const variableInfo& linkAInfo, const variableInfo& linkBInfo );
+
+		void LoadShaderInstance( const std::string& fileName );
+		void SaveShaderInstance( const std::string& fileName );
 	
 	private:
+		std::string m_shaderName;
+
 		// Node Instances
-		std::map< HashedString, std::shared_ptr< NodeInstance > > m_nodeInstances;
+		std::map< HashedString, std::shared_ptr< NodeInstance > > m_nodeInstances;:/
 		std::string m_shaderName;
 
 		unsigned int m_compileCounter;

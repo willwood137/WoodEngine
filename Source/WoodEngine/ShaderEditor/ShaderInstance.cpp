@@ -346,4 +346,67 @@ namespace woodman
 // 		linkA->partnerLinkInstance = linkB;
 // 		linkB->partnerLinkInstance = linkA;
 	}
+
+
+	void ShaderInstance::SaveShaderInstance( const std::string& fileName )
+	{
+		pugi::xml_document doc;
+
+		doc.append_child().set_name("Model_Header");
+
+		pugi::xml_node shaderHeader = doc.child("Shader_WorkFile");
+		shaderHeader.append_attribute("name").set_value(m_shaderName.c_str());
+
+
+
+// 		unsigned int offset = 0;
+// 		size_t vertTotalSize = 0;
+// 		for(auto it = m_vertexAttributes.begin(); it != m_vertexAttributes.end(); ++it)
+// 		{
+// 			pugi::xml_node attributeNode = modelNode.append_child();
+// 			attributeNode.set_name("Attribute");
+// 			attributeNode.append_attribute("name").set_value(it->Name.c_str());
+// 			attributeNode.append_attribute("numValues").set_value(it->NumValues);
+// 			attributeNode.append_attribute("offsetOf").set_value(offset);
+// 			offset += sizeof(float) * it->NumValues;
+// 			vertTotalSize += sizeof(float) * it->NumValues;
+// 		}
+// 
+// 		offset = 0;
+// 		for(auto it = BatchDatas.begin(); it != BatchDatas.end(); ++it)
+// 		{
+// 			pugi::xml_node batchNode = modelNode.append_child();
+// 			batchNode.set_name("Batch");
+// 			batchNode.append_attribute("OffsetStart").set_value(offset);
+// 			batchNode.append_attribute("numVerts").set_value(it->numVerts );
+// 			batchNode.append_attribute("numIndices").set_value(it->numIndicies );
+// 			offset += it->numIndicies * sizeof(unsigned int) + it->numVerts * vertTotalSize;
+// 		}
+// 
+// 		modelNode.append_attribute("VertexSize").set_value(vertTotalSize);
+// 
+// 		doc.save_file(headerPath.c_str(), "", pugi::format_default);
+// 
+// 		return true;
+
+		for(auto nodeIt = m_nodeInstances.begin(); nodeIt != m_nodeInstances.end(); ++nodeIt)
+		{
+
+			pugi::xml_node xmlNode = shaderHeader.append_child();
+			xmlNode.set_name("Node");
+			xmlNode.append_attribute("Name").set_value(nodeIt->second->getName().c_str());
+			
+			//save data bits
+
+			//save links
+
+			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* nodeLinks = nodeIt->second->getUINodeLinkInstances();
+
+			for(auto linkIt = nodeLinks->begin(); linkIt != nodeLinks->(); ++linkIt)
+			{
+
+			}
+
+		}
+	}
 }
