@@ -288,6 +288,9 @@
     <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
       <Filter>ShaderEditor\ShaderNodes</Filter>
     </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Assets\Shaders\UI\CanvasBackground.frag">
@@ -331,6 +334,12 @@
     </None>
     <None Include="..\..\Assets\Shaders\UI\PreviewWindow.vert">
       <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="ShaderTest.frag">
+      <Filter>ShaderEditor</Filter>
+    </None>
+    <None Include="ShaderTest.vert">
+      <Filter>ShaderEditor</Filter>
     </None>
   </ItemGroup>
 </Project>

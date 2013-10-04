@@ -62,6 +62,10 @@ namespace woodman
 	const HashedString HASHED_STRING_u_minGrid("u_minGrid");
 	const HashedString HASHED_STRING_u_modelTransform("u_modelTransform");
 	const HashedString HASHED_STRING_u_MV("u_MV");
+	const HashedString HASHED_STRING_u_modelView("u_modelView");
+	const HashedString HASHED_STRING_u_projection("u_projection");
+	const HashedString HASHED_STRING_u_modelMatrix("u_modelMatrix");
+	const HashedString HASHED_STRING_u_viewMatrix("u_viewMatrixn");
 	const HashedString HASHED_STRING_u_MVP("u_MVP");
 	const HashedString HASHED_STRING_u_normalMap("u_normalMap");
 	const HashedString HASHED_STRING_u_offset("u_offset");

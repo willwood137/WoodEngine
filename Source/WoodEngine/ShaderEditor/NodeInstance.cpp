@@ -14,6 +14,7 @@ namespace woodman
 		if(instance != nullptr)
 		{
 			partnerLinkInstance = instance;
+			m_dType.currentSize = m_dType.maxSize;
 		}
 		else
 		{
@@ -42,8 +43,8 @@ namespace woodman
 			newNodeLink->parentLink = (*it).get();
 			newNodeLink->parentNodeInstance = this;
 			newNodeLink->exitNode = false;
-			newNodeLink->pType = (*it)->typeData.type;
-			newNodeLink->typeSize = (*it)->typeData.maxSize;
+			newNodeLink->m_dType = (*it)->typeData;
+			//newNodeLink-> = (*it)->typeData.maxSize;
 			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
 
@@ -55,8 +56,9 @@ namespace woodman
 			newNodeLink->parentLink = (*it).get();
 			newNodeLink->parentNodeInstance = this;
 			newNodeLink->exitNode = true;
-			newNodeLink->pType = (*it)->typeData.type;
-			newNodeLink->typeSize = (*it)->typeData.maxSize;
+			newNodeLink->m_dType = (*it)->typeData;
+			newNodeLink->m_dType.currentSize = newNodeLink->m_dType.maxSize;
+			//newNodeLink->typeSize = (*it)->typeData.maxSize;
 			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
 
@@ -84,6 +86,7 @@ namespace woodman
 		else 
 			return nullptr;
 	}
+
 
 	void NodeInstance::CompileLink(NodeLinkInstance* link, std::string& compilation, unsigned int compileCounter)
 	{
@@ -120,8 +123,9 @@ namespace woodman
 								{
 									tempLinkInstance->partnerLinkInstance->parentNodeInstance->CompileLink(tempLinkInstance, compilation, compileCounter);
 								}
-
-								insertString += "(" + tempLinkInstance->varInfo.VariableName.m_string + ")";
+								std::string variableConversion;
+								ConvertToType(	tempLinkInstance->partnerLinkInstance->m_dType,	tempLinkInstance->m_dType,	tempLinkInstance->varInfo.VariableName.m_string, variableConversion );
+								insertString += variableConversion; 
 							}
 						}
 						else
@@ -147,7 +151,9 @@ namespace woodman
 				if( (link->parentLink->OpenGLName.compare("") != 0) || (!link->parentLink->varyingName.empty()) || (!link->parentLink->outName.empty() ) )
 				{
 					//so we have a openGL variable here USE IT
-					compilation += link->varInfo.VariableName.m_string + " = " + link->partnerLinkInstance->varInfo.VariableName.m_string + ";\n";
+					std::string variableConversion;
+					ConvertToType(	link->partnerLinkInstance->m_dType,	link->m_dType,	link->partnerLinkInstance->varInfo.VariableName.m_string, variableConversion );
+					compilation += link->varInfo.VariableName.m_string + " = " + variableConversion + ";\n";
 				}
 				else if(link->partnerLinkInstance != nullptr)
 				{

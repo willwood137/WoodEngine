@@ -197,6 +197,9 @@
     <Xml Include="ShaderEditor\ShaderNodes\Math.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="UI\DefaultStyle.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +217,8 @@
     <None Include="..\..\Assets\Shaders\UI\NodeBox.vert" />
     <None Include="..\..\Assets\Shaders\UI\PreviewWindow.frag" />
     <None Include="..\..\Assets\Shaders\UI\PreviewWindow.vert" />
+    <None Include="ShaderTest.frag" />
+    <None Include="ShaderTest.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

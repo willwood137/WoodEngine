@@ -54,8 +54,7 @@ namespace woodman
 
 		variableInfo varInfo;
 
-		PropertyType pType;
-		unsigned int typeSize;
+		DataType m_dType;
 
 		bool exitNode;
 		unsigned int lastCompile;

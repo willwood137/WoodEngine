@@ -6,6 +6,7 @@
 #include "..\Engine\Model.hpp"
 //#include "..\Engine\MetaShader.hpp"
 #include "..\Engine\Shader.hpp"
+#include "..\\Engine\\Clock.hpp"
 
 
 namespace woodman
@@ -16,7 +17,7 @@ namespace woodman
 		ModelPreviewWidget( UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID );
+			HashedString uniqueID);
 
 		bool SetUpRenderTarget(Vector2i textureResolution);
 
@@ -40,5 +41,7 @@ namespace woodman
 		Vector2i m_previewTextureSize;
 		GLuint m_renderedTextureID;
 		GLuint m_framebufferName;
+
+		Clock m_clock;
 	};
 }

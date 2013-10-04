@@ -91,16 +91,19 @@ namespace woodman
 			{
 				std::stringstream ss;
 				
-				ss << clamp<unsigned int>(LinkIt->second->typeSize, 1, 4);
+				ss << clamp<unsigned int>(LinkIt->second->m_dType.currentSize, LinkIt->second->m_dType.minSize, LinkIt->second->m_dType.maxSize);
 				std::string sizeString(ss.str());
 
-				switch( LinkIt->second->pType)
+				switch( LinkIt->second->m_dType.type)
 				{
 				case PROPERTYTYPE_SAMPLER2D:
 					LinkIt->second->varInfo.variablePrefix = "sampler2D";
 					break;
 				case PROPERTYTYPE_MATRIX:
 					LinkIt->second->varInfo.variablePrefix = "mat" + sizeString;
+					break;
+				case PROPERTYTYPE_FLOAT:
+					LinkIt->second->varInfo.variablePrefix = "float";
 					break;
 				default:
 				case PROPERTYTYPE_VECTOR:

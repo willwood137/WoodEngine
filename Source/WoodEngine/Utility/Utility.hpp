@@ -23,6 +23,7 @@ namespace woodman
 		PROPERTYTYPE_SAMPLER2D,
 		PROPERTYTYPE_STRING,
 		PROPERTYTYPE_LIST,
+		PROPERTYTYPE_FLOAT,
 		PROPERTYTYPE_SIZE,
 	};
 
@@ -38,7 +39,11 @@ namespace woodman
 		PropertyType type;
 		unsigned int minSize;
 		unsigned int maxSize;
+		unsigned int currentSize;
 	};
+
+
+	void ConvertToType( const DataType& d1, const DataType& d2, const std::string& variableName, std::string& output );
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	

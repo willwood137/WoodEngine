@@ -16,9 +16,13 @@
 
   <NodeDefinition name="Final_Position" category ="Core" canBeVertex="true" canBeFrag="false">
 
-    <Input name="Position">
+    <Input name="ScreenPosition">
       <dataType type="vector" size="4"/>
       <GLVariable name ="gl_Position" />
+    </Input>
+    <Input name="worldPosition">
+      <dataType type="vector" size="3"/>
+      <Varying name ="worldPosition" />
     </Input>
     
   </NodeDefinition>
@@ -28,6 +32,26 @@
     <Output name="MVP">
       <dataType type="matrix" size="4" />
       <Uniform name="mvp" />
+    </Output>
+
+    <Output name="Model">
+      <dataType type="matrix" size="4" />
+      <Uniform name="modelMatrix" />
+    </Output>
+
+    <Output name="View">
+      <dataType type="matrix" size="4" />
+      <Uniform name="viewMatrix" />
+    </Output>
+    
+    <Output name="ModelView">
+      <dataType type="matrix" size="4" />
+      <Uniform name="modelView" />
+    </Output>
+    
+    <Output name="Projection">
+      <dataType type="matrix" size="4" />
+      <Uniform name="projection" />
     </Output>
 
   </NodeDefinition>
@@ -72,6 +96,15 @@
     <Input name="UV">
       <dataType type="vector" size="2" />
       <Varying name="uv" />
+    </Input>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="WorldPosition" category ="Core" canBeVertex="true" canBeFrag="false">
+
+    <Input name="UV">
+      <dataType type="vector" size="3" />
+      <Varying name="worldPosition" />
     </Input>
 
   </NodeDefinition>

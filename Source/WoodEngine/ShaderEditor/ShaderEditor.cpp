@@ -32,6 +32,7 @@ namespace woodman
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
+		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Utility.xml");
 
 		//load default shader work file
 		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
@@ -250,6 +251,10 @@ namespace woodman
 							{
 								def.returnType.type = PROPERTYTYPE_VECTOR;
 							}
+							else if( sType.compare("float") == 0)
+							{
+								def.returnType.type = PROPERTYTYPE_FLOAT;
+							}
 							else if( sType.compare("matrix") == 0)
 							{
 								def.returnType.type = PROPERTYTYPE_MATRIX;
@@ -285,6 +290,10 @@ namespace woodman
 									if(sType.compare("vector") == 0)
 									{
 										dType.type = PROPERTYTYPE_VECTOR;
+									}
+									else if( sType.compare("float") == 0)
+									{
+										dType.type = PROPERTYTYPE_FLOAT;
 									}
 									else if( sType.compare("matrix") == 0)
 									{

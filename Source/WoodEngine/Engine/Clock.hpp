@@ -32,6 +32,7 @@ namespace woodman
 		Clock( const HashedString& name, double timeScale, Clock* parent );
 		~Clock();
 
+		double getTimeScale(){ return m_timeScale;}
 		void registerForEvents();
 		void advanceTime(double deltaTime );
 		void setPaused(bool pause);

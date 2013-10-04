@@ -7,7 +7,8 @@ namespace woodman
 {
 	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID )
 		: UIWidget(ParentCanvas, parentWidget, name, uniqueID),
-		m_camera(new Camera(Vector3f(0.0f, 50.0f, -200.0f) ) )
+		m_camera(new Camera(Vector3f(0.0f, 50.0f, -200.0f) ) ),
+		m_clock(HashedString("PreviewClock"), .2, Clock::MasterClock())
 	{
 	}
 
@@ -39,6 +40,17 @@ namespace woodman
 
 	void ModelPreviewWidget::render( UIMouse* currentMouse)
 	{
+		
+		if(isKeyDown(VK_OEM_PLUS))
+		{
+			m_clock.setTimeScale( m_clock.getTimeScale() + .01);
+		}
+
+		if(isKeyDown(VK_OEM_MINUS))
+		{
+			m_clock.setTimeScale( m_clock.getTimeScale() - .01);
+		}
+
 		glPushAttrib(GL_VIEWPORT_BIT);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferName);
@@ -54,7 +66,7 @@ namespace woodman
 			
 
 			//first we get the MVP Matrix
-			Matrix4f mvpMatrix, camMatrix;
+			Matrix4f projectionMatrix, mvpMatrix, modelView;
 
 			GLint viewport[4];
 			GLdouble projection[16];
@@ -68,12 +80,14 @@ namespace woodman
 
 			for(size_t i = 0; i < 16; ++i)
 			{
-				mvpMatrix[i] = projection[i];
+				projectionMatrix[i] = projection[i];
 			}
+			Matrix4f modelMatrix, viewMatrix;
 
 			m_camera->update(.016f);
-			camMatrix = m_camera->getMatrix();
-			mvpMatrix = camMatrix * mvpMatrix;
+			viewMatrix = m_camera->getMatrix();
+			modelView = viewMatrix * modelMatrix;
+			mvpMatrix = modelView * projectionMatrix;
 
  			glEnable(GL_DEPTH_TEST);
  			glCullFace(GL_CW);
@@ -83,23 +97,28 @@ namespace woodman
 
 			m_previewShader->load();
 
-			if(m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix, 1 ) )
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_viewMatrix, viewMatrix, 1 );
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_modelMatrix, modelMatrix, 1 );
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix, 1 );
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_projection, projectionMatrix, 1 );
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_modelView, modelView, 1 );
+			float time = static_cast<float>(m_clock.getTimeSeconds());
+			m_previewShader->SetUniformFloat(HASHED_STRING_u_time, time , 1 );
+			
+			Texture::ApplyTexture(m_model->getMaterialTexture("Diffuse"));
+
+			for(auto batchIt = batches->begin(); batchIt != batches->end(); ++batchIt)
 			{
-				Texture::ApplyTexture(m_model->getMaterialTexture("Diffuse"));
 
-				for(auto batchIt = batches->begin(); batchIt != batches->end(); ++batchIt)
-				{
+				glBindBuffer(GL_ARRAY_BUFFER, batchIt->idVBO);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batchIt->idIBO);
 
-					glBindBuffer(GL_ARRAY_BUFFER, batchIt->idVBO);
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, batchIt->idIBO);
+				m_previewShader->setUpAttrbituesFromModel(m_model);
 
-					m_previewShader->setUpAttrbituesFromModel(m_model);
-
-					glDrawElements(GL_TRIANGLES, batchIt->numIndices, GL_UNSIGNED_INT, 0);
-
-				}
+				glDrawElements(GL_TRIANGLES, batchIt->numIndices, GL_UNSIGNED_INT, 0);
 
 			}
+
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
@@ -136,6 +155,16 @@ namespace woodman
 		glDrawArrays( GL_QUADS, 0, 4);
 
 		m_showTextureShader->disableAttribute(HASHED_STRING_in_position);
+
+		std::stringstream ss, ss2;
+		ss << m_clock.getTimeSeconds();
+		ss2 << "x" << m_clock.getTimeScale();
+		Vector2f screenPos;
+		m_parentCanvas->mapPointToScreenSpace(m_coordinates, screenPos);
+
+		Font::DrawTextToScreen(ss.str(), m_style->TitleTextFont, RGBA(1.0, 0.0, 0.0, .8), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
+		Font::DrawTextToScreen(ss2.str(), m_style->TitleTextFont, RGBA(1.0, 0.0, 0.0, .8), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
+
 
 	}
 

@@ -262,4 +262,11 @@ namespace woodman
 
 		return ClockMasterTotalTime + delta;
 	}
+
+	//---------------
+
+	void Clock::setTimeScale(double newTimeScale)
+	{
+		m_timeScale = newTimeScale;
+	}
 }

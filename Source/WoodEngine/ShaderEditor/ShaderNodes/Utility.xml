@@ -1,0 +1,28 @@
+<ShaderEditor>
+
+  <NodeDefinition name="Time" category ="Utility" canBeVertex="true" canBeFrag="false">
+
+    <Output name="Time">
+      <dataType type="float" size="1" />
+      <Uniform name="time" />
+    </Output>
+
+  </NodeDefinition>
+
+  <NodeDefinition name="Plus_One_div_2" category ="Utility" canBeVertex="true" canBeFrag="false">
+
+
+    <Input name="Value">
+      <dataType type="float" size="1" />
+     </Input>
+    <Output name="newValue">
+      <dataType type="float" size="1" />
+      <Shader_Code> ( $Value + 1 ) * .5</Shader_Code>
+    </Output>
+
+  </NodeDefinition>
+
+
+
+
+</ShaderEditor>
