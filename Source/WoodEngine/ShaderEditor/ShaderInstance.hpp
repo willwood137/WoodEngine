@@ -26,10 +26,9 @@ namespace woodman
 		void SaveShaderInstance( const std::string& fileName );
 	
 	private:
-		std::string m_shaderName;
 
 		// Node Instances
-		std::map< HashedString, std::shared_ptr< NodeInstance > > m_nodeInstances;:/
+		std::map< HashedString, std::shared_ptr< NodeInstance > > m_nodeInstances;
 		std::string m_shaderName;
 
 		unsigned int m_compileCounter;

@@ -352,42 +352,11 @@ namespace woodman
 	{
 		pugi::xml_document doc;
 
-		doc.append_child().set_name("Model_Header");
+		//doc.append_child().set_name("Shader_WorkFile");
 
-		pugi::xml_node shaderHeader = doc.child("Shader_WorkFile");
+		pugi::xml_node shaderHeader = doc.append_child();//.set_name("Shader_WorkFile");
+		shaderHeader.set_name("Shader_WorkFile");
 		shaderHeader.append_attribute("name").set_value(m_shaderName.c_str());
-
-
-
-// 		unsigned int offset = 0;
-// 		size_t vertTotalSize = 0;
-// 		for(auto it = m_vertexAttributes.begin(); it != m_vertexAttributes.end(); ++it)
-// 		{
-// 			pugi::xml_node attributeNode = modelNode.append_child();
-// 			attributeNode.set_name("Attribute");
-// 			attributeNode.append_attribute("name").set_value(it->Name.c_str());
-// 			attributeNode.append_attribute("numValues").set_value(it->NumValues);
-// 			attributeNode.append_attribute("offsetOf").set_value(offset);
-// 			offset += sizeof(float) * it->NumValues;
-// 			vertTotalSize += sizeof(float) * it->NumValues;
-// 		}
-// 
-// 		offset = 0;
-// 		for(auto it = BatchDatas.begin(); it != BatchDatas.end(); ++it)
-// 		{
-// 			pugi::xml_node batchNode = modelNode.append_child();
-// 			batchNode.set_name("Batch");
-// 			batchNode.append_attribute("OffsetStart").set_value(offset);
-// 			batchNode.append_attribute("numVerts").set_value(it->numVerts );
-// 			batchNode.append_attribute("numIndices").set_value(it->numIndicies );
-// 			offset += it->numIndicies * sizeof(unsigned int) + it->numVerts * vertTotalSize;
-// 		}
-// 
-// 		modelNode.append_attribute("VertexSize").set_value(vertTotalSize);
-// 
-// 		doc.save_file(headerPath.c_str(), "", pugi::format_default);
-// 
-// 		return true;
 
 		for(auto nodeIt = m_nodeInstances.begin(); nodeIt != m_nodeInstances.end(); ++nodeIt)
 		{
@@ -395,8 +364,12 @@ namespace woodman
 			pugi::xml_node xmlNode = shaderHeader.append_child();
 			xmlNode.set_name("Node");
 			xmlNode.append_attribute("Name").set_value(nodeIt->second->getName().c_str());
+			xmlNode.append_attribute("DefinitionCategory").set_value(nodeIt->second->getDefinitionNode()->category.c_str());
+			xmlNode.append_attribute("DefinitionNode").set_value(nodeIt->second->getDefinitionNode()->name.c_str());
+			xmlNode.append_attribute("x_Position").set_value(nodeIt->second->getPosition().x);
+			xmlNode.append_attribute("y_Position").set_value(nodeIt->second->getPosition().y);
 			
-			//save data bits
+			//save data fields
 
 			//save links
 
@@ -404,9 +377,52 @@ namespace woodman
 
 			for(auto linkIt = nodeLinks->begin(); linkIt != nodeLinks->end(); ++linkIt)
 			{
-
+				if(linkIt->second->partnerLinkInstance != nullptr)
+				{
+					pugi::xml_node linkXmlNode = xmlNode.append_child();
+					linkXmlNode.set_name("Link");
+					linkXmlNode.append_attribute("Name").set_value( linkIt->second->m_uniqueID.m_string.c_str() );
+					pugi::xml_node partnerXmlNode = linkXmlNode.append_child("Partner");
+					partnerXmlNode.append_attribute("PartnerNodeName").set_value(linkIt->second->partnerLinkInstance->parentNodeInstance->getUniqueID().m_string.c_str() );
+					partnerXmlNode.append_attribute("PartnerLinkName").set_value(linkIt->second->partnerLinkInstance->m_uniqueID.m_string.c_str() );
+				}
 			}
 
+		}
+
+		//finally save file
+		
+		doc.save_file(fileName.c_str() );
+	}
+
+
+	void ShaderInstance::LoadShaderInstance( const std::string& fileName, std::map<HashedString, std::shared_ptr<NodeCategory> >& nodeCategories )
+	{
+		pugi::xml_document* doc = new pugi::xml_document();
+		pugi::xml_parse_result result = doc->load_file( (fileName).c_str() );
+		pugi::xml_node topNode = doc->first_child();
+
+		if(std::string(topNode.name()).compare(std::string("Shader_WorkFile") ) == 0 )
+		{
+			m_shaderName = topNode.attribute("Name").as_string();
+
+			pugi::xml_node dataNode = topNode.first_child();
+			while(dataNode)
+			{
+				std::string category = dataNode.attribute("DefinitionCategory").as_string();
+				std::string defName = dataNode.attribute("DefinitionName").as_string();
+
+
+
+// 				std::shared_ptr<NodeInstance> newNode = std::make_shared<NodeInstance>(NodeInstance());
+// 				std::shared_ptr<NodeCategory> currentCategory;
+// 
+// 				//is this a definition?
+// 				if(std::string(DefinitionNode.name()).compare(std::string("NodeDefinition") ) == 0 )
+// 				{
+// 
+// 				}
+			}
 		}
 	}
 }

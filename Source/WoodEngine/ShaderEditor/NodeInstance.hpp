@@ -61,7 +61,7 @@ namespace woodman
 		unsigned int lastCompile;
 	};
 
-	class NodeInstance
+	class NodeInstance : public UINodeBoxCallBackRecipient
 	{
 
 	public:
@@ -85,12 +85,17 @@ namespace woodman
 		}
 		std::shared_ptr<NodeLinkInstance> getLinkByID(HashedString uniqueID);
 		std::shared_ptr<NodeLinkInstance> getLinkInstanceByName(const std::string& linkName);
+
 		HashedString getUniqueID()
 		{
 			return m_uniqueID;
 		}
 		void CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation, unsigned int compileID);
 
+		virtual void setPosition(const Vector2f& position)
+		{
+			m_position = position;
+		}
 
 	private:
 

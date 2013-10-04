@@ -112,10 +112,29 @@ namespace woodman
 	}
 
 
-
+	void UINodeBox::move(const Vector2f& amountToMove)
+	{
+		UIWidget::move(amountToMove);
+		
+		if(m_callBackRecipient != nullptr)
+		{
+			m_callBackRecipient->setPosition(m_coordinates);
+		}
+	}
 
 	void UINodeBox::MouseDrag(std::shared_ptr<UIMouse> currentMouse)
 	{
 		move(m_parentCanvas->getCurrentMouseCanvasPosition() - m_parentCanvas->getPrevMouseCanvasPosition() );
+	}
+
+	void UINodeBox::setCallBackRecipient( std::shared_ptr<UINodeBoxCallBackRecipient> recipient )
+	{
+		m_callBackRecipient = recipient;
+
+		if(m_callBackRecipient != nullptr)
+		{
+			m_callBackRecipient->setPosition(m_coordinates);
+		}
+
 	}
 }

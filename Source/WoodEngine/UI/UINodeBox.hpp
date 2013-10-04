@@ -24,7 +24,10 @@ namespace woodman
 		MOUSE_STATUS_SIZE
 	};
 
-	
+	struct UINodeBoxCallBackRecipient
+	{
+		virtual void setPosition(const Vector2f& position) = 0;
+	};
 
 	class UINodeBox : public UIWidget
 	{
@@ -36,11 +39,14 @@ namespace woodman
 			const Vector2f& canvasCoordinates);
 
 		virtual void Initialize();
+		virtual void move(	const Vector2f& amountToMove );
 		virtual void render(std::shared_ptr<UIMouse> currentMouse);
 
 // 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 // 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
  		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
+
+		void setCallBackRecipient( std::shared_ptr<UINodeBoxCallBackRecipient> recipient );
 
 	private:
 		//TL Corner
@@ -50,6 +56,8 @@ namespace woodman
 		std::set< std::shared_ptr<UINodeSlot> >	m_linkSlots;
 		unsigned int							m_numInSlots;
 		unsigned int							m_numOutSlots;
+
+		std::shared_ptr< UINodeBoxCallBackRecipient > m_callBackRecipient;
 
 		std::shared_ptr<Shader> m_nodeBoxShader;
 		std::shared_ptr<Texture> m_borderFilterIdle;

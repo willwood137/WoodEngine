@@ -43,6 +43,7 @@ namespace woodman
 		void catchCompile(NamedPropertyContainer& parameters);
 		void catchPreview(NamedPropertyContainer& parameters);
 		void catchKeyDown(NamedPropertyContainer& parameters);
+		void catchSaveFile(NamedPropertyContainer& parameters);
 
 		void SyncUIAndShaderInstance();
 

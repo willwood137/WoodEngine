@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Shader_WorkFile name="">
+	<Node Name="Multiply" x_Position="-302" y_Position="111">
+		<Link Name="Multiply_0_Sum">
+			<Partner PartnerNodeName="Division_0" PartnerLinkName="Division_0_Denominator" />
+		</Link>
+	</Node>
+	<Node Name="Division" x_Position="-27" y_Position="81">
+		<Link Name="Division_0_Denominator">
+			<Partner PartnerNodeName="Multiply_0" PartnerLinkName="Multiply_0_Sum" />
+		</Link>
+	</Node>
+</Shader_WorkFile>

@@ -34,6 +34,7 @@ namespace woodman
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchCompile, "Compile");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchPreview, "Preview");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchKeyDown, "KeyDown");
+		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchSaveFile, "SaveFile");
 
 
 		//create Menu
@@ -73,9 +74,10 @@ namespace woodman
 		CompileMenu->EventToFire = "Compile";
 		m_mouse->MainMenu->subMenus.push_back(CompileMenu);
 
-
-		
-
+		std::shared_ptr<MouseMenu> SaveMenu(new MouseMenu());
+		SaveMenu->name = "Save";
+		SaveMenu->EventToFire = "SaveFile";
+		m_mouse->MainMenu->subMenus.push_back(SaveMenu);
 
 		m_previewWidget = std::shared_ptr<ModelPreviewWidget>(new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) );
 
@@ -384,7 +386,9 @@ namespace woodman
 		
 		
 
-		std::shared_ptr<UIWidget> NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), node->getPosition() ) );
+		std::shared_ptr<UINodeBox> NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), node->getPosition() ) );
+
+		NodeBox->setCallBackRecipient(node);
 
 		//get all the nodes
 		std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* links = node->getUINodeLinkInstances();
@@ -483,6 +487,38 @@ namespace woodman
 
 	}
 
+	void ShaderEditor::SyncUIAndShaderInstance()
+	{
+		for(auto it = UIWidget::WidgetDatabase.begin(); it != UIWidget::WidgetDatabase.end(); ++it)
+		{
+			std::shared_ptr<UINodeSlot> asNodeSlot = std::dynamic_pointer_cast<UINodeSlot>(it->second);
+
+			if(asNodeSlot != nullptr)
+			{
+
+
+				//this is a nodeslot, if it has a partner then hook it up with the instance
+				if(asNodeSlot->getPartnerSlot() != nullptr)
+				{
+					variableInfo infoA, infoB;
+					// 					infoA.name = asNodeSlot->getUniqueID();
+					// 					infoA.typeSize = asNodeSlot->getTypeSize();
+					// 					infoA.pType = asNodeSlot->getDataType()->type;
+					// 
+					// 
+					// 					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
+					// 					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
+					// 					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
+
+					m_shaderInstance.linkSlots( infoA, infoB );
+				}
+			}
+		}
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------
+	//--------Call Back Functions---------------------Call Back Functions-----------------Call Back Functions------------
 	//-------------------------------------------------------------------------------------------------------------------
 
 	void ShaderEditor::KeyDown(unsigned int key)
@@ -509,7 +545,6 @@ namespace woodman
 
 		UIController::KeyDown(key);
 	}
-
 
 	void ShaderEditor::catchAddNode(NamedPropertyContainer& parameters)
 	{
@@ -550,36 +585,6 @@ namespace woodman
 		m_shaderInstance.Compile();
 	}
 
-	void ShaderEditor::SyncUIAndShaderInstance()
-	{
-		for(auto it = UIWidget::WidgetDatabase.begin(); it != UIWidget::WidgetDatabase.end(); ++it)
-		{
-			std::shared_ptr<UINodeSlot> asNodeSlot = std::dynamic_pointer_cast<UINodeSlot>(it->second);
-
-			if(asNodeSlot != nullptr)
-			{
-				
-
-				//this is a nodeslot, if it has a partner then hook it up with the instance
-				if(asNodeSlot->getPartnerSlot() != nullptr)
-				{
- 					variableInfo infoA, infoB;
-// 					infoA.name = asNodeSlot->getUniqueID();
-// 					infoA.typeSize = asNodeSlot->getTypeSize();
-// 					infoA.pType = asNodeSlot->getDataType()->type;
-// 
-// 
-// 					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
-// 					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
-// 					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
-
-					m_shaderInstance.linkSlots( infoA, infoB );
-				}
-			}
-		}
-	}
-
-
 	void ShaderEditor::catchPreview(NamedPropertyContainer& parameters)
 	{
 		m_previewMode = !m_previewMode;
@@ -590,7 +595,6 @@ namespace woodman
 
 	void ShaderEditor::catchKeyDown(NamedPropertyContainer& parameters)
 	{
-
 		unsigned int key; 
 		parameters.getNamedData(HashedString("Key"), key);
 
@@ -601,8 +605,10 @@ namespace woodman
 
 			m_previewWidget->updateShader("ShaderTest");
 		}
+	}
 
-
-
+	void ShaderEditor::catchSaveFile(NamedPropertyContainer& parameters)
+	{
+		m_shaderInstance.SaveShaderInstance(ASSETS + "ShaderWorkfiles\\" + "temp.xml");
 	}
 }
