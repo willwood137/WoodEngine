@@ -585,6 +585,32 @@ namespace woodman
 
 	//-------------------------------------------------------------------------
 
+	void UIInLink::Pair( UIOutLink* partnerLink)
+	{
+
+		CanvasCoordinates startCoords(partnerLink->getParentCanvas(), m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+		CanvasCoordinates endCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+
+		m_linkStrip = std::shared_ptr<UILinkStrip>( new UILinkStrip(
+			m_parentCanvas, 
+			this, 
+			"lineSTRIP",
+			HashedString("LinkStrip"),
+			m_parentDataType->type,
+			m_dataTypeSize, 
+			startCoords,
+			endCoords) );
+
+		m_callBackRecipient->CallBackLinkToNodeSlot(partnerLink->getCallBackRecipient());
+
+		m_linkStrip->Initialize();
+		m_linkStrip->updateEndTarget(this);
+
+		partnerLink->Pair(m_linkStrip, this);
+	}
+
+	//-------------------------------------------------------------------------
+
 	void UIInLink::unPair(std::shared_ptr<UILinkStrip> linkStrip)
 	{
 		// So we have to remove that Thing

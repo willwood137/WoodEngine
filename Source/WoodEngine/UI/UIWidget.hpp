@@ -119,6 +119,7 @@ namespace woodman
 		}
 
 		UICanvas* getParentCanvas();
+		UIWidget* getUIWidgetByID(HashedString ID);
 
 	protected:
 		std::string m_name;

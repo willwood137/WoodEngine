@@ -112,7 +112,19 @@ namespace woodman
 		}
 	}
 
+	UIWidget* UIController::getUIWidgetByID(HashedString ID)
+	{
+		UIWidget* result = nullptr;
 
+		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
+		{
+			result = (*it)->getUIWidgetByID(ID);
+			if(result != nullptr)
+				return result;
+		}
+
+		return nullptr;
+	}
 
 	//------------------------------------------------------------------------------------------------------------------------
 	//----Event Functions                                                                                               ------

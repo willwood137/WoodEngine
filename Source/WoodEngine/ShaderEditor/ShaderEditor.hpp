@@ -28,6 +28,8 @@ namespace woodman
 		void LoadNodeDefinitionsFromFile(const std::string &filePath);
 		void addNode();
 		void CreateUINodeBoxFromNodeInstance( NodeInstance* node);
+		void CreateNodeInstanceFromData(NodeInstanceData* data);
+		void PairLinksFromData(LinkInfo* info, HashedString NodeID);
 
 		ShaderNode* getDefinitionNode( HashedString name );
 

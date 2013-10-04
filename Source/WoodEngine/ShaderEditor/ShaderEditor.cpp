@@ -32,6 +32,26 @@ namespace woodman
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
+
+		//load default shader work file
+		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
+
+		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkFiles\\Default.xml", nodeInstanceData);
+
+		// create Nodes
+		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
+		{
+			CreateNodeInstanceFromData( (*it).get() );
+		}
+		// Pair up nodeLinks
+		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
+		{
+			for(auto linkIt = (*it)->LinkInfos.begin(); linkIt != (*it)->LinkInfos.end(); ++linkIt)
+			{
+				PairLinksFromData( (*linkIt).get(), HashedString( (*it)->Name) );
+			}
+		}
+
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchAddNode, "AddNode");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchCompile, "Compile");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchPreview, "Preview");
@@ -80,6 +100,11 @@ namespace woodman
  		SaveMenu->name = "Save";
  		SaveMenu->EventToFire = "SaveFile";
  		m_mouse->MainMenu->subMenus.emplace_back(std::move(SaveMenu) );
+
+		std::unique_ptr<MouseMenu> LoadMenu(new MouseMenu());
+		LoadMenu->name = "Load";
+		LoadMenu->EventToFire = "LoadFile";
+		m_mouse->MainMenu->subMenus.emplace_back(std::move(LoadMenu) );
  
  		m_previewWidget = std::move( std::unique_ptr<ModelPreviewWidget>( new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) ) );
  
@@ -88,6 +113,38 @@ namespace woodman
 		//m_dividerCanvas->RegisterUIWidget(m_previewWidget.get());
 	}
 
+
+	//-------------------------------------------------------------------------------------------------------------------
+
+	void ShaderEditor::CreateNodeInstanceFromData(NodeInstanceData* data)
+	{
+		
+		ShaderNode* tempDef(getDefinitionNode(HashedString(data->defName) ) );
+
+		UICanvas* curCanvas;
+
+
+		NodeInstance* newNode = m_shaderInstance.CreateNewNodeInstance(tempDef, data->shaderType, data->Position, data->Name);
+		CreateUINodeBoxFromNodeInstance(newNode);
+	}
+
+	//-------------------------------------------------------------------------------------------------------------------
+	
+	void ShaderEditor::PairLinksFromData(LinkInfo* info, HashedString NodeID)
+	{
+
+		UIInLink* inLink =  dynamic_cast<UIInLink*>(getUIWidgetByID( HashedString( info->Name ) ) );
+
+// 		NodeInstance* inCallBackNode = m_shaderInstance.getNodeInstanceByID(NodeID);
+// 		NodeLinkInstance* inCallBack = inCallBackNode->getLinkByID(info->Name);
+// 
+// 		inLink->set
+
+		UIOutLink* outLink = dynamic_cast<UIOutLink*>(getUIWidgetByID( HashedString( info->PartnerLinkName ) ) );
+
+		inLink->Pair(outLink);
+
+	}
 
 	//-------------------------------------------------------------------------------------------------------------------
 

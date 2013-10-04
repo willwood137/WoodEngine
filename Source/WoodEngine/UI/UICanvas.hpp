@@ -68,6 +68,7 @@ namespace woodman
 		}
 
 		UIWidget* getUIWidgetatPoint(const Vector2f& PointScreenSpace);
+		UIWidget* getUIWidgetByID(HashedString ID);
 
 
 		void mapPointToCanvasSpace(Vector2f pointToMap, Vector2f& pointInCanvasSpace);

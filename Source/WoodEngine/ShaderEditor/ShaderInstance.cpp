@@ -41,6 +41,23 @@ namespace woodman
 		return newNode;
 	}
 
+
+	NodeInstance* ShaderInstance::CreateNewNodeInstance( ShaderNode* NodeDefinition, SHADER_TYPE shaderType, const Vector2f& position, const std::string& nameOverride )
+	{
+		HashedString tempID(nameOverride);
+		NodeInstance* newNode =  new NodeInstance(NodeDefinition, position, shaderType, tempID);
+
+		auto nodeIt = m_nodeInstances.find(tempID);
+		if( nodeIt != m_nodeInstances.end() )
+		{
+			return (nodeIt->second.get() );
+		}
+
+		m_nodeInstances.insert(std::make_pair(tempID, std::unique_ptr<NodeInstance>(newNode) ) );
+
+		return newNode;
+	}
+
 	void ShaderInstance::Compile()
 	{
 		std::string vertexCode, fragmentCode;
@@ -221,7 +238,7 @@ namespace woodman
 	}
 
 	
-	void ShaderInstance::linkSlots(const variableInfo& linkAInfo, const variableInfo& linkBInfo  )
+	void ShaderInstance::PairlinkSlots(const variableInfo& linkAInfo, const variableInfo& linkBInfo  )
 	{
 
 	}
@@ -242,7 +259,8 @@ namespace woodman
 
 			pugi::xml_node xmlNode = shaderHeader.append_child();
 			xmlNode.set_name("Node");
-			xmlNode.append_attribute("Name").set_value(nodeIt->second->getName().c_str());
+			xmlNode.append_attribute("Name").set_value(nodeIt->second->getUniqueID().m_string.c_str());
+			xmlNode.append_attribute("ShaderType").set_value(nodeIt->second->getShaderType());
 			xmlNode.append_attribute("DefinitionCategory").set_value(nodeIt->second->getDefinitionNode()->category.c_str());
 			xmlNode.append_attribute("DefinitionNode").set_value(nodeIt->second->getDefinitionNode()->name.c_str());
 			xmlNode.append_attribute("x_Position").set_value(nodeIt->second->getPosition().x);
@@ -274,8 +292,9 @@ namespace woodman
 		doc.save_file(fileName.c_str() );
 	}
 
+	
 
-	void ShaderInstance::LoadShaderInstance( const std::string& fileName, std::map<HashedString, std::unique_ptr<NodeCategory> >& nodeCategories )
+	void ShaderInstance::LoadShaderInstance( const std::string& fileName, std::vector<std::shared_ptr<NodeInstanceData> >& NodeInstanceInfos )
 	{
 		pugi::xml_document* doc = new pugi::xml_document();
 		pugi::xml_parse_result result = doc->load_file( (fileName).c_str() );
@@ -288,20 +307,54 @@ namespace woodman
 			pugi::xml_node dataNode = topNode.first_child();
 			while(dataNode)
 			{
-				std::string category = dataNode.attribute("DefinitionCategory").as_string();
-				std::string defName = dataNode.attribute("DefinitionName").as_string();
+				std::shared_ptr<NodeInstanceData> data(new NodeInstanceData());
+				data->defCategory = dataNode.attribute("DefinitionCategory").as_string();
+				data->defName = dataNode.attribute("DefinitionNode").as_string();
+				data->Name = dataNode.attribute("Name").as_string();
+				data->Position.x = dataNode.attribute("x_Position").as_float();
+				data->Position.y = dataNode.attribute("y_Position").as_float();
+				data->shaderType = static_cast<SHADER_TYPE>(dataNode.attribute("ShaderType").as_int() );
 
+				pugi::xml_node linkNode = dataNode.first_child();
 
+				while(linkNode)
+				{
+					std::shared_ptr<LinkInfo> link(new LinkInfo());
 
-// 				std::shared_ptr<NodeInstance> newNode = std::make_shared<NodeInstance>(NodeInstance());
-// 				std::shared_ptr<NodeCategory> currentCategory;
-// 
-// 				//is this a definition?
-// 				if(std::string(DefinitionNode.name()).compare(std::string("NodeDefinition") ) == 0 )
-// 				{
-// 
-// 				}
+					link->Name = linkNode.attribute("Name").as_string();
+
+					pugi::xml_node partnerNode = linkNode.first_child();
+
+					while(partnerNode)
+					{
+						link->PartnerNodeInstanceName = partnerNode.attribute("PartnerNodeName").as_string();
+						link->PartnerLinkName = partnerNode.attribute("PartnerLinkName").as_string();
+
+						partnerNode = partnerNode.next_sibling();
+					}
+
+					data->LinkInfos.push_back(link);
+
+					linkNode = linkNode.next_sibling();
+				}
+
+				NodeInstanceInfos.push_back(data);
+
+				dataNode = dataNode.next_sibling();
 			}
 		}
+	}
+
+	NodeInstance* ShaderInstance::getNodeInstanceByID( HashedString ID )
+	{
+		auto it = m_nodeInstances.find(ID);
+
+		if(it != m_nodeInstances.end())
+		{
+			return it->second.get();
+		}
+
+		else 
+			return nullptr;
 	}
 }

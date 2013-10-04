@@ -177,4 +177,23 @@ namespace woodman
 		return m_parentCanvas;
 	}
 
+	UIWidget* UIWidget::getUIWidgetByID(HashedString ID)
+	{
+		if( ! (ID < m_uniqueID) && !(m_uniqueID < ID ) )
+			return this;
+
+		UIWidget* result = nullptr;
+
+
+		for(auto it = m_children.begin(); it != m_children.end(); ++it)
+		{
+			result = (*it)->getUIWidgetByID(ID);
+			
+			if(result != nullptr)
+				return result;
+		}
+
+		return nullptr;
+	}
+
 }

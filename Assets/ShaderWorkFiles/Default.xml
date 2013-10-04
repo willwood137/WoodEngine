@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Shader_WorkFile name="">
+  <Node Name="TextureSampler_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="TextureSampler" x_Position="-143" y_Position="126">
+    <Link Name="TextureSampler_0_Texture">
+      <Partner PartnerNodeName="Diffuse_0" PartnerLinkName="Diffuse_0_diffuse" />
+    </Link>
+    <Link Name="TextureSampler_0_UV">
+      <Partner PartnerNodeName="Fragment_UV_0" PartnerLinkName="Fragment_UV_0_UV" />
+    </Link>
+  </Node>
+  <Node Name="ModelViewProjection_Matrix_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="ModelViewProjection_Matrix" x_Position="-710" y_Position="-239" />
+  <Node Name="Diffuse_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Diffuse" x_Position="-430" y_Position="243" />
+  <Node Name="OutputColor_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="OutputColor" x_Position="200" y_Position="182">
+    <Link Name="OutputColor_0_OutputColor">
+      <Partner PartnerNodeName="TextureSampler_0" PartnerLinkName="TextureSampler_0_Color" />
+    </Link>
+  </Node>
+  <Node Name="Standard_Vertex_Info_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Standard_Vertex_Info" x_Position="-627" y_Position="58" />
+  <Node Name="Transform_Vector_0" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-205" y_Position="-47">
+    <Link Name="Transform_Vector_0_Matrix">
+      <Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_MVP" />
+    </Link>
+    <Link Name="Transform_Vector_0_Vector">
+      <Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
+    </Link>
+  </Node>
+  <Node Name="UV_To_Fragment_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="UV_To_Fragment" x_Position="96" y_Position="246">
+    <Link Name="UV_To_Fragment_0_UV">
+      <Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Texture_Coordinates" />
+    </Link>
+  </Node>
+  <Node Name="Fragment_UV_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Fragment_UV" x_Position="-445" y_Position="6" />
+  <Node Name="Final_Position_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Final_Position" x_Position="229" y_Position="-192">
+    <Link Name="Final_Position_0_Position">
+      <Partner PartnerNodeName="Transform_Vector_0" PartnerLinkName="Transform_Vector_0_OutVector" />
+    </Link>
+  </Node>
+</Shader_WorkFile>

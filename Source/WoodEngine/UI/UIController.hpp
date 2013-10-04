@@ -24,6 +24,8 @@ namespace woodman
 
 		virtual void KeyDown(unsigned int key);
 
+		UIWidget* getUIWidgetByID(HashedString ID);
+
 		void catchKey(NamedPropertyContainer& parameters);
 		void catchLMouseDown(NamedPropertyContainer& parameters);
 		void catchLMouseUp(NamedPropertyContainer& parameters);
