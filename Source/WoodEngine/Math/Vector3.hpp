@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vector2.hpp"
 
 namespace woodman
 {
@@ -12,6 +13,7 @@ namespace woodman
 
 		Vector3( real f = 0 ) : x( f ), y( f ), z( f ){}
 		Vector3( real x_, real y_, real z_ ) : x(x_), y(y_), z(z_) {}
+		Vector3( const Vector2<real> &v2, real z_ ) : x(v2.x), y(v2.y), z(z_) {}
 
 		//accessors
 		double calcLength();

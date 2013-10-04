@@ -27,6 +27,7 @@ namespace woodman
 	void UILinkStrip::Initialize()
 	{
 		m_lineStripShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LineShader");
+		m_crossCanvasLineStripShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\CrossCanvasLineShader");
 		Texture::TextureFormat tf;
 		tf.MagFilter = GL_LINEAR;
 		tf.MinFilter = GL_LINEAR;
@@ -46,10 +47,38 @@ namespace woodman
 	void UILinkStrip::render(UIMouse* currentMouse)
 	{
 
-		float zoomScale = m_parentCanvas->getZoomScale();
-		m_lineStripShader->load();
+		if(m_startPoint.getOwningCanvas() == nullptr || m_endPoint.getOwningCanvas() == nullptr)
+			return;
+
+		if(m_startPoint.getOwningCanvas() == m_endPoint.getOwningCanvas())
+		{
+			renderIntraCanvas(currentMouse);
+		}
+		else
+		{
+			renderCrossCanvas(currentMouse);
+		}
+	}
+
+
+	void UILinkStrip::renderCrossCanvas(UIMouse* currentMouse)
+	{
 
 		
+	}
+
+	void UILinkStrip::renderIntraCanvas(UIMouse* currentMouse)
+	{
+		m_lineStripShader->load();
+
+		std::vector< Vector2f > canvasPoints;
+
+		//canvasPoints.resize(m_controlPoints.size());
+
+		for(auto it = m_controlPoints.begin(); it != m_controlPoints.end(); ++it)
+		{
+			canvasPoints.push_back( (*it).coordinatesCanvasSpace );
+		}
 
 		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen;
 
@@ -61,28 +90,36 @@ namespace woodman
 
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 		glDisable(GL_CULL_FACE);
- 		glUniform2f( m_lineStripShader->getUniformID(HASHED_STRING_u_position),NodeBoxMinScreen.x, NodeBoxMinScreen.y );
-		glUniform2f( m_lineStripShader->getUniformID(HASHED_STRING_u_size), NodeBoxSizeScreen.x, NodeBoxSizeScreen.y);
- 		glUniform2f( m_lineStripShader->getUniformID(HASHED_STRING_u_screenMin), screenSpaceBounds.m_vMin.x, screenSpaceBounds.m_vMin.y  );
-		glUniform2f( m_lineStripShader->getUniformID(HASHED_STRING_u_screenMax), screenSpaceBounds.m_vMax.x, screenSpaceBounds.m_vMax.y);
-		glUniform2f(m_lineStripShader->getUniformID(HASHED_STRING_u_canvasMin), m_coordinates.x, m_coordinates.y  );
-		glUniform2f(m_lineStripShader->getUniformID(HASHED_STRING_u_canvasMax), (m_coordinates + m_canvasCollisionBoxSize).x, (m_coordinates + m_canvasCollisionBoxSize).y);
-		glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_filter),0);
 
- 
- 
- 		glUniform2fv( m_lineStripShader->getUniformID(HASHED_STRING_u_lineSegmentsStrip), m_controlPoints.size(), reinterpret_cast<GLfloat*>( m_controlPoints.data() ) );
- 		glUniform1i( m_lineStripShader->getUniformID(HASHED_STRING_u_numLines), m_controlPoints.size() - 1);
-		glUniform1f( m_lineStripShader->getUniformID(HASHED_STRING_u_lineSize), m_style->LineWidth);
-		glUniform2f(m_lineStripShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+		int filterSlot = 0;
+		int numPoints = canvasPoints.size();
+		int numLines = numPoints - 1;
+		Vector2f inverseScreen( 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+		Vector3f minScreenPos(NodeBoxMinScreen, m_layer);
+
+		m_lineStripShader->SetUniformVector3(HASHED_STRING_u_position, minScreenPos, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_size, NodeBoxSizeScreen, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMin, screenSpaceBounds.m_vMin, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMax, screenSpaceBounds.m_vMax, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMin, m_coordinates, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMax, m_coordinates + m_canvasCollisionBoxSize, 1);
+		m_lineStripShader->SetUniformInt(HASHED_STRING_u_filter, filterSlot, 1);
+
+
+		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_filter), 0);
+		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_numLines), numLines);
+		//glUniform1f(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSize), m_style->LineWidth);
+
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_lineSegmentsStrip, canvasPoints[0], numPoints );
+		//glUniform2fv(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSegmentsStrip), numPoints, reinterpret_cast<GLfloat*>(canvasPoints.data()) );
+		m_lineStripShader->SetUniformInt(HASHED_STRING_u_numLines, numLines, 1);
+		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_lineSize, m_style->LineWidth, 1);
+
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_inverseScreenResolution, inverseScreen, 1 );
 
 		Texture::ApplyTexture(m_filterTexture);
 
-		m_lineStripShader->setAttribute(HASHED_STRING_in_position, 2, GL_FLOAT, sizeof(Vector2f), 0);
-
-		glDrawArrays( GL_QUADS, 0, 4);
-
-		m_lineStripShader->disableAttribute(HASHED_STRING_in_position);
+		m_lineStripShader->renderSimpleQuad();
 	}
 
 	void UILinkStrip::calcControlPoints()
@@ -103,19 +140,31 @@ namespace woodman
 		m_controlPoints.push_back(p3);
 		m_controlPoints.push_back(m_endPoint);
 
-		Vector2f minValues(m_startPoint.getScreenCoordinates()), maxValues(m_endPoint.getScreenCoordinates());
+		Vector2f minValues, maxValues;
+		if(m_endPoint.getOwningCanvas() != m_startPoint.getOwningCanvas())
+		{
+			minValues = Vector2f(m_startPoint.getScreenCoordinates());
+			maxValues = Vector2f(m_endPoint.getScreenCoordinates());
+		}
+		else
+		{
+			minValues = Vector2f(m_startPoint.coordinatesCanvasSpace);
+			maxValues = Vector2f(m_endPoint.coordinatesCanvasSpace);
+
+		}
 
 		for(auto it = m_controlPoints.begin(); it != m_controlPoints.end(); ++it)
 		{
-			Vector2f screenCoords = (*it).getScreenCoordinates();
+			Vector2f screenCoords = (*it).coordinatesCanvasSpace;
 			minValues.x = min(minValues.x, screenCoords.x);
 			minValues.y = min(minValues.y, screenCoords.y);
 			maxValues.x = max(maxValues.x, screenCoords.x);
 			maxValues.y = max(maxValues.y, screenCoords.y);
 		}
-
-		m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth);
-		m_canvasCollisionBoxSize = maxValues - minValues + Vector2f(0.0f, m_style->LineWidth * 2);
+		
+		m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth * .5f);
+		m_canvasCollisionBoxSize = maxValues - minValues + Vector2f(0.0f, m_style->LineWidth);
+		calcFullCollisionBox();
 	}
 
 

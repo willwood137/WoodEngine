@@ -26,12 +26,6 @@
     <Filter Include="ShaderEditor">
       <UniqueIdentifier>{601048e9-f8fc-4d59-b428-42afaa8d9524}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderEditor\ShaderEditorUI">
-      <UniqueIdentifier>{58967876-047e-4954-ae9b-3019572308f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderEditor\ShaderEditorUI\Shaders">
-      <UniqueIdentifier>{2e61e57d-cfb5-4e11-906e-f86445624512}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{61232f84-ac98-4d35-aa95-8de61a29fd8e}</UniqueIdentifier>
     </Filter>
@@ -296,11 +290,41 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.vert">
-      <Filter>ShaderEditor\ShaderEditorUI\Shaders</Filter>
+    <None Include="..\..\Assets\Shaders\UI\CanvasBackground.frag">
+      <Filter>UI\Shaders</Filter>
     </None>
-    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag">
-      <Filter>ShaderEditor\ShaderEditorUI\Shaders</Filter>
+    <None Include="..\..\Assets\Shaders\UI\CanvasBackground.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\LineShader.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\LineShader.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\LinkNode.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\LinkNode.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\MouseMenu.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\MouseMenu.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\NodeBox.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\NodeBox.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.vert">
+      <Filter>UI\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

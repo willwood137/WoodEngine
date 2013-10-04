@@ -41,12 +41,12 @@ namespace woodman
 
 		bool setUpAttrbituesFromModel(std::shared_ptr<Model> model);
 
-		bool SetUniformFloat(const HashedString& uniformName, float value);
-		bool SetUniformInt(const HashedString& uniformName, int value);
-		bool SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Value);
-		bool SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Value);
-		bool SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Value);
-		bool SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrix);
+		bool SetUniformFloat(const HashedString& uniformName, float& values, unsigned int numValues);
+		bool SetUniformInt(const HashedString& uniformName, int& values, unsigned int numValues);
+		bool SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Values, unsigned int numValues);
+		bool SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Values, unsigned int numValues);
+		bool SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Values, unsigned int numValues);
+		bool SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrices, unsigned int numValues);
 
 		bool setAttribute( const HashedString& attributeName, 
 			const unsigned int numValues, 
@@ -70,6 +70,8 @@ namespace woodman
 		// texture was loaded.
 		// Returns an empty string if no file was used in loading this
 		// texture or if the texture has not been loaded.
+
+		void renderSimpleQuad();
 
 		static std::shared_ptr<Shader> CreateOrGetShader( 
 			const std::string& ShaderPath );

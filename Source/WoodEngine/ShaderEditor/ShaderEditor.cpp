@@ -476,6 +476,7 @@ namespace woodman
 			newSlot->setLockedToParent(true);
 			newSlot->setParentOffset(Offset);
 			newSlot->Initialize();
+			newSlot->calcFullCollisionBox();
 			NodeBox->addChild(newSlot);
 		}
 

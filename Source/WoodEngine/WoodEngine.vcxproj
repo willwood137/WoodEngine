@@ -200,8 +200,18 @@
     <Xml Include="UI\DefaultStyle.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.frag" />
-    <None Include="ShaderEditor\UI\Shaders\NodeInstance_Background.vert" />
+    <None Include="..\..\Assets\Shaders\UI\CanvasBackground.frag" />
+    <None Include="..\..\Assets\Shaders\UI\CanvasBackground.vert" />
+    <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.frag" />
+    <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.vert" />
+    <None Include="..\..\Assets\Shaders\UI\LineShader.frag" />
+    <None Include="..\..\Assets\Shaders\UI\LineShader.vert" />
+    <None Include="..\..\Assets\Shaders\UI\LinkNode.frag" />
+    <None Include="..\..\Assets\Shaders\UI\LinkNode.vert" />
+    <None Include="..\..\Assets\Shaders\UI\MouseMenu.frag" />
+    <None Include="..\..\Assets\Shaders\UI\MouseMenu.vert" />
+    <None Include="..\..\Assets\Shaders\UI\NodeBox.frag" />
+    <None Include="..\..\Assets\Shaders\UI\NodeBox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

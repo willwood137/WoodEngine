@@ -315,11 +315,20 @@ namespace woodman
 		PROMISES( pShader == 0 );
 	}
 
-	bool Shader::SetUniformFloat(const HashedString& uniformName, float value)
+	void Shader::renderSimpleQuad()
+	{
+		setAttribute(HASHED_STRING_in_position, 2, GL_FLOAT, sizeof(Vector2f), 0);
+
+		glDrawArrays( GL_QUADS, 0, 4);
+
+		disableAttribute(HASHED_STRING_in_position);
+	}
+
+	bool Shader::SetUniformFloat(const HashedString& uniformName, float& values, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniform1f(m_uniforms[uniformName], value);
+			glUniform1fv(m_uniforms[uniformName], numValues, reinterpret_cast<GLfloat*>(&values) );
 			return true;
 		}
 
@@ -327,55 +336,55 @@ namespace woodman
 	}
 
 
-	bool Shader::SetUniformInt(const HashedString& uniformName, int value)
+	bool Shader::SetUniformInt(const HashedString& uniformName, int& values, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniform1i(m_uniforms[uniformName], value);
+			glUniform1iv(m_uniforms[uniformName], numValues, reinterpret_cast<GLint*>( &values) );
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Shader::SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Value)
+	bool Shader::SetUniformVector2(const HashedString& uniformName, Vector2f& vec2Values, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniform2fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec2Value ) );
+			glUniform2fv(m_uniforms[uniformName], numValues, reinterpret_cast<GLfloat*>( &vec2Values ) );
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Shader::SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Value)
+	bool Shader::SetUniformVector3(const HashedString& uniformName, Vector3f& vec3Values, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniform3fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec3Value ) );
+			glUniform3fv(m_uniforms[uniformName], numValues, reinterpret_cast<GLfloat*>( &vec3Values ) );
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Shader::SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Value)
+	bool Shader::SetUniformVector4(const HashedString& uniformName, Vector4f& vec4Values, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniform4fv(m_uniforms[uniformName], 1, reinterpret_cast<GLfloat*>( &vec4Value ) );
+			glUniform4fv(m_uniforms[uniformName], numValues, reinterpret_cast<GLfloat*>( &vec4Values ) );
 			return true;
 		}
 
 		return false;
 	}
 
-	bool Shader::SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrix)
+	bool Shader::SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrices, unsigned int numValues)
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniformMatrix4fv(m_uniforms[uniformName], 1, false, reinterpret_cast<GLfloat*>( &matrix ) );
+			glUniformMatrix4fv(m_uniforms[uniformName], numValues, false, reinterpret_cast<GLfloat*>( &matrices ) );
 			return true;
 		}
 

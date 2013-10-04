@@ -53,6 +53,11 @@ namespace woodman
 
 
 	private:
+
+		void renderCrossCanvas(UIMouse* currentMouse);
+		void renderIntraCanvas(UIMouse* currentMouse);
+
+
 		CanvasCoordinates m_startPoint;
 		CanvasCoordinates m_endPoint;
 		Vector2f m_startVector;
@@ -68,6 +73,7 @@ namespace woodman
 		std::vector< CanvasCoordinates > m_controlPoints;
 
 		std::shared_ptr<Shader> m_lineStripShader;
+		std::shared_ptr<Shader> m_crossCanvasLineStripShader;
 		std::shared_ptr<Texture> m_filterTexture;
 
 	};

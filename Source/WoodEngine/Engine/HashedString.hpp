@@ -90,6 +90,10 @@ namespace woodman
 	const HashedString HASHED_STRING_u_screenMin("u_screenMin");
 	const HashedString HASHED_STRING_u_screenMax("u_screenMax");
 	const HashedString HASHED_STRING_u_lineSegmentsStrip("u_lineSegmentsStrip");
+	const HashedString HASHED_STRING_u_lineLengths("u_lineLengths");
+	const HashedString HASHED_STRING_u_fullLength("u_fullLength");
+	const HashedString HASHED_STRING_u_startSize("u_startSize");
+	const HashedString HASHED_STRING_u_endSize("u_endSize");
 	const HashedString HASHED_STRING_u_numLines("u_numLines");
 	const HashedString HASHED_STRING_u_lineSize("u_lineSize");
 	const HashedString HASHED_STRING_u_lineWidth("u_lineWidth");

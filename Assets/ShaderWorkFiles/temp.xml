@@ -1,13 +1,23 @@
 <?xml version="1.0"?>
 <Shader_WorkFile name="">
-	<Node Name="Multiply" x_Position="-302" y_Position="111">
-		<Link Name="Multiply_0_Sum">
-			<Partner PartnerNodeName="Division_0" PartnerLinkName="Division_0_Denominator" />
+	<Node Name="ModelViewProjection_Matrix" DefinitionCategory="Core" DefinitionNode="ModelViewProjection_Matrix" x_Position="-654" y_Position="-154" />
+	<Node Name="Standard_Vertex_Info" DefinitionCategory="Core" DefinitionNode="Standard_Vertex_Info" x_Position="-538" y_Position="159" />
+	<Node Name="Transform_Vector" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-111" y_Position="-23.0001">
+		<Link Name="Transform_Vector_0_Matrix">
+			<Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_MVP" />
+		</Link>
+		<Link Name="Transform_Vector_0_Vector">
+			<Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
 		</Link>
 	</Node>
-	<Node Name="Division" x_Position="-27" y_Position="81">
-		<Link Name="Division_0_Denominator">
-			<Partner PartnerNodeName="Multiply_0" PartnerLinkName="Multiply_0_Sum" />
+	<Node Name="UV_To_Fragment" DefinitionCategory="Core" DefinitionNode="UV_To_Fragment" x_Position="163" y_Position="138">
+		<Link Name="UV_To_Fragment_0_UV">
+			<Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Texture_Coordinates" />
+		</Link>
+	</Node>
+	<Node Name="Final_Position" DefinitionCategory="Core" DefinitionNode="Final_Position" x_Position="205" y_Position="-83">
+		<Link Name="Final_Position_0_Position">
+			<Partner PartnerNodeName="Transform_Vector_0" PartnerLinkName="Transform_Vector_0_OutVector" />
 		</Link>
 	</Node>
 </Shader_WorkFile>

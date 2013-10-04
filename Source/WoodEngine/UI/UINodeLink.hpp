@@ -32,7 +32,7 @@ namespace woodman
 		virtual void MouseDrag( UIMouse* currentMouse);
 
 		// pure virtual functions
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip) = 0;
+		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink) = 0;
 		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip) = 0;
 		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip) = 0;
 		virtual UINodeLink* getPartnerSlot() = 0;
@@ -41,6 +41,7 @@ namespace woodman
 		bool IsOutLink() const;
 		DataType* getDataType();
 		unsigned int getTypeSize();
+		UINodeLinkCallBackBase* getCallBackRecipient();
 #pragma endregion
 #pragma region UINodeLink_Setters
 		void setDraggingStrip(std::shared_ptr<UILinkStrip> linkStrip);
@@ -90,8 +91,8 @@ namespace woodman
 		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual void move(const Vector2f& amountToMove);
 
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip);
-		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);		
+		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink);
+		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);
 		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip);
 		virtual UINodeLink* getPartnerSlot();
 
@@ -119,7 +120,7 @@ namespace woodman
 		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual void move(const Vector2f& amountToMove);
 
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip);
+		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink);
 		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);
 		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip);
 		virtual UINodeLink* getPartnerSlot();

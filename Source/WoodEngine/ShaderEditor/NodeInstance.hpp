@@ -35,7 +35,7 @@ namespace woodman
 
 	struct NodeLinkInstance : public UINodeLinkCallBackBase
 	{
-		NodeLinkInstance(HashedString uniqueID) : m_uniqueID(uniqueID) {}
+		NodeLinkInstance(HashedString uniqueID) : m_uniqueID(uniqueID), parentLink(nullptr), parentNodeInstance(nullptr), partnerLinkInstance(nullptr) {}
 
 		//CallBackFunctions
 		virtual void CallBackLinkToNodeSlot(UINodeLinkCallBackBase* partner); 

@@ -79,7 +79,7 @@ namespace woodman
 
 			m_previewShader->load();
 
-			if(m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix ) )
+			if(m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix, 1 ) )
 			{
 				Texture::ApplyTexture(m_model->getMaterialTexture("Diffuse"));
 
