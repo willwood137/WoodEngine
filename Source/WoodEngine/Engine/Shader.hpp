@@ -26,7 +26,7 @@ namespace woodman
 			bool operator()( const std::shared_ptr<Shader>& lhs, const std::shared_ptr<Shader>& rhs ) const;
 		};
 
-		Shader(const std::string& filepath);
+		Shader(const std::string& filepath );
 
 		Shader() {}
 		
@@ -87,7 +87,9 @@ namespace woodman
 		std::map<HashedString, unsigned int> m_uniforms;
 		std::string m_filePath;
 		unsigned int m_shaderID;
+		unsigned int m_shaderRenderToTextureID;
 		bool m_isLoaded;
+		bool m_isRenderToTexture;
 
 		static std::set< std::shared_ptr<Shader>, ShaderCompare > Shaders;
 

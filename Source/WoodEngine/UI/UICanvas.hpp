@@ -88,6 +88,7 @@ namespace woodman
 			return m_prevMouseCanvasPosition;
 		}
 
+		bool m_moveable;
 		
 	private:
 

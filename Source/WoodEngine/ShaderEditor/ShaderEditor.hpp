@@ -58,9 +58,8 @@ namespace woodman
 		UICanvas* m_vertexCanvas;
 		UICanvas* m_fragmentCanvas;
 		UICanvas* m_dividerCanvas;
-		std::unique_ptr<ModelPreviewWidget> m_previewWidget;
+		ModelPreviewWidget* m_previewWidget;
 
-		bool m_previewMode;
 
 	};
 }

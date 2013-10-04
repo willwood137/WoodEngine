@@ -223,7 +223,7 @@ namespace woodman
 
 		for(auto it = m_outputs.begin(); it != m_outputs.end(); ++it)
 		{
-			fragFile << "out " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
+			fragFile << "layout(location = 0) out " << it->second.variablePrefix << " " << it->second.VariableName.m_string <<";\n";
 		}
 
 		fragFile << "\n";

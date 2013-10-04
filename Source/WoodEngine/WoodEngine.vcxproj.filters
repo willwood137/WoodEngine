@@ -326,5 +326,11 @@
     <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.vert">
       <Filter>UI\Shaders</Filter>
     </None>
+    <None Include="..\..\Assets\Shaders\UI\PreviewWindow.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\PreviewWindow.vert">
+      <Filter>UI\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

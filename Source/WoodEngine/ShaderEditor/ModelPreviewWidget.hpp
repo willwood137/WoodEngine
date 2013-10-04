@@ -18,6 +18,7 @@ namespace woodman
 			const std::string& name,
 			HashedString uniqueID );
 
+		bool SetUpRenderTarget(Vector2i textureResolution);
 
 		virtual void render( UIMouse* currentMouse);
 
@@ -28,13 +29,16 @@ namespace woodman
 		void updateShader( const std::string& shaderFilePath );
 
 
-		bool m_focus;
 
 	private:
 		std::shared_ptr<Model> m_model;
 		std::shared_ptr<Texture> m_backgroundTexture;
 		std::shared_ptr<Shader> m_previewShader;
+		std::shared_ptr<Shader> m_showTextureShader;
 		std::shared_ptr<Camera> m_camera;
 
+		Vector2i m_previewTextureSize;
+		GLuint m_renderedTextureID;
+		GLuint m_framebufferName;
 	};
 }

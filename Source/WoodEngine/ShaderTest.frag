@@ -5,7 +5,7 @@ uniform sampler2D u_diffuse;
 
 in vec2 v_uv;
 
-out vec4 OutputColor;
+layout(location = 0) out vec4 OutputColor;
 
 
 

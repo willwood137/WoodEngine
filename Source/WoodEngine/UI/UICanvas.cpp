@@ -20,6 +20,7 @@ namespace woodman
 		m_layer(0),
 		EventRecipient(eventsystem)
 	{
+		m_moveable = true;
 	}
 
 	bool UICanvas::Initialize()
@@ -109,7 +110,7 @@ namespace woodman
 			}
 
 
- 			if(currentMouse->isPressed && currentMouse->selectedCanvas == this)
+ 			if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas == this)
  			{
  				if(currentMouse->selectedWidget == nullptr)
  				{

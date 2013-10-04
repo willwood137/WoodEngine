@@ -86,6 +86,8 @@ namespace woodman
 		OutputDebugStringA( log.c_str() );
 		log.clear();
 
+
+
 		//get all uniforms from the vertex shader
 		
 		std::stringstream vertexSS(vertexShaderSourceText);
@@ -212,7 +214,9 @@ namespace woodman
 
 	bool Shader::load()
 	{
+		
 		glUseProgram(m_shaderID);
+		
 		return true;
 	}
 

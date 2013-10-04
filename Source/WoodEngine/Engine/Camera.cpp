@@ -103,19 +103,19 @@ namespace woodman
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		if( isKeyDown( VK_UP ) || isKeyDown( 'W' ))
+		if(  isKeyDown( 'W' ))
 		{
 			impulse.z -= 1.0f;
 		}
-		if( isKeyDown( VK_DOWN ) || isKeyDown( 'S' ))
+		if( isKeyDown( 'S' ))
 		{
 			impulse.z += 1.0f;
 		}
-		if( isKeyDown( VK_LEFT ) || isKeyDown( 'A' ))
+		if(  isKeyDown( 'A' ))
 		{
 			impulse.x -= 1.0f;
 		}
-		if( isKeyDown( VK_RIGHT ) || isKeyDown( 'D' ))
+		if(  isKeyDown( 'D' ))
 		{
 			impulse.x += 1.0f;
 		}

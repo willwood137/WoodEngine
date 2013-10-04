@@ -93,6 +93,11 @@ namespace woodman
 			return m_coordinates;
 		}
 
+		void setCanvasCoordinates(const Vector2f& coords) 
+		{
+			m_coordinates = coords;
+		}
+
 		Vector2f getCollisionSize() const
 		{
 			return m_canvasCollisionBoxSize;

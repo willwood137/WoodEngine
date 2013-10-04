@@ -12,15 +12,15 @@ namespace woodman
 {
 	ShaderEditor::ShaderEditor(EventSystem* eventsystem )
 		: UIController(eventsystem),
-		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1400.0f, 900.0f) ), (TEXTURES_PATH + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15)		) ),
-		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
-		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(200, 900), Vector2i(10, 10)	) ),
+		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1200.0f, 900.0f) ), (TEXTURES_PATH + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15)		) ),
+		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
+		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(400, 900), Vector2i(10, 10)	) ),
 		m_vertexToFragmentRatio(1.0f),
-		m_vertexToFramentRatioGoal(1.0f),
-		m_previewMode(false)
+		m_vertexToFramentRatioGoal(1.0f)
 	{
 		m_canvases.insert(std::unique_ptr<UICanvas>(m_vertexCanvas) );
 		m_canvases.insert(std::unique_ptr<UICanvas>(m_dividerCanvas) );
+		m_dividerCanvas->m_moveable = false;
 		m_canvases.insert(std::unique_ptr<UICanvas>(m_fragmentCanvas) );
 	}
 
@@ -106,11 +106,13 @@ namespace woodman
 		LoadMenu->EventToFire = "LoadFile";
 		m_mouse->MainMenu->subMenus.emplace_back(std::move(LoadMenu) );
  
- 		m_previewWidget = std::move( std::unique_ptr<ModelPreviewWidget>( new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) ) );
- 
+ 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") );
+		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
  		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
+		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
+		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
 		
-		//m_dividerCanvas->RegisterUIWidget(m_previewWidget.get());
+		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
 	}
 
 
@@ -150,23 +152,8 @@ namespace woodman
 
 	void ShaderEditor::update(const Vector2f& MouseScreenPosition )
 	{
-		if(!m_previewMode)
-			UIController::update(MouseScreenPosition);
-		else
-		{
-			m_mouse->prevScreenPosition = m_mouse->screenPosition;
-			m_mouse->screenPosition = MouseScreenPosition;
-
-			m_mouse->hoveringWidget = getUIWidgetatPoint(MouseScreenPosition);
-
-			if(m_mouse->isPressed)
-			{
-				if(m_mouse->selectedWidget != nullptr)
-				{
-					m_mouse->selectedWidget->MouseDrag(m_mouse.get());
-				}
-			}
-		}
+		UIController::update(MouseScreenPosition);
+		
 
 		setCanvasSpace();
 	}
@@ -195,9 +182,9 @@ namespace woodman
 
 			m_vertexToFragmentRatio = clamp(m_vertexToFragmentRatio, 0.0f, 1.0f);
 		}
-		float xDiff = ((1 - m_vertexToFragmentRatio) * -1400.0f);
-		m_vertexCanvas->setScreenSpace(AABB2D(Vector2f(0.0f + xDiff , 0.0f), Vector2f(1400.0f + xDiff, 900.0f) ) );
-		m_dividerCanvas->setScreenSpace(AABB2D(Vector2f(1400.0f + xDiff , 0.0f), Vector2f(1600.0f + xDiff, 900.0f) ) );
+		float xDiff = ((1 - m_vertexToFragmentRatio) * -1200.0f);
+		m_vertexCanvas->setScreenSpace(AABB2D(Vector2f(0.0f + xDiff , 0.0f), Vector2f(1200.0f + xDiff, 900.0f) ) );
+		m_dividerCanvas->setScreenSpace(AABB2D(Vector2f(1200.0f + xDiff , 0.0f), Vector2f(1600.0f + xDiff, 900.0f) ) );
 		m_fragmentCanvas->setScreenSpace(AABB2D(Vector2f(1600.0f + xDiff , 0.0f), Vector2f(3000.0f + xDiff, 900.0f) ) );
 
 
@@ -208,19 +195,7 @@ namespace woodman
 
 	void ShaderEditor::render()
 	{
-		if(m_previewMode)
-		{
-			m_previewWidget->render(m_mouse.get());
-
-			if(m_mouse->menuOpen)
-			{
-				m_mouse->render();
-			}
-		}
-		else
-		{
-			UIController::render();
-		}
+		UIController::render();
 	}
 
 
@@ -617,9 +592,6 @@ namespace woodman
 
 	void ShaderEditor::catchPreview(NamedPropertyContainer& parameters)
 	{
-		m_previewMode = !m_previewMode;
-		m_previewWidget->m_focus = m_previewMode;
-
 		m_previewWidget->updateShader("ShaderTest");
 	}
 
@@ -630,9 +602,6 @@ namespace woodman
 
 		if(key=='P')
 		{
-			m_previewMode = !m_previewMode;
-			m_previewWidget->m_focus = m_previewMode;
-
 			m_previewWidget->updateShader("ShaderTest");
 		}
 	}
