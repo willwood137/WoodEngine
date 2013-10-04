@@ -13,15 +13,15 @@ namespace woodman
 	class ModelPreviewWidget : public UIWidget
 	{
 	public:
-		ModelPreviewWidget( std::shared_ptr<UICanvas> ParentCanvas,
-			std::shared_ptr<UIWidget> parentWidget,
+		ModelPreviewWidget( UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID );
 
 
-		virtual void render( std::shared_ptr<UIMouse> currentMouse);
+		virtual void render( UIMouse* currentMouse);
 
-		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
+		virtual void MouseDrag( UIMouse* currentMouse);
 
 		void loadBackgroundTexture( const std::string& texturePath );
 		void loadModelFromFile(const std::string& modelFilePath);

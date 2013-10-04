@@ -12,7 +12,7 @@ namespace woodman
 
 	}
 
-	std::shared_ptr<NodeInstance> ShaderInstance::CreateNewNodeInstance(std::shared_ptr<ShaderNode> NodeDefinition, SHADER_TYPE shaderType, const Vector2f& position)
+	NodeInstance* ShaderInstance::CreateNewNodeInstance(ShaderNode* NodeDefinition, SHADER_TYPE shaderType, const Vector2f& position)
 	{
 	
 		int i = 0;
@@ -34,9 +34,9 @@ namespace woodman
 		}while(!hasUniqueID);
 
 
-		std::shared_ptr<NodeInstance> newNode( new NodeInstance(NodeDefinition, position, shaderType, tempID) );
+		NodeInstance* newNode =  new NodeInstance(NodeDefinition, position, shaderType, tempID);
 
-		m_nodeInstances.insert(std::make_pair(tempID, newNode) );
+		m_nodeInstances.insert(std::make_pair(tempID, std::unique_ptr<NodeInstance>(newNode) ) );
 
 		return newNode;
 	}
@@ -48,15 +48,12 @@ namespace woodman
 		std::set<HashedString> compiledDefinitions;
 
 		//go through and find each node that has a openGL variable or a varying
-		std::set<std::shared_ptr<NodeLinkInstance> > GLLinks;
+		std::set<NodeLinkInstance*> GLLinks;
 		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
 		{
 			//check if we need to add the Definition
-			std::shared_ptr<ShaderNode> nodeDef = it->second->getDefinitionNode();
-
+			ShaderNode* nodeDef = it->second->getDefinitionNode();
 			HashedString nodeDefName(nodeDef->name);
-
-
 
 			if(compiledDefinitions.find(nodeDefName) == compiledDefinitions.end() )
 			{
@@ -71,7 +68,7 @@ namespace woodman
 
 
 
-			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* links = it->second->getUINodeLinkInstances();
+			std::map< HashedString, std::unique_ptr< NodeLinkInstance > >* links = it->second->getUINodeLinkInstances();
 
 			for(auto LinkIt = links->begin(); LinkIt != links->end(); ++LinkIt)
 			{
@@ -105,7 +102,7 @@ namespace woodman
 					LinkIt->second->varInfo.VariableName = HashedString(LinkIt->second->parentLink->OpenGLName);
 
 					//also use this as a starting point
-					GLLinks.insert(LinkIt->second);
+					GLLinks.insert(LinkIt->second.get());
 				}
 				else if(!LinkIt->second->parentLink->outName.empty() )
 				{
@@ -113,7 +110,7 @@ namespace woodman
 					m_outputs.insert(std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 
 					//also use this as a starting point
-					GLLinks.insert(LinkIt->second);
+					GLLinks.insert(LinkIt->second.get());
 				}
 				else if(!LinkIt->second->parentLink->varyingName.empty() )
 				{
@@ -122,7 +119,7 @@ namespace woodman
 
 					//also use this as a starting point
 					if(!LinkIt->second->exitNode)
-						GLLinks.insert(LinkIt->second);
+						GLLinks.insert(LinkIt->second.get());
 				}
 				else if(!LinkIt->second->parentLink->uniformName.empty() )
 				{
@@ -133,12 +130,9 @@ namespace woodman
 				{
 					LinkIt->second->varInfo.VariableName = LinkIt->second->m_uniqueID.m_string;
 				}
-				
-					
-
-
 			}
 		}
+
 		//now compile it
 		m_compileCounter++;
 		for(auto it = GLLinks.begin(); it != GLLinks.end(); it++)
@@ -226,125 +220,10 @@ namespace woodman
 		fragFile << fragmentCode << "\n}";
 	}
 
-
-// 	void ShaderInstance::CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation)
-// 	{
-// 		//we need to resolve this before we can compile this
-// 
-// 		if( link->exitNode )
-// 		{
-// 			if( !link->parentLink->ShaderCode.empty() )
-// 			{
-// 				//this has shader code put it in!
-// 				std::stringstream ss, shaderCodeParse(link->parentLink->ShaderCode);
-// 
-// 				std::string tempString, insertString;
-// 
-// 				while(shaderCodeParse.good())
-// 				{
-// 
-// 				shaderCodeParse >> tempString;
-// 
-// 					if(tempString[0] == '$')
-// 					{
-// 						//this is a variable, get its value
-// 						std::shared_ptr<NodeLinkInstance> tempLinkInstance = link->parentNodeInstance->getLinkInstanceByName(tempString.substr(1));
-// 
-// 						if(tempLinkInstance != nullptr)
-// 						{
-// 							if(tempLinkInstance->partnerLinkInstance != nullptr)
-// 							{
-// 								CompileLink(tempLinkInstance, compilation);
-// 							}
-// 
-// 							insertString += tempLinkInstance->m_linkName + " ";
-// 						}
-// 					}
-// 					else
-// 					{
-// 						insertString += tempString + " ";
-// 					}
-// 				}
-// 
-// 				std::string typePrefix;
-// 
-// 				if(link->pType == PROPERTYTYPE_VECTOR)
-// 					typePrefix = "vec";
-// 				else if(link->pType == PROPERTYTYPE_SAMPLER2D)
-// 					typePrefix = "sampler2D";
-// 				else
-// 					typePrefix = "mat";
-// 
-// 				if(link->pType != PROPERTYTYPE_SAMPLER2D)
-// 				{
-// 					std::stringstream ss;
-// 					ss << link->typeSize;
-// 					typePrefix.append(ss.str());
-// 				}
-// 				
-// 				ss <<typePrefix << " " << link->m_uniqueID.m_string << " = " << insertString << ";\n";
-// 				compilation += ss.str();
-// 			}
-// 		}
-// 		else
-// 		{
-// 			//we are an Input Node
-// 			if(link->partnerLinkInstance != nullptr)
-// 			{
-// 				CompileLink(link->partnerLinkInstance, compilation);
-// 				link->m_linkName = link->partnerLinkInstance->m_linkName;
-// 			}
-// 
-// 			if(link->parentLink->OpenGLName.compare("") != 0)
-// 			{
-// 				//so we have a openGL variable here USE IT
-// 				compilation += link->parentLink->OpenGLName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-// 			}
-// 			else if(!link->parentLink->varyingName.empty())
-// 			{
-// 				//so we have a openGL variable here USE IT
-// 				compilation += "v_" + link->parentLink->varyingName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-// 			}
-// 			else if(!link->parentLink->outName.empty())
-// 			{
-// 				//so we have a openGL variable here USE IT
-// 				compilation += link->parentLink->outName + " = " + link->partnerLinkInstance->m_linkName + ";\n";
-// 			}
-// 		}
-// 	}
-
 	
-
 	void ShaderInstance::linkSlots(const variableInfo& linkAInfo, const variableInfo& linkBInfo  )
 	{
-// 		std::shared_ptr<NodeLinkInstance> linkA, linkB;
-// 
-// 		//first find slot A and B
-// 		for(auto it = m_nodeInstances.begin(); it != m_nodeInstances.end(); ++it)
-// 		{
-// 			std::shared_ptr<NodeLinkInstance> tempLink;
-// 			tempLink = (it->second)->getLinkByID(linkAInfo.name);
-// 			if(tempLink != nullptr)
-// 			{
-// 				linkA = tempLink;
-// 				linkA->pType = linkAInfo.pType;
-// 				linkA->typeSize = clamp<unsigned int>(linkAInfo.typeSize, 1, 4);
-// 			}
-// 
-// 			tempLink = (it->second)->getLinkByID(linkBInfo.name);
-// 			if(tempLink != nullptr)
-// 			{
-//  				linkB = tempLink;
-//  				linkB->pType = linkBInfo.pType;
-//  				linkB->typeSize = clamp<unsigned int>(linkBInfo.typeSize, 1, 4);
-// 			}
-// 
-// 			if(linkA != nullptr && linkB != nullptr)
-// 				break;
-// 		}
-// 
-// 		linkA->partnerLinkInstance = linkB;
-// 		linkB->partnerLinkInstance = linkA;
+
 	}
 
 
@@ -373,7 +252,7 @@ namespace woodman
 
 			//save links
 
-			std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* nodeLinks = nodeIt->second->getUINodeLinkInstances();
+			std::map< HashedString, std::unique_ptr< NodeLinkInstance > >* nodeLinks = nodeIt->second->getUINodeLinkInstances();
 
 			for(auto linkIt = nodeLinks->begin(); linkIt != nodeLinks->end(); ++linkIt)
 			{
@@ -396,7 +275,7 @@ namespace woodman
 	}
 
 
-	void ShaderInstance::LoadShaderInstance( const std::string& fileName, std::map<HashedString, std::shared_ptr<NodeCategory> >& nodeCategories )
+	void ShaderInstance::LoadShaderInstance( const std::string& fileName, std::map<HashedString, std::unique_ptr<NodeCategory> >& nodeCategories )
 	{
 		pugi::xml_document* doc = new pugi::xml_document();
 		pugi::xml_parse_result result = doc->load_file( (fileName).c_str() );

@@ -160,12 +160,6 @@
     <ClInclude Include="UI\UIStyle.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\UIDataStrip.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\UINodeSlot.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="UI\UIMouse.hpp">
       <Filter>UI</Filter>
     </ClInclude>
@@ -174,6 +168,12 @@
     </ClInclude>
     <ClInclude Include="ShaderEditor\ModelPreviewWidget.hpp">
       <Filter>ShaderEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UINodeLink.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UILinkStrip.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -249,12 +249,6 @@
     <ClCompile Include="UI\UIStyle.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\UIDataStrip.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UINodeSlot.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="UI\UIController.cpp">
       <Filter>UI</Filter>
     </ClCompile>
@@ -263,6 +257,12 @@
     </ClCompile>
     <ClCompile Include="ShaderEditor\ModelPreviewWidget.cpp">
       <Filter>ShaderEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UINodeLink.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UILinkStrip.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

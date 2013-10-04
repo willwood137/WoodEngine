@@ -19,7 +19,8 @@ namespace woodman
 		virtual void render();
 
 
-		virtual std::shared_ptr<UIWidget> getUIWidgetatPoint(const Vector2f& screenPosition);
+		virtual UIWidget* getUIWidgetatPoint(const Vector2f& screenPosition);
+		virtual UICanvas* getUICanvasAtPoint(const Vector2f& screenPosition);
 
 		virtual void KeyDown(unsigned int key);
 
@@ -30,7 +31,7 @@ namespace woodman
 
 	protected:
 
-		std::set<std::shared_ptr<UICanvas> > m_canvases;
-		std::shared_ptr<UIMouse> m_mouse;
+		std::set<std::unique_ptr<UICanvas> > m_canvases;
+		std::unique_ptr<UIMouse> m_mouse;
 	};
 }

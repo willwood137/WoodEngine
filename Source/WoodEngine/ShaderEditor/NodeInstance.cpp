@@ -7,9 +7,9 @@
 
 namespace woodman
 {
-	void NodeLinkInstance::CallBackLinkToNodeSlot(std::shared_ptr<NodeSlotCallBackInfoBase> partner)
+	void NodeLinkInstance::CallBackLinkToNodeSlot( UINodeLinkCallBackBase* partner)
 	{
-		std::shared_ptr<NodeLinkInstance> instance(std::dynamic_pointer_cast<NodeLinkInstance>(partner) );
+		NodeLinkInstance* instance = dynamic_cast<NodeLinkInstance*>(partner);
 
 		if(instance != nullptr)
 		{
@@ -26,7 +26,7 @@ namespace woodman
 
 	}
 
-	NodeInstance::NodeInstance( std::shared_ptr<ShaderNode > NodeReference, const Vector2f& startPosition, SHADER_TYPE shaderType, HashedString uniqueID )
+	NodeInstance::NodeInstance( ShaderNode* NodeReference, const Vector2f& startPosition, SHADER_TYPE shaderType, HashedString uniqueID )
 		: m_referenceNode(NodeReference),
 		m_position(startPosition),
 		m_uniqueID(uniqueID),
@@ -38,27 +38,26 @@ namespace woodman
 		for(auto it = NodeReference->inLinks.begin(); it != NodeReference->inLinks.end(); ++it)
 		{
 			HashedString LinkuniqueID( uniqueID.m_string + "_" + (*it)->name );
-			std::shared_ptr<NodeLinkInstance> newNodeLink(new NodeLinkInstance(LinkuniqueID));
-			newNodeLink->parentLink = (*it);
+			NodeLinkInstance* newNodeLink = new NodeLinkInstance(LinkuniqueID);
+			newNodeLink->parentLink = (*it).get();
 			newNodeLink->parentNodeInstance = this;
 			newNodeLink->exitNode = false;
-			newNodeLink->pType = (*it)->typeData->type;
-			newNodeLink->typeSize = (*it)->typeData->maxSize;
-			m_linkInstances.insert( std::make_pair(LinkuniqueID, newNodeLink) );
+			newNodeLink->pType = (*it)->typeData.type;
+			newNodeLink->typeSize = (*it)->typeData.maxSize;
+			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
 
 		//create out links
 		for( auto it = NodeReference->outLinks.begin(); it != NodeReference->outLinks.end(); ++it)
 		{
 			HashedString LinkuniqueID( uniqueID.m_string + "_" + (*it)->name );
-
-			std::shared_ptr<NodeLinkInstance> newNodeLink(new NodeLinkInstance(LinkuniqueID));
-			newNodeLink->parentLink = (*it);
+			NodeLinkInstance* newNodeLink = new NodeLinkInstance(LinkuniqueID);
+			newNodeLink->parentLink = (*it).get();
 			newNodeLink->parentNodeInstance = this;
 			newNodeLink->exitNode = true;
-			newNodeLink->pType = (*it)->typeData->type;
-			newNodeLink->typeSize = (*it)->typeData->maxSize;
-			m_linkInstances.insert(std::make_pair(LinkuniqueID, newNodeLink) );
+			newNodeLink->pType = (*it)->typeData.type;
+			newNodeLink->typeSize = (*it)->typeData.maxSize;
+			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
 
 		// get title Size
@@ -74,19 +73,19 @@ namespace woodman
 
 
 
-	std::shared_ptr<NodeLinkInstance> NodeInstance::getLinkByID(HashedString uniqueID)
+	NodeLinkInstance* NodeInstance::getLinkByID(HashedString uniqueID)
 	{
 		auto it = m_linkInstances.find(uniqueID);
 
 		if(it != m_linkInstances.end())
 		{
-			return it->second;
+			return it->second.get();
 		}
 		else 
 			return nullptr;
 	}
 
-	void NodeInstance::CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation, unsigned int compileCounter)
+	void NodeInstance::CompileLink(NodeLinkInstance* link, std::string& compilation, unsigned int compileCounter)
 	{
 
 		//check if this link has already been compiled
@@ -113,7 +112,7 @@ namespace woodman
 						if(tempString[0] == '$')
 						{
 							//this is a variable, get its value
-							std::shared_ptr<NodeLinkInstance> tempLinkInstance = getLinkInstanceByName(tempString.substr(1));
+							NodeLinkInstance* tempLinkInstance = getLinkInstanceByName(tempString.substr(1));
 
 							if(tempLinkInstance != nullptr)
 							{
@@ -159,13 +158,13 @@ namespace woodman
 	}
 
 
-	std::shared_ptr<NodeLinkInstance> NodeInstance::getLinkInstanceByName(const std::string& linkName)
+	NodeLinkInstance* NodeInstance::getLinkInstanceByName(const std::string& linkName)
 	{
 		for(auto it = m_linkInstances.begin(); it != m_linkInstances.end(); ++it)
 		{
 			if( (it->second)->parentLink->name.compare(linkName) == 0 )
 			{
-				return it->second;
+				return it->second.get();
 			}
 		}
 

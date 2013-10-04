@@ -16,13 +16,6 @@
 
 namespace woodman
 {
-
-	struct NodeCategory
-	{
-		std::string name;
-		std::map<HashedString, std::shared_ptr<ShaderNode> > nodes;
-	};
-
 	class ShaderEditor : public UIController
 	{
 	public:
@@ -34,9 +27,9 @@ namespace woodman
 
 		void LoadNodeDefinitionsFromFile(const std::string &filePath);
 		void addNode();
-		void CreateUINodeBoxFromNodeInstance( std::shared_ptr<NodeInstance> node);
+		void CreateUINodeBoxFromNodeInstance( NodeInstance* node);
 
-		std::shared_ptr<ShaderNode> getNode( HashedString name );
+		ShaderNode* getDefinitionNode( HashedString name );
 
 		virtual void KeyDown(unsigned int key);
 		void catchAddNode(NamedPropertyContainer& parameters);
@@ -53,17 +46,17 @@ namespace woodman
 		//private functions
 		void setCanvasSpace();
 
-		std::map<HashedString, std::shared_ptr<NodeCategory> > m_nodeCategories;
+		std::map<HashedString, std::unique_ptr<NodeCategory> > m_nodeCategories;
 
 		float m_vertexToFragmentRatio;
 		float m_vertexToFramentRatioGoal;
 
 		// shader Instances?
 		ShaderInstance m_shaderInstance;
-		std::shared_ptr<UICanvas> m_vertexCanvas;
-		std::shared_ptr<UICanvas> m_fragmentCanvas;
-		std::shared_ptr<UICanvas> m_dividerCanvas;
-		std::shared_ptr<ModelPreviewWidget> m_previewWidget;
+		UICanvas* m_vertexCanvas;
+		UICanvas* m_fragmentCanvas;
+		UICanvas* m_dividerCanvas;
+		std::unique_ptr<ModelPreviewWidget> m_previewWidget;
 
 		bool m_previewMode;
 

@@ -38,24 +38,45 @@ namespace woodman
 		m_mouse->screenPosition = MouseScreenPosition;
 
 		m_mouse->hoveringWidget = getUIWidgetatPoint(MouseScreenPosition);
+		
+		if(m_mouse->hoveringWidget != nullptr)
+		{
+			m_mouse->hoveringCanvas = m_mouse->hoveringWidget->getParentCanvas();
+		}
+		else
+		{
+			m_mouse->hoveringCanvas = getUICanvasAtPoint(MouseScreenPosition);
+		}
 
 		if(m_mouse->isPressed)
 		{
 			if(m_mouse->selectedWidget != nullptr)
 			{
-				m_mouse->selectedWidget->MouseDrag(m_mouse);
+				m_mouse->selectedWidget->MouseDrag(m_mouse.get());
 			}
 		}
 
 		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
 		{
-			(*it)->update(m_mouse);
+			(*it)->update(m_mouse.get());
 		}
 	}
 
-	std::shared_ptr<UIWidget> UIController::getUIWidgetatPoint(const Vector2f& screenPosition)
+	UICanvas* UIController::getUICanvasAtPoint(const Vector2f& screenPosition)
 	{
-		std::shared_ptr<UIWidget> tempWidget, HighestFound;
+		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
+		{
+			if( (*it)->getScreenSpace().isPointInsideBounds(screenPosition) )
+				return (*it).get();
+		}
+
+		return nullptr;
+	}
+
+	UIWidget* UIController::getUIWidgetatPoint(const Vector2f& screenPosition)
+	{
+		UIWidget* tempWidget = nullptr;
+		UIWidget* HighestFound = nullptr;
 
 		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
 		{
@@ -82,7 +103,7 @@ namespace woodman
 	{
 		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
 		{
-			(*it)->RenderCanvas(m_mouse);
+			(*it)->RenderCanvas(m_mouse.get());
 		}
 
 		if(m_mouse->menuOpen)
@@ -112,7 +133,7 @@ namespace woodman
 
 		if(m_mouse->menuOpen)
 		{
-			bool clickedMenu = m_mouse->clickMenu(m_mouse->MainMenu, m_mouse->prevRClickPosition, p_eventSystem);
+			bool clickedMenu = m_mouse->clickMenu(m_mouse->MainMenu.get(), m_mouse->prevRClickPosition, p_eventSystem);
 			if(!clickedMenu)
 			{
 				m_mouse->menuOpen = false;
@@ -123,7 +144,7 @@ namespace woodman
 			if(m_mouse->hoveringWidget != nullptr)
 			{
 				m_mouse->selectedWidget = m_mouse->hoveringWidget;
-				m_mouse->hoveringWidget->MouseClick(m_mouse);
+				m_mouse->hoveringWidget->MouseClick(m_mouse.get());
 			}
 			else
 			{
@@ -135,11 +156,11 @@ namespace woodman
 
 						if(m_mouse->selectedCanvas == nullptr)
 						{
-							m_mouse->selectedCanvas = (*it);
+							m_mouse->selectedCanvas = (*it).get();
 						}
 						else if(m_mouse->selectedCanvas->getLayer() > (*it)->getLayer() )
 						{
-							m_mouse->selectedCanvas = (*it);
+							m_mouse->selectedCanvas = (*it).get();
 						}
 					}
 				}
@@ -158,7 +179,7 @@ namespace woodman
 			}
 			else
 			{
-				m_mouse->hoveringWidget->MouseRClick(m_mouse);
+				m_mouse->hoveringWidget->MouseRClick(m_mouse.get());
 			}
 		}
 	}
@@ -170,7 +191,7 @@ namespace woodman
 		
 		if(m_mouse->selectedWidget != nullptr)
 		{
-			m_mouse->selectedWidget->MouseRelease(m_mouse);
+			m_mouse->selectedWidget->MouseRelease(m_mouse.get());
 		}
 		m_mouse->selectedWidget = m_mouse->hoveringWidget;
 	}

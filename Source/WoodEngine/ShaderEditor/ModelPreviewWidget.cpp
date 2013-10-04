@@ -4,7 +4,7 @@
 
 namespace woodman
 {
-	ModelPreviewWidget::ModelPreviewWidget( std::shared_ptr<UICanvas> ParentCanvas, std::shared_ptr<UIWidget> parentWidget, const std::string& name, HashedString uniqueID )
+	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID )
 		: UIWidget(ParentCanvas, parentWidget, name, uniqueID),
 		m_camera(new Camera(Vector3f(0.0f, 0.0f, -20.0f) ) )
 	{
@@ -36,7 +36,7 @@ namespace woodman
 
 	void drawOrigin(Camera* camera);
 
-	void ModelPreviewWidget::render(std::shared_ptr<UIMouse> currentMouse)
+	void ModelPreviewWidget::render( UIMouse* currentMouse)
 	{
 		if(!m_focus)
 			return;
@@ -102,7 +102,7 @@ namespace woodman
 		}
 	}
 
-	void ModelPreviewWidget::MouseDrag(std::shared_ptr<UIMouse> currentMouse)
+	void ModelPreviewWidget::MouseDrag( UIMouse* currentMouse )
 	{
 
 	}

@@ -28,13 +28,13 @@ namespace woodman
 	class UIWidget
 	{
 	public:
-		UIWidget(std::shared_ptr<UICanvas> ParentCanvas,
-			std::shared_ptr<UIWidget> parentWidget,
+		UIWidget(UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID);
 
-		UIWidget(std::shared_ptr<UICanvas> ParentCanvas,
-			std::shared_ptr<UIWidget> parentWidget,
+		UIWidget(UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID, 
 			const Vector2f& canvasCoordinates);
@@ -42,19 +42,19 @@ namespace woodman
 		virtual ~UIWidget();
 
 		virtual void Initialize();
-		virtual void update( std::shared_ptr<UIMouse> currentMouse);
-		virtual void render( std::shared_ptr<UIMouse> currentMouse);
+		virtual void update( UIMouse* currentMouse);
+		virtual void render( UIMouse* currentMouse);
 		virtual void move(	const Vector2f& amountToMove );
-		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
-		virtual void MouseRClick( std::shared_ptr<UIMouse> currentMouse );
-		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
-		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
+		virtual void MouseClick( UIMouse* currentMouse );
+		virtual void MouseRClick( UIMouse* currentMouse );
+		virtual void MouseRelease( UIMouse* currentMouse);
+		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual bool isPointInBounds(const Vector2f& point);
-		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, std::shared_ptr<UIWidget>& TopWidget);
+		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget);
 
 
-		void addChild(std::shared_ptr<UIWidget> child);
-		void removeChild(std::shared_ptr<UIWidget> child);
+		void addChild( UIWidget* child);
+		void removeChild( UIWidget* child);
 		AABB2D calcFullCollisionBox();
 
 		
@@ -118,11 +118,7 @@ namespace woodman
 			return m_layer;
 		}
 
-
-		//Static Methods
-		static unsigned int RegisterUIWidget(std::shared_ptr<UIWidget> Widget);
-		static void UnRegisterUIWidget(std::shared_ptr<UIWidget> Widget);
-		static std::map<unsigned int, std::shared_ptr<UIWidget> > WidgetDatabase;
+		UICanvas* getParentCanvas();
 
 	protected:
 		std::string m_name;
@@ -141,13 +137,13 @@ namespace woodman
 		AABB2D m_fullCanvasCollisionBox;
 
 		//any children UIWidgets
-		std::set<std::shared_ptr<UIWidget> > m_children;
+		std::set<std::unique_ptr<UIWidget> > m_children;
 
 		// to do with the parent
-		std::shared_ptr<UIWidget> m_parentWidget;
-		Vector2f				  m_parentCoordinatesOffset;
+		UIWidget* m_parentWidget;
+		Vector2f  m_parentCoordinatesOffset;
 
-		std::shared_ptr<UICanvas> m_parentCanvas;
+		UICanvas* m_parentCanvas;
 
 		std::shared_ptr<UIStyle> m_style;
 

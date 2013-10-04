@@ -23,7 +23,7 @@ namespace woodman
 		MouseMenu() : open(false) {}
 
 		std::string name;
-		std::vector< std::shared_ptr<MouseMenu> > subMenus;
+		std::vector< std::unique_ptr<MouseMenu> > subMenus;
 		std::string EventToFire;
 		NamedPropertyContainer Parameters;
 		bool open;
@@ -34,15 +34,19 @@ namespace woodman
 
 		UIMouse()
 			:menuOpen(false),
-			isPressed(false)
+			isPressed(false),
+			selectedWidget(nullptr),
+			hoveringWidget(nullptr),
+			selectedCanvas(nullptr),
+			hoveringCanvas(nullptr)
 		{
 
 		}
 
 
 		void render();
-		bool clickMenu( std::shared_ptr<MouseMenu> menu, const Vector2f& menuPosition, EventSystem* eventSystem);
-		void renderMenu(std::shared_ptr<MouseMenu> menu, const Vector2f& menuPosition,  std::shared_ptr<UIStyle> style );
+		bool clickMenu(  MouseMenu* menu, const Vector2f& menuPosition, EventSystem* eventSystem);
+		void renderMenu( MouseMenu* menu, const Vector2f& menuPosition,  std::shared_ptr<UIStyle> style );
 
 		Vector2f screenPosition;
 		Vector2f prevScreenPosition;
@@ -50,10 +54,11 @@ namespace woodman
 		Vector2f prevRClickPosition;
 		Vector2f prevReleasePosition;
 
-		std::shared_ptr<UIWidget> selectedWidget;
-		std::shared_ptr<UIWidget> hoveringWidget;
+		UIWidget* selectedWidget;
+		UIWidget* hoveringWidget;
 
-		std::shared_ptr<UICanvas> selectedCanvas;
+		UICanvas* selectedCanvas;
+		UICanvas* hoveringCanvas;
 
 		//where in relation the last Click was to the selected widgets coordinates (canvas space)
 		Vector2f relativeOriginalPosition;
@@ -63,7 +68,7 @@ namespace woodman
 
 
 		std::shared_ptr<Shader> mouseMenuShader;
-		std::shared_ptr<MouseMenu> MainMenu;
+		std::unique_ptr<MouseMenu> MainMenu;
 	
 	};
 }

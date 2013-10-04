@@ -2,7 +2,7 @@
 #define UINODEBOX_HPP
 
 #include "UIWidget.hpp"
-#include "UINodeSlot.hpp"
+#include "UINodeLink.hpp"
 
 #include "../Math/Vector2.hpp"
 
@@ -32,32 +32,32 @@ namespace woodman
 	class UINodeBox : public UIWidget
 	{
 	public:
-		UINodeBox(std::shared_ptr<UICanvas> ParentCanvas,
-			std::shared_ptr<UIWidget> parentWidget,
+		UINodeBox(UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID, 
 			const Vector2f& canvasCoordinates);
 
 		virtual void Initialize();
 		virtual void move(	const Vector2f& amountToMove );
-		virtual void render(std::shared_ptr<UIMouse> currentMouse);
+		virtual void render(UIMouse* currentMouse);
 
 // 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 // 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
- 		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
+ 		virtual void MouseDrag( UIMouse* currentMouse);
 
-		void setCallBackRecipient( std::shared_ptr<UINodeBoxCallBackRecipient> recipient );
+		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
 
 	private:
 		//TL Corner
 		Vector2f								m_titleOffset;
 		std::string								m_title;
 		std::list<std::string>					n_data;
-		std::set< std::shared_ptr<UINodeSlot> >	m_linkSlots;
+		std::set< UINodeLink* >					m_linkSlots;
 		unsigned int							m_numInSlots;
 		unsigned int							m_numOutSlots;
 
-		std::shared_ptr< UINodeBoxCallBackRecipient > m_callBackRecipient;
+		UINodeBoxCallBackRecipient* m_callBackRecipient;
 
 		std::shared_ptr<Shader> m_nodeBoxShader;
 		std::shared_ptr<Texture> m_borderFilterIdle;

@@ -9,11 +9,11 @@ namespace woodman
 {
 	void UIMouse::render()
 	{
-		renderMenu(MainMenu, prevRClickPosition, UIStyle::DefaultUIStyle);
+		renderMenu(MainMenu.get(), prevRClickPosition, UIStyle::DefaultUIStyle);
 		
 	}
 
-	void UIMouse::renderMenu(std::shared_ptr<MouseMenu> menu, const Vector2f& menuPosition, std::shared_ptr<UIStyle> style )
+	void UIMouse::renderMenu(MouseMenu* menu, const Vector2f& menuPosition, std::shared_ptr<UIStyle> style )
 	{
 		//--------------------------
 		// Render the box
@@ -46,13 +46,13 @@ namespace woodman
 			if(menu->subMenus[i]->open)
 			{
 				Vector2f newPos(menuPosition.x + style->MouseMenuWidth, menuPosition.y - i * style->MouseMenuHeight );
-				renderMenu(menu->subMenus[i], newPos, style);
+				renderMenu(menu->subMenus[i].get(), newPos, style);
 			}
 		}
 	}
 
 
-	bool UIMouse::clickMenu( std::shared_ptr<MouseMenu> menu, const Vector2f& menuPosition, EventSystem* eventSystem)
+	bool UIMouse::clickMenu( MouseMenu* menu, const Vector2f& menuPosition, EventSystem* eventSystem)
 	{
 		Vector2f menuSize(UIStyle::DefaultUIStyle->MouseMenuWidth, -(menu->subMenus.size() * UIStyle::DefaultUIStyle->MouseMenuHeight));
 
@@ -106,7 +106,7 @@ namespace woodman
 				if(menu->subMenus[i]->open)
 				{
 					Vector2f newPos(menuPosition.x + UIStyle::DefaultUIStyle->MouseMenuWidth, menuPosition.y - i * UIStyle::DefaultUIStyle->MouseMenuHeight );
-					clickedMenu = clickedMenu || clickMenu(menu->subMenus[i], newPos, eventSystem);
+					clickedMenu = clickedMenu || clickMenu(menu->subMenus[i].get(), newPos, eventSystem);
 				}
 			}
 

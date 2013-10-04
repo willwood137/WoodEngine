@@ -17,18 +17,18 @@ namespace woodman
 	{
 	public:
 		void render();
-		std::shared_ptr<NodeInstance> CreateNewNodeInstance( std::shared_ptr<ShaderNode> NodeDefinition, SHADER_TYPE shaderType, const Vector2f& position );
+		NodeInstance* CreateNewNodeInstance( ShaderNode* NodeDefinition, SHADER_TYPE shaderType, const Vector2f& position );
 		void Compile();
 		//void CompileLink(std::shared_ptr<NodeLinkInstance> link, std::string& compilation);
 		void linkSlots( const variableInfo& linkAInfo, const variableInfo& linkBInfo );
 
-		void LoadShaderInstance( const std::string& fileName );
+		void LoadShaderInstance( const std::string& fileName, std::map<HashedString, std::unique_ptr<NodeCategory> >& nodeCategories );
 		void SaveShaderInstance( const std::string& fileName );
 	
 	private:
 
 		// Node Instances
-		std::map< HashedString, std::shared_ptr< NodeInstance > > m_nodeInstances;
+		std::map< HashedString, std::unique_ptr< NodeInstance > > m_nodeInstances;
 		std::string m_shaderName;
 
 		unsigned int m_compileCounter;

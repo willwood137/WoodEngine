@@ -30,7 +30,7 @@ namespace woodman
 	{
 		PropertyType type;
 		std::string name;		
-		std::list< std::shared_ptr<PropertyList> > children;
+		std::list< std::unique_ptr<PropertyList> > children;
 	};
 
 	struct DataType
@@ -38,7 +38,6 @@ namespace woodman
 		PropertyType type;
 		unsigned int minSize;
 		unsigned int maxSize;
-		std::set<std::shared_ptr< DataType > > smartSizeReferences;
 	};
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

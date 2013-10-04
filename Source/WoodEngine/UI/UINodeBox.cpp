@@ -12,8 +12,8 @@ namespace woodman
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-	UINodeBox::UINodeBox(std::shared_ptr<UICanvas> ParentCanvas,
-		std::shared_ptr<UIWidget> parentWidget,
+	UINodeBox::UINodeBox(UICanvas* ParentCanvas,
+		UIWidget* parentWidget,
 		const std::string& name,
 		HashedString uniqueID, 
 		const Vector2f& canvasCoordinates)
@@ -38,7 +38,7 @@ namespace woodman
 		UIWidget::Initialize();
 	}
 
-	void UINodeBox::render( std::shared_ptr<UIMouse> currentMouse )
+	void UINodeBox::render( UIMouse* currentMouse )
 	{
 		float zoomScale = m_parentCanvas->getZoomScale();
 
@@ -66,14 +66,14 @@ namespace woodman
 		glUniform1i(m_nodeBoxShader->getUniformID(HASHED_STRING_u_borderFilter), 0);
 		glUniform2f(m_nodeBoxShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
 
-		if(currentMouse->selectedWidget.get() == this)
+		if( currentMouse->selectedWidget == this)
 		{
 			if(currentMouse->isPressed)
 				Texture::ApplyTexture(m_borderFilterDrag);
 			else
 				Texture::ApplyTexture(m_borderFilterSelected);
 		}
-		else if( currentMouse->hoveringWidget.get() == this )
+		else if( currentMouse->hoveringWidget == this )
 		{
 			Texture::ApplyTexture(m_borderFilterHover);
 		}
@@ -122,12 +122,12 @@ namespace woodman
 		}
 	}
 
-	void UINodeBox::MouseDrag(std::shared_ptr<UIMouse> currentMouse)
+	void UINodeBox::MouseDrag(UIMouse* currentMouse)
 	{
 		move(m_parentCanvas->getCurrentMouseCanvasPosition() - m_parentCanvas->getPrevMouseCanvasPosition() );
 	}
 
-	void UINodeBox::setCallBackRecipient( std::shared_ptr<UINodeBoxCallBackRecipient> recipient )
+	void UINodeBox::setCallBackRecipient( UINodeBoxCallBackRecipient* recipient )
 	{
 		m_callBackRecipient = recipient;
 

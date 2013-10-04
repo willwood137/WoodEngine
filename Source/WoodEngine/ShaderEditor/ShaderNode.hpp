@@ -1,26 +1,29 @@
 #pragma once
 
+#include "../Engine/HashedString.hpp"
+
+#include "../Utility/Utility.hpp"
+
 #include <vector>
 #include <list>
 #include <memory>
 #include <string>
 #include <array>
+#include <map>
 
-#include "../Utility/Utility.hpp"
 
 namespace woodman
 {
-
 	struct FunctionDefinition
 	{
 		std::string functionCode;
-		std::shared_ptr<DataType> dType;
+		DataType returnType;
 	};
 
 	struct NodeLink
 	{
 		std::string name;
-		std::shared_ptr<DataType> typeData;
+		DataType typeData;
 		std::string ShaderCode;
 		std::string attributeName;
 		std::string uniformName;
@@ -30,27 +33,33 @@ namespace woodman
 
 	};
 
-	 struct ShaderNode
-	 {
-		 std::shared_ptr<NodeLink> getLinkByName(const std::string& name)
-		 {
-			 for(auto it = inLinks.begin(); it != inLinks.end(); ++it)
-			 {
-				 if( (*it)->name.compare(name) == 0)
-				 {
-					 return (*it);
-				 }
-			 }
-			 return nullptr;
-		 }
+	struct ShaderNode
+	{
+		NodeLink* getLinkByName(const std::string& name)
+		{
+			for(auto it = inLinks.begin(); it != inLinks.end(); ++it)
+			{
+				if( (*it)->name.compare(name) == 0)
+				{
+					return (*it).get();
+				}
+			}
+			return nullptr;
+		}
 
 		std::string name;
 		std::string category;
-		std::list< std::shared_ptr<PropertyList> > propertyLists;
-		std::vector<std::shared_ptr<NodeLink> > inLinks;
-		std::vector<std::shared_ptr<NodeLink> > outLinks;
+		std::list< std::unique_ptr<PropertyList> > propertyLists;
+		std::vector<std::unique_ptr<NodeLink> > inLinks;
+		std::vector<std::unique_ptr<NodeLink> > outLinks;
 		std::vector<FunctionDefinition> functions;
 		bool canBeVert;
 		bool canBeFrag;
-	 };
+	};
+
+	struct NodeCategory
+	{
+		std::string name;
+		std::map<HashedString, std::unique_ptr<ShaderNode> > nodes;
+	};
 }

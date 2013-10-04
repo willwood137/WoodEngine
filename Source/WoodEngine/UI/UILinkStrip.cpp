@@ -1,26 +1,30 @@
 #include "../stdafx.h"
 
-#include "UIDataStrip.hpp"
+#include "UILinkStrip.hpp"
 #include "UICanvas.hpp"
-#include "UINodeSlot.hpp"
+#include "UINodeLink.hpp"
 
 namespace woodman
 {
-	UIDataStrip::UIDataStrip(std::shared_ptr<UICanvas> ParentCanvas,
-		std::shared_ptr<UIWidget> parentWidget,
+	UILinkStrip::UILinkStrip(UICanvas* ParentCanvas,
+		UIWidget* parentWidget,
 		const std::string& name,
 		HashedString uniqueID,
 		PropertyType pType,
-		unsigned int typeSize)
+		unsigned int typeSize,
+		CanvasCoordinates startPoint,
+		CanvasCoordinates endPoint)
 		:UIWidget(ParentCanvas, parentWidget, name, uniqueID),
 		m_startVector(30.0f, 0.0f),
 		m_endVector(-30.0f, 0.0f),
 		m_propertyType(pType),
-		m_typeSize(typeSize)
+		m_typeSize(typeSize),
+		m_startPoint(startPoint),
+		m_endPoint(endPoint)
 	{
 	}
 
-	void UIDataStrip::Initialize()
+	void UILinkStrip::Initialize()
 	{
 		m_lineStripShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LineShader");
 		Texture::TextureFormat tf;
@@ -32,14 +36,14 @@ namespace woodman
 		UIWidget::Initialize();
 	}
 
-	bool UIDataStrip::isPointInBounds(const Vector2f& point)
+	bool UILinkStrip::isPointInBounds(const Vector2f& point)
 	{
 		// TODO check line collision
 		//
 		return UIWidget::isPointInBounds(point);
 	}
 
-	void UIDataStrip::render(std::shared_ptr<UIMouse> currentMouse)
+	void UILinkStrip::render(UIMouse* currentMouse)
 	{
 
 		float zoomScale = m_parentCanvas->getZoomScale();
@@ -81,23 +85,33 @@ namespace woodman
 		m_lineStripShader->disableAttribute(HASHED_STRING_in_position);
 	}
 
-	void UIDataStrip::calcControlPoints()
+	void UILinkStrip::calcControlPoints()
 	{
 		m_controlPoints.clear();
 
+		if(m_startPoint.getOwningCanvas() == nullptr || m_endPoint.getOwningCanvas() == nullptr)
+			return;
+
+		CanvasCoordinates p2(m_startPoint);
+		p2.coordinatesCanvasSpace += m_startVector;
+
+		CanvasCoordinates p3(m_endPoint);
+		p3.coordinatesCanvasSpace += m_endVector;
+
 		m_controlPoints.push_back(m_startPoint);
-		m_controlPoints.push_back(m_startPoint + m_startVector);
-		m_controlPoints.push_back(m_endPoint + m_endVector);
+		m_controlPoints.push_back(p2);
+		m_controlPoints.push_back(p3);
 		m_controlPoints.push_back(m_endPoint);
 
-		Vector2f minValues(m_startPoint), maxValues(m_endPoint);
+		Vector2f minValues(m_startPoint.getScreenCoordinates()), maxValues(m_endPoint.getScreenCoordinates());
 
 		for(auto it = m_controlPoints.begin(); it != m_controlPoints.end(); ++it)
 		{
-			minValues.x = min(minValues.x, (*it).x);
-			minValues.y = min(minValues.y, (*it).y);
-			maxValues.x = max(maxValues.x, (*it).x);
-			maxValues.y = max(maxValues.y, (*it).y);
+			Vector2f screenCoords = (*it).getScreenCoordinates();
+			minValues.x = min(minValues.x, screenCoords.x);
+			minValues.y = min(minValues.y, screenCoords.y);
+			maxValues.x = max(maxValues.x, screenCoords.x);
+			maxValues.y = max(maxValues.y, screenCoords.y);
 		}
 
 		m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth);
@@ -105,112 +119,45 @@ namespace woodman
 	}
 
 
-	void UIDataStrip::updateStartPoint(const Vector2f& StartPoint)
+
+	UIWidget* UILinkStrip::getStartTarget()
+	{
+		return m_startTarget;
+	}
+
+	UIWidget* UILinkStrip::getEndTarget()
+	{
+		return m_endTarget;
+	}
+
+	void UILinkStrip::updateStartPoint(const CanvasCoordinates& StartPoint)
 	{
 		m_startPoint = StartPoint;
 		calcControlPoints();
 	}
 
-	void UIDataStrip::updateEndPoint(const Vector2f& EndPoint)
+	void UILinkStrip::updateEndPoint(const CanvasCoordinates& EndPoint)
 	{
 		m_endPoint = EndPoint;
 		calcControlPoints();
 	}
 
-	void UIDataStrip::MouseRelease(std::shared_ptr<UIMouse> currentMouse)
+	void UILinkStrip::update( UIMouse* currentMouse )
 	{
-		UIWidget::MouseRelease(currentMouse);
-
-		std::shared_ptr<UINodeSlot> slot( std::dynamic_pointer_cast<UINodeSlot>(currentMouse->hoveringWidget) );
-
-		if( slot != nullptr)
-		{
-			if(slot->getDataType()->type == m_propertyType )
-			{
-				//slot->setDataSize( m_typeSize );
-
-				//if dragging the endpoint, then should only connect to entrance slots
-				if(m_dragEndPoint)
-				{
-					if(!slot->getExitSlot())
-					{
-						m_endTarget = slot;
-						slot->setDataStrip(std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
-						UINodeSlot::PairNodeSlots(slot, std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
-					}
-				}
-				else
-				{
-					if(slot->getExitSlot())
-					{
-						m_startTarget = slot;
-						slot->setDataStrip( std::dynamic_pointer_cast<UIDataStrip>(WidgetDatabase[m_id]), std::dynamic_pointer_cast<UINodeSlot>(m_endTarget) );
-						UINodeSlot::PairNodeSlots( std::dynamic_pointer_cast<UINodeSlot>(m_endTarget), std::dynamic_pointer_cast<UINodeSlot>(m_startTarget) );
-					}
-				}
-			}
-		}
-		else
-		{
-			//which point are we dragging
-			if(m_dragEndPoint)
-			{
-				updateEndPoint(m_parentCanvas->getCurrentMouseCanvasPosition());
-			}
-			else
-			{
-				updateStartPoint(m_parentCanvas->getCurrentMouseCanvasPosition());
-			}
-		}
-
+		UIWidget::update(currentMouse);
 	}
 
-	void UIDataStrip::update(std::shared_ptr<UIMouse> currentMouse)
-	{
-		if(currentMouse->isPressed)
-		{
-			if(currentMouse->selectedWidget.get() == this)
-			{
-				//Im being dragged, update end point
-
-				std::shared_ptr<UINodeSlot> slot( std::dynamic_pointer_cast<UINodeSlot>(currentMouse->hoveringWidget) );
-	
-				if( slot != nullptr)
-				{
-
-				}
-				else
-				{
-					//which point are we dragging
-					if(m_dragEndPoint)
-					{
-						updateEndPoint(m_parentCanvas->getCurrentMouseCanvasPosition());
-					}
-					else
-					{
-						updateStartPoint(m_parentCanvas->getCurrentMouseCanvasPosition());
-					}
-				}
-			}
-		}
-	}
-
-	bool UIDataStrip::isGoodStrip()
+	bool UILinkStrip::isGoodStrip()
 	{
 		return (m_endTarget != nullptr && m_startTarget != nullptr);
 	}
 
-	void UIDataStrip::setDragEndPoint(bool dragEndPoint)
-	{
-		m_dragEndPoint = dragEndPoint;
-	}
-
-	void UIDataStrip::updateStartTarget(std::shared_ptr<UIWidget> StartTarget)
+	void UILinkStrip::updateStartTarget(UIWidget* StartTarget)
 	{
 		m_startTarget = StartTarget;
 	}
 
-	void UIDataStrip::updateEndTarget(std::shared_ptr<UIWidget> EndTarget)
+	void UILinkStrip::updateEndTarget(UIWidget* EndTarget)
 	{
 		m_endTarget = EndTarget;
 	}

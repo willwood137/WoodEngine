@@ -6,6 +6,8 @@
 #include "..\UI\UINodeBox.hpp"
 #include "..\Utility\Utility.hpp"
 
+
+
 namespace woodman
 {
 	ShaderEditor::ShaderEditor(EventSystem* eventsystem )
@@ -17,9 +19,9 @@ namespace woodman
 		m_vertexToFramentRatioGoal(1.0f),
 		m_previewMode(false)
 	{
-		m_canvases.insert(m_vertexCanvas);
-		m_canvases.insert(m_dividerCanvas);
-		m_canvases.insert(m_fragmentCanvas);
+		m_canvases.insert(std::unique_ptr<UICanvas>(m_vertexCanvas) );
+		m_canvases.insert(std::unique_ptr<UICanvas>(m_dividerCanvas) );
+		m_canvases.insert(std::unique_ptr<UICanvas>(m_fragmentCanvas) );
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------
@@ -38,53 +40,52 @@ namespace woodman
 
 
 		//create Menu
-		m_mouse->MainMenu = std::shared_ptr<MouseMenu>(new MouseMenu());
-		m_mouse->MainMenu->name = "Main Menu";
+ 		m_mouse->MainMenu = std::unique_ptr<MouseMenu>(new MouseMenu());
+ 		m_mouse->MainMenu->name = "Main Menu";
 
-		std::shared_ptr<MouseMenu> addNodeMenu(new MouseMenu());
-		addNodeMenu->name = "Add Node";
-
-		m_mouse->MainMenu->subMenus.push_back(addNodeMenu);
+ 		std::unique_ptr<MouseMenu> addNodeMenu(new MouseMenu());
+ 		addNodeMenu->name = "Add Node";
+ 
+ 		m_mouse->MainMenu->subMenus.emplace_back( std::move(addNodeMenu) );
+ 		
+ 		for(auto it = m_nodeCategories.begin(); it != m_nodeCategories.end(); ++it)
+ 		{
+ 			std::unique_ptr<MouseMenu> catMenu(new MouseMenu());
+ 			catMenu->name = it->second->name;
+ 
+ 			for(auto it2 = it->second->nodes.begin(); it2 != it->second->nodes.end(); ++it2)
+ 			{
+ 				std::unique_ptr<MouseMenu> nodeMenu(new MouseMenu());
+ 				nodeMenu->name = it2->second->name;
+ 				nodeMenu->EventToFire = "AddNode";
+ 				nodeMenu->Parameters.insertNamedData(HashedString("Category"), it2->second->category);
+ 				nodeMenu->Parameters.insertNamedData(HashedString("Name"), it2->second->name);
+ 				catMenu->subMenus.emplace_back(std::move(nodeMenu) );
+ 			}
+ 
+ 			m_mouse->MainMenu->subMenus[0]->subMenus.emplace_back(std::move(catMenu) );
+ 		}
+ 
+ 		std::unique_ptr<MouseMenu> PreviewMenu(new MouseMenu());
+ 		PreviewMenu->name = "Preview";
+ 		PreviewMenu->EventToFire = "Preview";
+ 		m_mouse->MainMenu->subMenus.emplace_back(std::move(PreviewMenu));
+ 
+ 		std::unique_ptr<MouseMenu> CompileMenu(new MouseMenu());
+ 		CompileMenu->name = "Compile";
+ 		CompileMenu->EventToFire = "Compile";
+ 		m_mouse->MainMenu->subMenus.emplace_back(std::move(CompileMenu));
+ 
+ 		std::unique_ptr<MouseMenu> SaveMenu(new MouseMenu());
+ 		SaveMenu->name = "Save";
+ 		SaveMenu->EventToFire = "SaveFile";
+ 		m_mouse->MainMenu->subMenus.emplace_back(std::move(SaveMenu) );
+ 
+ 		m_previewWidget = std::move( std::unique_ptr<ModelPreviewWidget>( new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) ) );
+ 
+ 		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
 		
-		for(auto it = m_nodeCategories.begin(); it != m_nodeCategories.end(); ++it)
-		{
-			std::shared_ptr<MouseMenu> catMenu(new MouseMenu());
-			catMenu->name = it->second->name;
-
-			for(auto it2 = it->second->nodes.begin(); it2 != it->second->nodes.end(); ++it2)
-			{
-				std::shared_ptr<MouseMenu> nodeMenu(new MouseMenu());
-				nodeMenu->name = it2->second->name;
-				nodeMenu->EventToFire = "AddNode";
-				nodeMenu->Parameters.insertNamedData(HashedString("Category"), it2->second->category);
-				nodeMenu->Parameters.insertNamedData(HashedString("Name"), it2->second->name);
-				catMenu->subMenus.push_back(nodeMenu);
-			}
-
-			m_mouse->MainMenu->subMenus[0]->subMenus.push_back(catMenu);
-		}
-
-		std::shared_ptr<MouseMenu> PreviewMenu(new MouseMenu());
-		PreviewMenu->name = "Preview";
-		PreviewMenu->EventToFire = "Preview";
-		m_mouse->MainMenu->subMenus.push_back(PreviewMenu);
-
-		std::shared_ptr<MouseMenu> CompileMenu(new MouseMenu());
-		CompileMenu->name = "Compile";
-		CompileMenu->EventToFire = "Compile";
-		m_mouse->MainMenu->subMenus.push_back(CompileMenu);
-
-		std::shared_ptr<MouseMenu> SaveMenu(new MouseMenu());
-		SaveMenu->name = "Save";
-		SaveMenu->EventToFire = "SaveFile";
-		m_mouse->MainMenu->subMenus.push_back(SaveMenu);
-
-		m_previewWidget = std::shared_ptr<ModelPreviewWidget>(new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") ) );
-
-		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
-		
-		UIWidget::RegisterUIWidget(m_previewWidget);
-		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
+		//m_dividerCanvas->RegisterUIWidget(m_previewWidget.get());
 	}
 
 
@@ -105,7 +106,7 @@ namespace woodman
 			{
 				if(m_mouse->selectedWidget != nullptr)
 				{
-					m_mouse->selectedWidget->MouseDrag(m_mouse);
+					m_mouse->selectedWidget->MouseDrag(m_mouse.get());
 				}
 			}
 		}
@@ -152,7 +153,7 @@ namespace woodman
 	{
 		if(m_previewMode)
 		{
-			m_previewWidget->render(m_mouse);
+			m_previewWidget->render(m_mouse.get());
 
 			if(m_mouse->menuOpen)
 			{
@@ -180,8 +181,8 @@ namespace woodman
 			pugi::xml_node DefinitionNode = topNode.first_child();
 			while(DefinitionNode)
 			{
-				std::shared_ptr<ShaderNode> currentDefinition = std::make_shared<ShaderNode>(ShaderNode());
-				std::shared_ptr<NodeCategory> currentCategory;
+				std::unique_ptr<ShaderNode> currentDefinition(new ShaderNode());
+				NodeCategory* currentCategory = new NodeCategory();
 
 				//is this a definition?
 				if(std::string(DefinitionNode.name()).compare(std::string("NodeDefinition") ) == 0 )
@@ -193,13 +194,12 @@ namespace woodman
 					auto it = m_nodeCategories.find(HashedString(currentDefinition->category) );
 					if( it == m_nodeCategories.end() )
 					{
-						currentCategory = std::shared_ptr<NodeCategory>(new NodeCategory() );
 						currentCategory->name = currentDefinition->category;
-						m_nodeCategories.insert(std::make_pair(HashedString(currentDefinition->category), currentCategory) );
+						m_nodeCategories.insert(std::make_pair(HashedString(currentDefinition->category), std::unique_ptr<NodeCategory>(currentCategory) ) );
 					}
 					else
 					{
-						currentCategory = ( it->second );
+						currentCategory = ( it->second.get() );
 					}
 
 					//get all the data about it
@@ -212,32 +212,30 @@ namespace woodman
 
 							def.functionCode = dataNode.first_child().value();
 
-							def.dType = std::shared_ptr<DataType>(new DataType());
-
 							std::string sType = dataNode.attribute("returnType").as_string();
 
 							if(sType.compare("vector") == 0)
 							{
-								def.dType->type = PROPERTYTYPE_VECTOR;
+								def.returnType.type = PROPERTYTYPE_VECTOR;
 							}
 							else if( sType.compare("matrix") == 0)
 							{
-								def.dType->type = PROPERTYTYPE_MATRIX;
+								def.returnType.type = PROPERTYTYPE_MATRIX;
 							}
 							else if( sType.compare("sampler2D") == 0)
 							{
-								def.dType->type = PROPERTYTYPE_SAMPLER2D;
+								def.returnType.type = PROPERTYTYPE_SAMPLER2D;
 							}
 
-							def.dType->maxSize = dataNode.attribute("returnSize").as_uint();
-							def.dType->minSize = def.dType->maxSize;
+							def.returnType.maxSize = dataNode.attribute("returnSize").as_uint();
+							def.returnType.minSize = def.returnType.maxSize;
 
 							currentDefinition->functions.push_back(def);
 
 						}
 						else if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
 						{
-							std::shared_ptr<NodeLink> newLink(new NodeLink);
+							std::unique_ptr<NodeLink> newLink(new NodeLink() );
 
 							
 							newLink->name = dataNode.attribute("name").as_string();
@@ -248,21 +246,21 @@ namespace woodman
 							{
 								if(std::string(codeNode.name()).compare(std::string("dataType")) == 0)
 								{
-									std::shared_ptr<DataType> dType(new DataType() );
+									DataType dType;
 									
 									std::string sType = codeNode.attribute("type").as_string();
 
 									if(sType.compare("vector") == 0)
 									{
-										dType->type = PROPERTYTYPE_VECTOR;
+										dType.type = PROPERTYTYPE_VECTOR;
 									}
 									else if( sType.compare("matrix") == 0)
 									{
-										dType->type = PROPERTYTYPE_MATRIX;
+										dType.type = PROPERTYTYPE_MATRIX;
 									}
 									else if( sType.compare("sampler2D") == 0)
 									{
-										dType->type = PROPERTYTYPE_SAMPLER2D;
+										dType.type = PROPERTYTYPE_SAMPLER2D;
 									}
 
 									//get sizes
@@ -273,23 +271,21 @@ namespace woodman
 
 										if(std::string(attrib.name()).compare("minSize") == 0)
 										{
-											dType->minSize = attrib.as_uint();
+											dType.minSize = attrib.as_uint();
 										}
 										else if(std::string(attrib.name()).compare("maxSize") == 0)
 										{
-											dType->maxSize = attrib.as_uint();
+											dType.maxSize = attrib.as_uint();
 										}
 										else if(std::string(attrib.name()).compare("size") == 0)
 										{
-											dType->minSize = attrib.as_uint();
-											dType->maxSize = dType->minSize;
+											dType.minSize = attrib.as_uint();
+											dType.maxSize = dType.minSize;
 										}
 										else if(std::string(attrib.name()).compare("smartSize") == 0)
 										{
 											std::string linkName = attrib.as_string();
-											std::shared_ptr<NodeLink> refLink = currentDefinition->getLinkByName(linkName.substr(1));
-											if(refLink != nullptr)
-												dType->smartSizeReferences.insert(refLink->typeData);
+											//std::shared_ptr<NodeLink> refLink = currentDefinition->getLinkByName(linkName.substr(1));
 										}
 									
 										attrib = attrib.next_attribute();
@@ -327,9 +323,9 @@ namespace woodman
 							}
 
 							if(std::string(dataNode.name()).compare(std::string("Input") ) == 0)
-								currentDefinition->inLinks.push_back(newLink);
+								currentDefinition->inLinks.emplace_back(std::move(newLink) );
 							else
-								currentDefinition->outLinks.push_back(newLink);
+								currentDefinition->outLinks.emplace_back(std::move(newLink) );
 						}
 						
 
@@ -339,7 +335,7 @@ namespace woodman
 
 				}
 
-				currentCategory->nodes.insert(std::make_pair(HashedString(currentDefinition->name), currentDefinition));
+				currentCategory->nodes.insert(std::make_pair(HashedString(currentDefinition->name), std::move(currentDefinition) ));
 
 				// go to next sibling
 				DefinitionNode = DefinitionNode.next_sibling();
@@ -352,14 +348,14 @@ namespace woodman
 
 	//-------------------------------------------------------------------------------------------------------------------
 
-	std::shared_ptr<ShaderNode> ShaderEditor::getNode( HashedString name )
+	ShaderNode* ShaderEditor::getDefinitionNode( HashedString name )
 	{
 		for( auto it = m_nodeCategories.begin(); it != m_nodeCategories.end(); ++it)
 		{
 			auto it2 = it->second->nodes.find(name);
 			if(it2 != it->second->nodes.end())
 			{
-				return (it2->second);
+				return (it2->second.get());
 			}
 		}
 
@@ -369,9 +365,9 @@ namespace woodman
 
 	//-------------------------------------------------------------------------------------------------------------------
 
-	void ShaderEditor::CreateUINodeBoxFromNodeInstance( std::shared_ptr<NodeInstance> node )
+	void ShaderEditor::CreateUINodeBoxFromNodeInstance( NodeInstance* node )
 	{
-		std::shared_ptr<UICanvas> canvasToPutOn;
+		UICanvas* canvasToPutOn;
 
 		switch( node->getShaderType() )
 		{
@@ -386,12 +382,12 @@ namespace woodman
 		
 		
 
-		std::shared_ptr<UINodeBox> NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), node->getPosition() ) );
+		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), node->getPosition() ) );
 
 		NodeBox->setCallBackRecipient(node);
 
 		//get all the nodes
-		std::map< HashedString, std::shared_ptr< NodeLinkInstance > >* links = node->getUINodeLinkInstances();
+		std::map< HashedString, std::unique_ptr< NodeLinkInstance > >* links = node->getUINodeLinkInstances();
 
 
 		std::shared_ptr<UIStyle> style = UIStyle::DefaultUIStyle;
@@ -465,55 +461,33 @@ namespace woodman
 				Offset.y -= static_cast<float>(numOutSlots) * ( style->subTitleSize + style->subTitleBuffer);
 				numOutSlots++;
 			}
-
-			
-			std::shared_ptr<UIWidget> newSlot( new UINodeSlot(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), (it->second)->exitNode, (it->second)->parentLink->typeData, it->second ) );
+			UIWidget* newSlot;
+			if((it->second)->exitNode)
+			{
+				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+			}
+			else
+			{
+				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+			}
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
 			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
 			newSlot->setLockedToParent(true);
 			newSlot->setParentOffset(Offset);
 			newSlot->Initialize();
-			UIWidget::RegisterUIWidget(newSlot);
 			NodeBox->addChild(newSlot);
 		}
-		
 
-		
 		NodeBox->calcFullCollisionBox();
 		NodeBox->Initialize();
-		UIWidget::RegisterUIWidget(NodeBox);
 		canvasToPutOn->RegisterUIWidget(NodeBox);
 
 	}
 
 	void ShaderEditor::SyncUIAndShaderInstance()
 	{
-		for(auto it = UIWidget::WidgetDatabase.begin(); it != UIWidget::WidgetDatabase.end(); ++it)
-		{
-			std::shared_ptr<UINodeSlot> asNodeSlot = std::dynamic_pointer_cast<UINodeSlot>(it->second);
 
-			if(asNodeSlot != nullptr)
-			{
-
-
-				//this is a nodeslot, if it has a partner then hook it up with the instance
-				if(asNodeSlot->getPartnerSlot() != nullptr)
-				{
-					variableInfo infoA, infoB;
-					// 					infoA.name = asNodeSlot->getUniqueID();
-					// 					infoA.typeSize = asNodeSlot->getTypeSize();
-					// 					infoA.pType = asNodeSlot->getDataType()->type;
-					// 
-					// 
-					// 					infoB.name = asNodeSlot->getPartnerSlot()->getUniqueID();
-					// 					infoB.typeSize = asNodeSlot->getPartnerSlot()->getTypeSize();
-					// 					infoB.pType = asNodeSlot->getPartnerSlot()->getDataType()->type;
-
-					m_shaderInstance.linkSlots( infoA, infoB );
-				}
-			}
-		}
 	}
 
 
@@ -554,10 +528,10 @@ namespace woodman
 		parameters.getNamedData(HashedString("name"), nodeName);
 
 
-		std::shared_ptr<ShaderNode> tempDef(getNode(HashedString(nodeName) ) );
+		ShaderNode* tempDef(getDefinitionNode(HashedString(nodeName) ) );
 
 		Vector2f canvasPos;
-		std::shared_ptr<UICanvas> curCanvas;
+		UICanvas* curCanvas;
 		SHADER_TYPE shadertype;
 		if(m_vertexToFramentRatioGoal == 1.0f )
 		{
@@ -571,10 +545,8 @@ namespace woodman
 		}
 
 		curCanvas->mapPointToCanvasSpace(m_mouse->prevRClickPosition, canvasPos);
-
-
-		
-		std::shared_ptr<NodeInstance> newNode(m_shaderInstance.CreateNewNodeInstance(tempDef, shadertype, canvasPos) );
+	
+		NodeInstance* newNode = m_shaderInstance.CreateNewNodeInstance(tempDef, shadertype, canvasPos);
 		CreateUINodeBoxFromNodeInstance(newNode);
 	}
 

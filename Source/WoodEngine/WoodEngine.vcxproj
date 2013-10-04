@@ -120,10 +120,10 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UI\UICanvas.hpp" />
     <ClInclude Include="UI\UIController.hpp" />
-    <ClInclude Include="UI\UIDataStrip.hpp" />
+    <ClInclude Include="UI\UILinkStrip.hpp" />
     <ClInclude Include="UI\UIMouse.hpp" />
     <ClInclude Include="UI\UINodeBox.hpp" />
-    <ClInclude Include="UI\UINodeSlot.hpp" />
+    <ClInclude Include="UI\UINodeLink.hpp" />
     <ClInclude Include="UI\UIStyle.hpp" />
     <ClInclude Include="UI\UIWidget.hpp" />
     <ClInclude Include="Utility\ConsoleRedirector.hpp" />
@@ -163,10 +163,10 @@
     </ClCompile>
     <ClCompile Include="UI\UICanvas.cpp" />
     <ClCompile Include="UI\UIController.cpp" />
-    <ClCompile Include="UI\UIDataStrip.cpp" />
+    <ClCompile Include="UI\UILinkStrip.cpp" />
     <ClCompile Include="UI\UIMouse.cpp" />
     <ClCompile Include="UI\UINodeBox.cpp" />
-    <ClCompile Include="UI\UINodeSlot.cpp" />
+    <ClCompile Include="UI\UINodeLink.cpp" />
     <ClCompile Include="UI\UIStyle.cpp" />
     <ClCompile Include="UI\UIWidget.cpp" />
     <ClCompile Include="Utility\ConsoleRedirector.cpp">

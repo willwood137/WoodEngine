@@ -5,11 +5,8 @@
 
 namespace woodman
 {
-
-	std::map<unsigned int, std::shared_ptr<UIWidget> > UIWidget::WidgetDatabase;
-
-	UIWidget::UIWidget(std::shared_ptr<UICanvas> ParentCanvas,
-		std::shared_ptr<UIWidget> parentWidget,
+	UIWidget::UIWidget(UICanvas* ParentCanvas,
+		UIWidget* parentWidget,
 		const std::string& name,
 		HashedString uniqueID)
 		: m_parentCanvas(ParentCanvas),
@@ -25,8 +22,8 @@ namespace woodman
 
 	}
 
-	UIWidget::UIWidget( std::shared_ptr<UICanvas> ParentCanvas,
-		std::shared_ptr<UIWidget> parentWidget,
+	UIWidget::UIWidget( UICanvas* ParentCanvas,
+		UIWidget* parentWidget,
 		const std::string& name,
 		HashedString uniqueID, 
 		const Vector2f& canvasCoordinates)
@@ -44,14 +41,23 @@ namespace woodman
 	}
 
 
-	void UIWidget::addChild(std::shared_ptr<UIWidget> child)
+	void UIWidget::addChild(UIWidget* child)
 	{
-		m_children.insert(child);
+		m_children.insert(std::unique_ptr<UIWidget>(child));
 	}
 
-	void UIWidget::removeChild(std::shared_ptr<UIWidget> child)
+	void UIWidget::removeChild(UIWidget* child)
 	{
-		m_children.erase(child);
+		for(auto it = m_children.begin(); it != m_children.end(); ++it)
+		{
+			if((*it).get() == child)
+			{
+				//we need to get rid of this
+				m_children.erase(it);
+				
+				break;
+			}
+		}
 	}
 
 	void UIWidget::move( const Vector2f& amountToMove )
@@ -81,7 +87,7 @@ namespace woodman
 		return m_fullCanvasCollisionBox;
 	}
 
-	void UIWidget::render( std::shared_ptr<UIMouse> currentMouse)
+	void UIWidget::render( UIMouse* currentMouse)
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
@@ -89,7 +95,7 @@ namespace woodman
 		}
 	}
 
-	void UIWidget::update( std::shared_ptr<UIMouse> currentMouse)
+	void UIWidget::update( UIMouse* currentMouse)
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
@@ -115,7 +121,7 @@ namespace woodman
 
 
 	//top widget is the widget colliding with the point with the lowest layer
-	void UIWidget::getTopWidgetColliding(const Vector2f& PointCanvasSpace, std::shared_ptr<UIWidget>& TopWidget)
+	void UIWidget::getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget)
 	{
 		//this has a chance of being on us
 		if( isPointInBounds(PointCanvasSpace) )
@@ -127,14 +133,14 @@ namespace woodman
 				//if its nothing set it to this
 				if(TopWidget == nullptr)
 				{
-					TopWidget = WidgetDatabase[m_id];
+					TopWidget = this;
 				}
 				else
 				{
 					//if the current topWidget is farther from the screen than this, set it to this
 					if(TopWidget->m_layer > m_layer)
 					{
-						TopWidget = WidgetDatabase[m_id];
+						TopWidget = this;
 					}
 				}
 			}
@@ -147,59 +153,28 @@ namespace woodman
 		}
 	}
 
-
-	unsigned int UIWidget::RegisterUIWidget(std::shared_ptr<UIWidget> Widget)
-	{
-		//First check if it is in database
-		if(Widget->m_id != 0)
-		{
-			//this is registered
-			WidgetDatabase[Widget->m_id] = Widget;
-			return Widget->m_id;
-		}
-		else
-		{
-			
-			bool inserted = false;
-			while(!inserted)
-			{
-				unsigned int tempNum = rand();
-				
-				//check if it exists already
-				if( WidgetDatabase.find(tempNum) == WidgetDatabase.end() )
-				{
-					WidgetDatabase.insert( std::make_pair(tempNum, Widget) );
-					Widget->m_id = tempNum;
-					inserted = true;
-					return tempNum;
-				}
-			}
-		}
-
-		return 0;
-	}
-
-	void UIWidget::UnRegisterUIWidget(std::shared_ptr<UIWidget> Widget)
-	{
-		WidgetDatabase.erase(Widget->m_id);
-	}
-
-	void UIWidget::MouseDrag( std::shared_ptr<UIMouse> currentMouse )
+	void UIWidget::MouseDrag( UIMouse* currentMouse )
 	{
 	
 	}
-	void UIWidget::MouseClick( std::shared_ptr<UIMouse> currentMouse )
+	void UIWidget::MouseClick( UIMouse* currentMouse )
 	{
 
 	}
-	void UIWidget::MouseRClick( std::shared_ptr<UIMouse> currentMouse )
+	void UIWidget::MouseRClick( UIMouse* currentMouse )
 	{
 
 	}
-	void UIWidget::MouseRelease( std::shared_ptr<UIMouse> currentMouse )
+	void UIWidget::MouseRelease( UIMouse* currentMouse )
 	{
 
 	}
 
+
+
+	UICanvas* UIWidget::getParentCanvas()
+	{
+		return m_parentCanvas;
+	}
 
 }
