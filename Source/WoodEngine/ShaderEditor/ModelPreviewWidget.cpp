@@ -102,9 +102,13 @@ namespace woodman
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix, 1 );
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_projection, projectionMatrix, 1 );
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_modelView, modelView, 1 );
+
 			float time = static_cast<float>(m_clock.getTimeSeconds());
 			m_previewShader->SetUniformFloat(HASHED_STRING_u_time, time , 1 );
-			
+
+			Vector3f lightPos( cos(time) * 100, 100.0f, sin(time) * 100 );
+			m_previewShader->SetUniformVector3(HASHED_STRING_u_light, lightPos, 1 );
+
 			Texture::ApplyTexture(m_model->getMaterialTexture("Diffuse"));
 
 			for(auto batchIt = batches->begin(); batchIt != batches->end(); ++batchIt)

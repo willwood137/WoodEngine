@@ -6,6 +6,11 @@
       <dataType type="vector" size="3"/>
       <Attribute name="position" />
     </Output>
+
+    <Output name="Normal">
+      <dataType type="vector" size="3"/>
+      <Attribute name="normal" />
+    </Output>
    
     <Output name="Texture_Coordinates">
       <dataType type="vector" size="2"/>
@@ -102,10 +107,10 @@
 
   <NodeDefinition name="WorldPosition" category ="Core" canBeVertex="true" canBeFrag="false">
 
-    <Input name="UV">
+    <Output name="WorldPosition">
       <dataType type="vector" size="3" />
       <Varying name="worldPosition" />
-    </Input>
+    </Output>
 
   </NodeDefinition>
 
@@ -118,6 +123,22 @@
 
   </NodeDefinition>
 
-
+  <NodeDefinition name="Light" category ="Core" canBeVertex="true" canBeFrag="true">
+    <Output name="LightPosition">
+      <dataType type="vector" size="3" />
+      <Uniform name="light" />
+    </Output>
+  </NodeDefinition>
+  
+  <NodeDefinition name="V_Normal" category ="Core" canBeVertex="true" canBeFrag="false">
+    <Input name="In">
+      <dataType type="vector" size="3" />
+      <Varying name="normal" />
+    </Input>
+    <Output name="Out">
+      <dataType type="vector" size="3" />
+      <Varying name="normal" />
+    </Output>
+  </NodeDefinition>
 
 </ShaderEditor>

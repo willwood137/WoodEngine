@@ -138,7 +138,7 @@ namespace woodman
 					m_varying.insert( std::make_pair(LinkIt->second->varInfo.VariableName, LinkIt->second->varInfo) );
 
 					//also use this as a starting point
-					if(!LinkIt->second->exitNode)
+					if(!LinkIt->second->exitNode && it->second->getShaderType() == SHADER_TYPE_VERTEX )
 						GLLinks.insert(LinkIt->second.get());
 				}
 				else if(!LinkIt->second->parentLink->uniformName.empty() )

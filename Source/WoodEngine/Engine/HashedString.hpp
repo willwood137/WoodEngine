@@ -57,6 +57,7 @@ namespace woodman
 	const HashedString HASHED_STRING_u_intersection("u_intersection");
 	const HashedString HASHED_STRING_u_isSelected("u_isSelected");
 	const HashedString HASHED_STRING_u_light1("u_light1");
+	const HashedString HASHED_STRING_u_light("u_light");
 	const HashedString HASHED_STRING_u_maxGrid("u_maxGrid");
 	const HashedString HASHED_STRING_u_middleLine("u_middleLine");
 	const HashedString HASHED_STRING_u_minGrid("u_minGrid");
