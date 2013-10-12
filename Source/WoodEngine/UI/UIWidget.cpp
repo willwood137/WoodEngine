@@ -8,10 +8,12 @@ namespace woodman
 	UIWidget::UIWidget(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID)
+		HashedString uniqueID,
+		float RelativeLayer)
 		: m_parentCanvas(ParentCanvas),
 		m_parentWidget(parentWidget),
 		m_name(name),
+		m_relativeLayer(RelativeLayer),
 		m_coordinates(0.0f, 0.0f),
 		m_style(UIStyle::DefaultUIStyle),
 		m_lockedToParent(false),
@@ -25,11 +27,13 @@ namespace woodman
 	UIWidget::UIWidget( UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID, 
+		HashedString uniqueID,
+		float RelativeLayer, 
 		const Vector2f& canvasCoordinates)
 		: m_parentCanvas(ParentCanvas),
 		m_parentWidget(parentWidget),
 		m_name(name),
+		m_relativeLayer(RelativeLayer),
 		m_coordinates(canvasCoordinates),
 		m_lockedToParent(false),	
 		m_canvasCollisionBoxOffset( 0.0f, 0.0f ),
@@ -87,11 +91,11 @@ namespace woodman
 		return m_fullCanvasCollisionBox;
 	}
 
-	void UIWidget::render( UIMouse* currentMouse)
+	void UIWidget::render( UIMouse* currentMouse, float ParentLayer)
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->render(currentMouse);
+			(*it)->render(currentMouse, ParentLayer - m_relativeLayer );
 		}
 	}
 
@@ -121,12 +125,14 @@ namespace woodman
 
 
 	//top widget is the widget colliding with the point with the lowest layer
-	void UIWidget::getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget)
+	void UIWidget::getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer)
 	{
 		//this has a chance of being on us
 		if( isPointInBounds(PointCanvasSpace) )
 		{
 			
+			float layer = ParentLayer - m_relativeLayer;
+
 			//is it colliding me?
 			if(m_canvasCollisionBox.isPointInsideBounds(PointCanvasSpace))
 			{
@@ -138,9 +144,10 @@ namespace woodman
 				else
 				{
 					//if the current topWidget is farther from the screen than this, set it to this
-					if(TopWidget->m_layer > m_layer)
+					if(layer < CurrentLayer )
 					{
 						TopWidget = this;
+						CurrentLayer = layer;
 					}
 				}
 			}
@@ -148,7 +155,7 @@ namespace woodman
 			//check if theres anything lower in the children
 			for(auto it = m_children.begin(); it != m_children.end(); ++it)
 			{
-				(*it)->getTopWidgetColliding(PointCanvasSpace, TopWidget);
+				(*it)->getTopWidgetColliding(PointCanvasSpace, TopWidget, layer, CurrentLayer);
 			}
 		}
 	}

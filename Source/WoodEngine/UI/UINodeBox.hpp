@@ -36,11 +36,12 @@ namespace woodman
 			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID, 
+			float RelativeLayer,
 			const Vector2f& canvasCoordinates);
 
 		virtual void Initialize();
 		virtual void move(	const Vector2f& amountToMove );
-		virtual void render(UIMouse* currentMouse);
+		virtual void render(UIMouse* currentMouse, float ParentLayer);
 
 // 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 // 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);

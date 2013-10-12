@@ -10,14 +10,14 @@
 namespace woodman
 {
 	UICanvas::UICanvas( EventSystem* eventsystem, const AABB2D& canvasScreenSpace, const std::string& backgroundTexturePath,
-		const Vector2i& backgroundResolution, Vector2i zoomBounds)
+		const Vector2i& backgroundResolution, Vector2i zoomBounds, float Layer)
 		: m_zoom(10),
 		m_center( Vector2f(0.0f, 0.0f) ),
 		m_screenSpace( canvasScreenSpace ),
 		m_backgroundTexturePath(backgroundTexturePath),
 		m_backgroundResolution(backgroundResolution),
 		m_zoomBounds(zoomBounds),
-		m_layer(0),
+		m_layer(Layer),
 		EventRecipient(eventsystem)
 	{
 		m_moveable = true;
@@ -68,6 +68,7 @@ namespace woodman
 		m_backgroundShader->load();
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 		Texture::ApplyTexture(m_backgroundTexture);
 		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_position), 
 			m_screenSpace.m_vMin.x, 
@@ -79,18 +80,19 @@ namespace woodman
 		glUniform1i(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundTexture), 0);
 		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundResolution), 1.0f / static_cast<float>(m_backgroundResolution.x), 1.0f / static_cast<float>(m_backgroundResolution.y) );
 		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
-
+		float layer = m_layer / g_MaxLayer;
+ 		m_backgroundShader->SetUniformFloat(HASHED_STRING_u_layer, layer, 1);
 		m_backgroundShader->setAttribute(HASHED_STRING_in_position, 2, GL_FLOAT, sizeof(Vector2f), 0);
 
 		glDrawArrays( GL_QUADS, 0, 4);
 
-		m_backgroundShader->disableAttribute(HASHED_STRING_in_position);
+		//m_backgroundShader->disableAttribute(HASHED_STRING_in_position);
 
 
 		//render my nodeBoxes
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->render( currentMouse );
+			(*it)->render( currentMouse, m_layer );
 		}
 	}
 
@@ -187,7 +189,7 @@ namespace woodman
 
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->getTopWidgetColliding(PointCanvasSpace, topWidget );
+			(*it)->getTopWidgetColliding(PointCanvasSpace, topWidget, m_layer, m_layer );
 		}
 		
 		return topWidget;

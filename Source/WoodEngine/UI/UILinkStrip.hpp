@@ -20,6 +20,7 @@ namespace woodman
 			UIWidget* parentWidget,
 			const std::string& name,
 			HashedString uniqueID,
+			float RelativeLayer,
 			PropertyType pType,
 			unsigned int typeSize,
 			CanvasCoordinates startPoint,
@@ -29,7 +30,7 @@ namespace woodman
 
 		//Inherited Functions
 		virtual void Initialize();
-		virtual void render(UIMouse* currentMouse);
+		virtual void render(UIMouse* currentMouse, float ParentLayer);
 		virtual void update(UIMouse* currentMouse);
 		
 		//calculates the line strip based on the start/end points/vectors
@@ -54,8 +55,8 @@ namespace woodman
 
 	private:
 
-		void renderCrossCanvas(UIMouse* currentMouse);
-		void renderIntraCanvas(UIMouse* currentMouse);
+		void renderCrossCanvas(UIMouse* currentMouse, float layer );
+		void renderIntraCanvas(UIMouse* currentMouse, float layer );
 
 
 		CanvasCoordinates m_startPoint;

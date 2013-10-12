@@ -27,7 +27,7 @@ namespace woodman
 	{
 	public:
 
-		UICanvas( EventSystem* eventsystem, const AABB2D& canvasScreenSpace, const std::string& backgroundTexturePath, const Vector2i& backgroundResolution, Vector2i zoomBounds );
+		UICanvas( EventSystem* eventsystem, const AABB2D& canvasScreenSpace, const std::string& backgroundTexturePath, const Vector2i& backgroundResolution, Vector2i zoomBounds, float Layer );
 
 		void update( UIMouse* currentMouse );
 

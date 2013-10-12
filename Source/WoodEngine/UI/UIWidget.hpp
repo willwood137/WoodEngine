@@ -31,26 +31,28 @@ namespace woodman
 		UIWidget(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID);
+			HashedString uniqueID,
+			float RelativeLayer);
 
 		UIWidget(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID, 
+			HashedString uniqueID,
+			float RelativeLayer,
 			const Vector2f& canvasCoordinates);
 
 		virtual ~UIWidget();
 
 		virtual void Initialize();
 		virtual void update( UIMouse* currentMouse);
-		virtual void render( UIMouse* currentMouse);
+		virtual void render( UIMouse* currentMouse, float ParentLayer );
 		virtual void move(	const Vector2f& amountToMove );
 		virtual void MouseClick( UIMouse* currentMouse );
 		virtual void MouseRClick( UIMouse* currentMouse );
 		virtual void MouseRelease( UIMouse* currentMouse);
 		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual bool isPointInBounds(const Vector2f& point);
-		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget);
+		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer );
 
 
 		void addChild( UIWidget* child);
@@ -118,10 +120,10 @@ namespace woodman
 			return m_uniqueID;
 		}
 
-		float getLayer()
-		{
-			return m_layer;
-		}
+// 		float getLayer()
+// 		{
+// 			return m_layer;
+// 		}
 
 		UICanvas* getParentCanvas();
 		UIWidget* getUIWidgetByID(HashedString ID);
@@ -155,7 +157,7 @@ namespace woodman
 
 		bool m_lockedToParent;
 
-		float m_layer;
+		float m_relativeLayer;
 
 		unsigned int m_id;
 		

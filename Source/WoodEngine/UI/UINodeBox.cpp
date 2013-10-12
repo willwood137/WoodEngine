@@ -15,9 +15,10 @@ namespace woodman
 	UINodeBox::UINodeBox(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID, 
+		HashedString uniqueID,
+		float RelativeLayer,
 		const Vector2f& canvasCoordinates)
-			: UIWidget(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates)
+			: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates)
 	{
 
 	}
@@ -38,9 +39,10 @@ namespace woodman
 		UIWidget::Initialize();
 	}
 
-	void UINodeBox::render( UIMouse* currentMouse )
+	void UINodeBox::render( UIMouse* currentMouse, float ParentLayer )
 	{
 		float zoomScale = m_parentCanvas->getZoomScale();
+		float layer = ParentLayer - m_relativeLayer;
 
 		//--------------------------
 		// Render the box
@@ -65,6 +67,9 @@ namespace woodman
 		glUniform2f(m_nodeBoxShader->getUniformID(HASHED_STRING_u_screenMax), CanvasScreenSpace.m_vMax.x, CanvasScreenSpace.m_vMax.y);
 		glUniform1i(m_nodeBoxShader->getUniformID(HASHED_STRING_u_borderFilter), 0);
 		glUniform2f(m_nodeBoxShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+		float mapLayer = layer / g_MaxLayer;
+		m_nodeBoxShader->SetUniformFloat(HASHED_STRING_u_layer, mapLayer, 1);
+
 
 		if( currentMouse->selectedWidget == this)
 		{
@@ -108,7 +113,7 @@ namespace woodman
 
 
 		//BASE RENDER CALL
-		UIWidget::render(currentMouse);
+		UIWidget::render(currentMouse, ParentLayer);
 	}
 
 

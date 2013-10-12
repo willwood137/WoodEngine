@@ -12,9 +12,9 @@ namespace woodman
 {
 	ShaderEditor::ShaderEditor(EventSystem* eventsystem )
 		: UIController(eventsystem),
-		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1200.0f, 900.0f) ), (TEXTURES_PATH + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15)		) ),
-		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15)			) ),
-		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(400, 900), Vector2i(10, 10)	) ),
+		m_vertexCanvas(  new UICanvas( eventsystem, AABB2D( Vector2f(0.0f, 0.0f ), Vector2f(1200.0f, 900.0f) ), (TEXTURES_PATH + "Hexagon_Background.png"), Vector2i(1024, 1024),  Vector2i(1, 15),	2000.0f	) ),
+		m_fragmentCanvas(new UICanvas( eventsystem, AABB2D( Vector2f(400.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "Frag_background.jpg"), Vector2i(700, 700), Vector2i(1, 15),	2000.0f	) ),
+		m_dividerCanvas( new UICanvas( eventsystem, AABB2D( Vector2f(1200.0f, 0.0f ), Vector2f(1600.0f, 900.0f) ), (TEXTURES_PATH + "divider_background.jpg"), Vector2i(400, 900), Vector2i(10, 10),	1000.0f ) ),
 		m_vertexToFragmentRatio(1.0f),
 		m_vertexToFramentRatioGoal(1.0f)
 	{
@@ -107,13 +107,13 @@ namespace woodman
 		LoadMenu->EventToFire = "LoadFile";
 		m_mouse->MainMenu->subMenus.emplace_back(std::move(LoadMenu) );
  
- 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01") );
-		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
- 		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
-		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
-		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
+// 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01"), 100 );
+// 		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
+//  		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
+// 		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
+// 		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
 		
-		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
+//		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
 	}
 
 
@@ -124,7 +124,7 @@ namespace woodman
 		
 		ShaderNode* tempDef(getDefinitionNode(HashedString(data->defName) ) );
 
-		UICanvas* curCanvas;
+		UICanvas* curCanvas(nullptr);
 
 
 		NodeInstance* newNode = m_shaderInstance.CreateNewNodeInstance(tempDef, data->shaderType, data->Position, data->Name);
@@ -423,7 +423,7 @@ namespace woodman
 		
 		
 
-		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), node->getPosition() ) );
+		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), 100, node->getPosition() ) );
 
 		NodeBox->setCallBackRecipient(node);
 
@@ -505,11 +505,11 @@ namespace woodman
 			UIWidget* newSlot;
 			if((it->second)->exitNode)
 			{
-				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
 			}
 			else
 			{
-				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
 			}
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );

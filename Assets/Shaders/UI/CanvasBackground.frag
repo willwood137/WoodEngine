@@ -23,7 +23,7 @@ void main(void)
 	else
 		value = 1.0;
 	outputColor = ( (1 - value) * vec4(0.0, 1.0, 1.0, 1.0) ) + ( (value) * texture2D(u_backgroundTexture, v_uv ) );
-
+	//outputColor = (1.0, 1.0, 1.0, 1.0);
 // 	if(mouseDistance > 20)
 // 		outputColor = texture2D(u_backgroundTexture, v_uv );
 // 	else

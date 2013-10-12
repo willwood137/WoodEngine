@@ -14,11 +14,12 @@ namespace woodman
 		UIWidget* parentWidget,
 		const std::string& name,
 		HashedString uniqueID, 
+		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		bool outLink,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates),
+		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates),
 		m_isOutLink(outLink),
 		m_parentDataType(dType),
 		m_callBackRecipient(callbackRecipient)
@@ -31,9 +32,10 @@ namespace woodman
 		m_slotShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LinkNode");
 	}
 
-	void UINodeLink::render(UIMouse* currentMouse)
+	void UINodeLink::render(UIMouse* currentMouse, float ParentLayer )
 	{
 		float zoomScale = m_parentCanvas->getZoomScale();
+		float layer = ParentLayer - m_relativeLayer;
 
 		ALIGNMENT ali;
 		float boxOffset;
@@ -75,11 +77,15 @@ namespace woodman
 		m_slotShader->load();
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 		glDisable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_position), LinkBoxMinScreen.x, LinkBoxMinScreen.y );
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_size), LinkBoxSizeScreen.x, LinkBoxSizeScreen.y);
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_screenMin), screenSpaceBounds.m_vMin.x, screenSpaceBounds.m_vMin.y  );
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_screenMax), screenSpaceBounds.m_vMax.x, screenSpaceBounds.m_vMax.y);
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+
+		float glLayer = layer / g_MaxLayer;
+		m_slotShader->SetUniformFloat(HASHED_STRING_u_layer, glLayer, 1);
 
 		if(currentMouse->selectedWidget == this)
 		{
@@ -105,7 +111,7 @@ namespace woodman
 
 		
 
-		UIWidget::render(currentMouse);
+		UIWidget::render(currentMouse, layer);
 	}
 
 
@@ -194,30 +200,33 @@ namespace woodman
 	UIOutLink::UIOutLink(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID, 
+		HashedString uniqueID,
+		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates, true, dType, callbackRecipient )
+		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates, true, dType, callbackRecipient )
 	{
 
 	}
 
-	void UIOutLink::render(UIMouse* currentMouse)
+	void UIOutLink::render(UIMouse* currentMouse, float ParentLayer)
 	{
-		UINodeLink::render(currentMouse);
+		UINodeLink::render(currentMouse, ParentLayer );
+
+		float layer = ParentLayer - m_relativeLayer;
 
 		if(m_draggingStrip != nullptr)
 		{
 			if(DoIOwnStrip(m_draggingStrip))
 			{
-				m_draggingStrip->render(currentMouse);
+				m_draggingStrip->render(currentMouse, layer);
 			}
 		}
 
 		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
 		{
-			(*it)->render(currentMouse);
+			(*it)->render(currentMouse, layer);
 		}
 	}
 
@@ -239,6 +248,7 @@ namespace woodman
 				this, 
 				"lineSTRIP",
 				HashedString("LinkStrip"),
+				-1.0f,
 				m_parentDataType->type,
 				m_dataTypeSize, 
 				startCoords,
@@ -404,31 +414,34 @@ namespace woodman
 	UIInLink::UIInLink(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID, 
+		HashedString uniqueID,
+		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, canvasCoordinates, false, dType, callbackRecipient )
+		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates, false, dType, callbackRecipient )
 	{
 
 	}
 
-	void UIInLink::render(UIMouse* currentMouse)
+	void UIInLink::render(UIMouse* currentMouse, float ParentLayer)
 	{
-		UINodeLink::render(currentMouse);
+		UINodeLink::render(currentMouse, ParentLayer);
+
+		float layer = ParentLayer - m_relativeLayer;
 
 		if(m_draggingStrip != nullptr)
 		{
 			if(DoIOwnStrip(m_draggingStrip))
 			{
-				m_draggingStrip->render(currentMouse);
+				m_draggingStrip->render(currentMouse, layer);
 			}
 		}
 
 		if(m_linkStrip != nullptr)
 		{
 			if(DoIOwnStrip(m_linkStrip))
-				m_linkStrip->render(currentMouse);
+				m_linkStrip->render(currentMouse, layer);
 		}
 	}
 
@@ -462,6 +475,7 @@ namespace woodman
 				this, 
 				"lineSTRIP",
 				HashedString("LinkStrip"),
+				-1.0f,
 				m_parentDataType->type,
 				m_dataTypeSize, 
 				startCoords,
@@ -596,6 +610,7 @@ namespace woodman
 			this, 
 			"lineSTRIP",
 			HashedString("LinkStrip"),
+			-1.0f, 
 			m_parentDataType->type,
 			m_dataTypeSize, 
 			startCoords,

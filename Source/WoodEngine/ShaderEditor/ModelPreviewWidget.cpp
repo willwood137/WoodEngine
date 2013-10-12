@@ -5,8 +5,8 @@
 
 namespace woodman
 {
-	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID )
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID),
+	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID, float RelativeLayer )
+		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
 		m_camera(new Camera(Vector3f(0.0f, 50.0f, -200.0f) ) ),
 		m_clock(HashedString("PreviewClock"), .2, Clock::MasterClock())
 	{
@@ -80,7 +80,7 @@ namespace woodman
 
 			for(size_t i = 0; i < 16; ++i)
 			{
-				projectionMatrix[i] = projection[i];
+				projectionMatrix[i] = static_cast<float>(projection[i]);
 			}
 			Matrix4f modelMatrix, viewMatrix;
 
@@ -166,8 +166,8 @@ namespace woodman
 		Vector2f screenPos;
 		m_parentCanvas->mapPointToScreenSpace(m_coordinates, screenPos);
 
-		Font::DrawTextToScreen(ss.str(), m_style->TitleTextFont, RGBA(1.0, 0.0, 0.0, .8), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
-		Font::DrawTextToScreen(ss2.str(), m_style->TitleTextFont, RGBA(1.0, 0.0, 0.0, .8), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
+		Font::DrawTextToScreen(ss.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
+		Font::DrawTextToScreen(ss2.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
 
 
 	}

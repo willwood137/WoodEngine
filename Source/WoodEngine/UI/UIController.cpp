@@ -89,10 +89,10 @@ namespace woodman
 				{
 					HighestFound = tempWidget;
 				}
-				else if(HighestFound->getLayer() > tempWidget->getLayer())
-				{
-					HighestFound = tempWidget;
-				}
+// 				else if(HighestFound->getLayer() > tempWidget->getLayer())
+// 				{
+// 					HighestFound = tempWidget;
+// 				}
 			}
 		}
 
