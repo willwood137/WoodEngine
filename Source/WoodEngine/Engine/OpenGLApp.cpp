@@ -120,9 +120,7 @@ namespace woodman
 		m_running(true),
 		m_appClock( HashedString("AppClock"), 1.0, &m_eventSystem ),
 		m_remainingUpdateTime(0.0),
-		m_devConsole(&m_eventSystem, "Engine\\ConsoleCommands.xml"),
-		m_shader("ModelShader"),
-		m_shaderEditor(&m_eventSystem)
+		m_devConsole(&m_eventSystem, "Engine\\ConsoleCommands.xml")
 	{
 		s_openGLAppInstance = this;
 		const size_t MAX_LOADSTRING = 100;
@@ -189,13 +187,9 @@ namespace woodman
 
 		// Event System
 		//
-		m_eventSystem.RegisterObjectForEvent( this, &OpenGLApp::keyDown,"KeyDown" );
-	
-		m_font = Font::CreateOrGetFont( HASHED_STRING_tahoma );
 		Font::LoadShader();
  		m_devConsole.initialize();
 		Shader::LoadQuadBuffer();
- 		m_shaderEditor.Initialize( );
 
 
 
@@ -234,7 +228,18 @@ namespace woodman
 
 				//update timing
 				Clock::MasterClock()->update();
+
+				m_framDeltaTime = m_appClock.getLastTimeDeltaSeconds();
+				double FrameStartTime = m_appClock.GetAbsoluteTimeSeconds();
+				m_remainingUpdateTime += m_framDeltaTime;
+
+
 				updateFrame();
+				preRender();
+				render();
+				postRender();
+
+				while(m_appClock.GetAbsoluteTimeSeconds() - FrameStartTime < 0.016);
 			}
 
 		}
@@ -244,68 +249,40 @@ namespace woodman
 	void OpenGLApp::updateFrame()
 	{
 
-		// TODO improve timing system
-
-		double DeltaTime = m_appClock.getLastTimeDeltaSeconds();
-		double FrameStartTime = m_appClock.GetAbsoluteTimeSeconds();
-
-
-		m_remainingUpdateTime += DeltaTime;
 		
 		POINT mousePos;
 		GetCursorPos( &mousePos );
 		ScreenToClient(m_hWnd, &mousePos);
 
-		Vector2f mouseScreenPos(static_cast<float>(mousePos.x), ScreenSize.y - static_cast<float>(mousePos.y) - 42.0f);
-		m_shaderEditor.update(mouseScreenPos);
-
-
+		m_mouseScreenPos = Vector2f(static_cast<float>(mousePos.x), ScreenSize.y - static_cast<float>(mousePos.y) - 42.0f);
 		m_remainingUpdateTime -= .016;
+	}
 
-
-
+	void OpenGLApp::preRender()
+	{
+// 		RECT clientRect;
+// 		GetClientRect( m_hWnd, &clientRect );
+// 		const double aspectRatio = static_cast< float >(clientRect.right ) / clientRect.bottom;
+// 		glMatrixMode( GL_PROJECTION );
+// 		glLoadIdentity();
+// 		gluPerspective( 45., aspectRatio, 1, 1200. );
+		
 		// Clear.
 		//
+		glClearColor(.04f, .08f, .04f, 1.0f);
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	}
 
-		// Setup scene-wide transformations.
-		//
-		RECT clientRect;
-		GetClientRect( m_hWnd, &clientRect );
-		const double aspectRatio = static_cast< float >(clientRect.right ) / clientRect.bottom;
- 		glMatrixMode( GL_PROJECTION );
- 		glLoadIdentity();
- 		gluPerspective( 45., aspectRatio, 1, 1200. );
+	void OpenGLApp::render()
+	{
 
+	}
 
-		//render
-		//
-		{
-
-			
-			glClearColor(.04f, .08f, .04f, 1.0f);
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-			//drawLineTest();
-
-			//drawOrigin(&m_camera);
-
-			
-			Vector2f pos(-.99f, .60f);
-			float diffLength = -.05f;
-			float diff = 0.f;
-			std::stringstream ss;
-			
-			ss << "Testing";
-			//Font::DrawTextToScreen("TESTING abcdefg", m_font, RGBA(1.0f, 0.0f, 0.0f, 1.0f), Vector2f(100.0f, 100.0f), 100.0f, ALIGNMENT_LEFT);
-			 			
-
-			m_shaderEditor.render();
-		}
-
+	void OpenGLApp::postRender()
+	{
 		// Present
 		//
 		SwapBuffers( m_hdcWindow );
-
-		while(m_appClock.GetAbsoluteTimeSeconds() - FrameStartTime < 0.016);
 	}
 
 	LRESULT CALLBACK OpenGLApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -463,26 +440,6 @@ namespace woodman
 
 		ReleaseDC( m_hWnd, m_hdcWindow );
 		m_hdcWindow = NULL;
-
-	}
-
-	//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	void OpenGLApp::keyDown( NamedPropertyContainer& parameters )
-	{
-		unsigned int key;
-		parameters.getNamedData(HashedString("Key"), key);
-
-		switch( key )
-		{
-		case 'F':
-			clearAllProfileSections();
-			break;
-		case 'Q':
-			m_running = false;
-			break;
-
-		}
 
 	}
 

@@ -26,40 +26,41 @@ namespace woodman
 		
 
 		OpenGLApp( std::shared_ptr<HINSTANCE> hInstance, int nCmdShow, Vector2i size );
-		~OpenGLApp();
+		virtual ~OpenGLApp();
 
 
 		int runMainLoop();
-		void SpawnProjectile( NamedPropertyContainer& parameters );
-		void keyDown( NamedPropertyContainer& parameters );
 
 		static OpenGLApp* s_openGLAppInstance;
 
-	private:
+	protected:
 
 		HWND m_hWnd;
 		HACCEL m_hAccelTable;
 		HGLRC m_renderingContext;
 		HDC m_hdcWindow;
 		Vector2i m_windowSize;
+
 		bool m_running;
 		EventSystem m_eventSystem;
 		Clock m_appClock;
-		std::shared_ptr<Font> m_font;
 		DevConsole m_devConsole;
-		ShaderEditor m_shaderEditor;
 
-
-		MetaShader m_shader;
-		
 		double m_remainingUpdateTime;
-		
-		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		double m_framDeltaTime;
+		Vector2f m_mouseScreenPos;
 
-		LRESULT CALLBACK HandleWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		void initializeOpenGL();
+		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		virtual LRESULT CALLBACK HandleWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+		virtual void initializeOpenGL();
 		void shutdownOpenGL();
-		void updateFrame();
+
+		virtual void updateFrame();
+		virtual void preRender();
+		virtual void render();
+		virtual void postRender();
+
 	};
 
 

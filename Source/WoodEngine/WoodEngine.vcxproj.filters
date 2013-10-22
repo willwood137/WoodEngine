@@ -169,6 +169,9 @@
     <ClInclude Include="UI\UILinkStrip.hpp">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderEditor\ShaderEditorApp.hpp">
+      <Filter>ShaderEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
@@ -257,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="UI\UILinkStrip.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor\ShaderEditorApp.cpp">
+      <Filter>ShaderEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

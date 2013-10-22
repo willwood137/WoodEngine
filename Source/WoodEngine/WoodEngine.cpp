@@ -11,6 +11,7 @@
 
 #include "resource.h"
 #include "Engine\OpenGLApp.hpp"
+#include "ShaderEditor\ShaderEditorApp.hpp"
 #include "Math\Vector2.hpp"
 #include "Utility\ConsoleRedirector.hpp"
 #include "Engine\Clock.hpp"
@@ -32,9 +33,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	try
 	{
 		
-		woodman::OpenGLApp myOpenGLApp( std::make_shared<HINSTANCE>(hInstance), nCmdShow, ScreenSize );
+		std::shared_ptr<woodman::OpenGLApp> myOpenGLApp( new woodman::ShaderEditorApp(std::make_shared<HINSTANCE>(hInstance), nCmdShow, ScreenSize ) );
 
-		resultCode = myOpenGLApp.runMainLoop();
+		resultCode = myOpenGLApp->runMainLoop();
 	}
 	catch( ... )
 	{

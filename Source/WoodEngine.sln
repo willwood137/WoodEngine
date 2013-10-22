@@ -3,16 +3,50 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WoodEngine", "WoodEngine\WoodEngine.vcxproj", "{E22EBEB6-A7CB-40A7-9765-29E4034F7034}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShaderNodeDefinitionCreator", "ShaderNodeDefinitionCreator\ShaderNodeDefinitionCreator.csproj", "{43D29F81-103A-4DBD-A3D2-E0746EE7D181}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FontConverter", "FontConverter\FontConverter.vcxproj", "{6E263D0F-0C74-4DF8-A57B-87F729B59E11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Debug|Win32.Build.0 = Debug|Win32
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Release|Win32.ActiveCfg = Release|Win32
 		{E22EBEB6-A7CB-40A7-9765-29E4034F7034}.Release|Win32.Build.0 = Release|Win32
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{43D29F81-103A-4DBD-A3D2-E0746EE7D181}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Debug|Win32.Build.0 = Debug|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Release|Win32.ActiveCfg = Release|Win32
+		{6E263D0F-0C74-4DF8-A57B-87F729B59E11}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -114,6 +114,7 @@
     <ClInclude Include="ShaderEditor\ModelPreviewWidget.hpp" />
     <ClInclude Include="ShaderEditor\NodeInstance.hpp" />
     <ClInclude Include="ShaderEditor\ShaderEditor.hpp" />
+    <ClInclude Include="ShaderEditor\ShaderEditorApp.hpp" />
     <ClInclude Include="ShaderEditor\ShaderInstance.hpp" />
     <ClInclude Include="ShaderEditor\ShaderNode.hpp" />
     <ClInclude Include="stdafx.h" />
@@ -154,6 +155,7 @@
     <ClCompile Include="ShaderEditor\ModelPreviewWidget.cpp" />
     <ClCompile Include="ShaderEditor\NodeInstance.cpp" />
     <ClCompile Include="ShaderEditor\ShaderEditor.cpp" />
+    <ClCompile Include="ShaderEditor\ShaderEditorApp.cpp" />
     <ClCompile Include="ShaderEditor\ShaderInstance.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
