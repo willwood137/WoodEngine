@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<Shader_WorkFile name="">
+  <Node Name="TextureSampler_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="TextureSampler" x_Position="-331.25" y_Position="157.5">
+    <Link Name="TextureSampler_0_Texture">
+      <Partner PartnerNodeName="Diffuse_0" PartnerLinkName="Diffuse_0_diffuse" />
+    </Link>
+    <Link Name="TextureSampler_0_UV">
+      <Partner PartnerNodeName="Fragment_UV_0" PartnerLinkName="Fragment_UV_0_UV" />
+    </Link>
+  </Node>
+  <Node Name="ModelViewProjection_Matrix_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="ModelViewProjection_Matrix" x_Position="-774" y_Position="-182" />
+  <Node Name="Diffuse_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Diffuse" x_Position="-638.75" y_Position="233.75" />
+  <Node Name="OutputColor_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="OutputColor" x_Position="76.2501" y_Position="195">
+    <Link Name="OutputColor_0_OutputColor">
+      <Partner PartnerNodeName="TextureSampler_0" PartnerLinkName="TextureSampler_0_Color" />
+    </Link>
+  </Node>
+  <Node Name="Standard_Vertex_Info_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Standard_Vertex_Info" x_Position="-675" y_Position="168" />
+  <Node Name="Transform_Vector_0" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-170.083" y_Position="-108.472">
+    <Link Name="Transform_Vector_0_Matrix">
+      <Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_Model" />
+    </Link>
+    <Link Name="Transform_Vector_0_Vector">
+      <Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
+    </Link>
+  </Node>
+  <Node Name="Transform_Vector_1" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-151.393" y_Position="105.754">
+    <Link Name="Transform_Vector_1_Matrix">
+      <Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_MVP" />
+    </Link>
+    <Link Name="Transform_Vector_1_Vector">
+      <Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
+    </Link>
+  </Node>
+  <Node Name="Transform_Vector_2" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="167.079" y_Position="1011.94" />
+  <Node Name="UV_To_Fragment_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="UV_To_Fragment" x_Position="-224.111" y_Position="368.889">
+    <Link Name="UV_To_Fragment_0_UV">
+      <Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Texture_Coordinates" />
+    </Link>
+  </Node>
+  <Node Name="Fragment_UV_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Fragment_UV" x_Position="-613.75" y_Position="-27.5" />
+  <Node Name="Final_Position_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Final_Position" x_Position="330.829" y_Position="-36.8055">
+    <Link Name="Final_Position_0_ScreenPosition">
+      <Partner PartnerNodeName="Transform_Vector_1" PartnerLinkName="Transform_Vector_1_OutVector" />
+    </Link>
+    <Link Name="Final_Position_0_worldPosition">
+      <Partner PartnerNodeName="Transform_Vector_0" PartnerLinkName="Transform_Vector_0_OutVector" />
+    </Link>
+  </Node>
+</Shader_WorkFile>

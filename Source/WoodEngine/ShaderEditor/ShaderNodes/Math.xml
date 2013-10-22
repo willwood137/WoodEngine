@@ -101,41 +101,8 @@ vec4 Division( vec4 numerator, vec4 denominator )
       <dataType type="float" size="1"/>
     </Input>
     <Output name="OutVector">
-      <dataType type="vector" smartSize="$Vector"/>
-      <Shader_Code>mix( $A , $B, $Interpolation )</Shader_Code>
+      <dataType type="vector" size="4"/>
+      <Shader_Code>mix( $A , $B , $Interpolation )</Shader_Code>
     </Output>
   </NodeDefinition>
-
-  <NodeDefinition name="Interpolate_Scalar" category="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="A">
-      <dataType type="vector" size="1"/>
-    </Input>
-    <Input name="B">
-      <dataType type="vector" size="1"/>
-    </Input>
-    <Input name="Interpolation">
-      <dataType type="float" size="1"/>
-    </Input>
-    <Output name="OutScalar">
-      <dataType type="vector" size="1"/>
-      <Shader_Code>mix( $A , $B, $Interpolation )</Shader_Code>
-    </Output>
-  </NodeDefinition>
-
-  <NodeDefinition name="Interpolate_Vector2" category="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="A">
-      <dataType type="vector" size="2"/>
-    </Input>
-    <Input name="B">
-      <dataType type="vector" size="2"/>
-    </Input>
-    <Input name="Interpolation">
-      <dataType type="float" size="1"/>
-    </Input>
-    <Output name="OutVector">
-      <dataType type="vector" size="2"/>
-      <Shader_Code>mix( $A , $B, $Interpolation )</Shader_Code>
-    </Output>
-  </NodeDefinition>
-  
 </ShaderEditor>

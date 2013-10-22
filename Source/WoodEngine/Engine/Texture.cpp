@@ -169,7 +169,22 @@ namespace woodman
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_format.MagFilter );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_format.MinFilter );	
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_format.WrapS );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_format.WrapT );	
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_format.WrapT );
+
+		GLuint colorType;
+
+		switch(n)
+		{
+		case 3:
+			colorType = GL_RGB;
+			break;
+		case 4:
+		default:
+			colorType = GL_RGBA;
+			break;
+			
+		}
+
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
 		if(m_format.MipMapTexture)

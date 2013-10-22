@@ -85,6 +85,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinPacker.cpp" />
     <ClCompile Include="FontConverter.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
