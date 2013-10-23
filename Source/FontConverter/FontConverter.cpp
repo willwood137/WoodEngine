@@ -3,7 +3,9 @@
 
 #include "stdafx.h"
 
+#include "EasyBMP.h"
 #include "BinPacker.hpp"
+#include "lodepng.h"
 
 #include <iostream>
 #include <string>
@@ -33,11 +35,20 @@ void get_SDF_radial(
 	unsigned char *fontmap,
 	int locationX, 
 	int locationY,
+	int originalWidth,
+	int originalHeight,
 	const sdf_glyph& glyphData,
 	int FullTextureSize,
 	unsigned char& signedDistance,
 	unsigned char& xDirection,
 	unsigned char& yDirection);
+
+int save_png_SDFont(
+	const char* orig_filename,
+	const char* font_name,
+	int img_width, int img_height,
+	const std::vector< unsigned char > &img_data,
+	const std::vector< sdf_glyph > &packed_glyphs );
 
 int scaler = 16;
 
@@ -146,6 +157,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		int glyph_index = FT_Get_Char_Index( ft_face, render_list[char_index] );
 		if( glyph_index )
 		{
+			
+
 			ft_err = FT_Load_Glyph( ft_face, glyph_index, 0 );
 			if( !ft_err )
 			{
@@ -158,6 +171,52 @@ int _tmain(int argc, _TCHAR* argv[])
 					int p = ft_face->glyph->bitmap.pitch;
 
 					unsigned char *buf = ft_face->glyph->bitmap.buffer;
+
+					char* filename = new char[50];
+					sprintf(filename, "c%d.bmp", glyph_index);
+
+					//std::ofstream outfile(filename, std::ofstream::binary);
+					//outfile.write(fontmap, glyphData.width * glyphData.height);
+
+					int sw = widthOriginal + scaler * 4;
+					int sh = heightOriginal + scaler * 4;
+					unsigned char *smooth_buf = new unsigned char[sw*sh];
+					for( int i = 0; i < sw*sh; ++i )
+					{
+						smooth_buf[i] = 0;
+					}
+
+					//	copy the glyph into the buffer to be smoothed
+					for( int j = 0; j < heightOriginal; ++j )
+					{
+						for( int i = 0; i < widthOriginal; ++i )
+						{
+							smooth_buf[scaler*2+i+(j+scaler*2)*sw] = 255 * ((buf[j*p+(i>>3)] >> (7 - (i & 7))) & 1);
+						}
+					}
+
+// 					BMP Image;
+// 					Image.SetSize(sw, sh);
+// 					//Image.SetBitDepth(32);
+// 
+// 					if(heightOriginal > 0)
+// 					{
+// 						for(int j = 0; j < sh; ++j)
+// 						{
+// 							for(int i = 0; i < sw; ++i)
+// 							{
+// 								RGBApixel p;
+// 								int pLoc = i + j*sw;
+// 								//p.Red = 255 * ( buf[ (i + j * widthOriginal ) / 4] & ( 1 << ( ( i + j*widthOriginal) % 4 ) ) );
+// 								p.Red = smooth_buf[pLoc];
+// 								p.Green = p.Red;
+// 								p.Blue = p.Red;
+// 								p.Alpha = p.Red;
+// 								Image.SetPixel(i, j, p);
+// 							}
+// 						}
+// 						Image.WriteToFile(filename);
+// 					}
 
 					int sdfWidth = all_glyphs[packed_glyph_index].width;
 					int sdfHeight = all_glyphs[packed_glyph_index].height;
@@ -174,9 +233,11 @@ int _tmain(int argc, _TCHAR* argv[])
 							//get_SDF
 							unsigned char signedDistance, xDirection, yDirection;
 
-							get_SDF_radial( buf, 
-								i * scaler, 
-								j * scaler,
+							get_SDF_radial( smooth_buf, 
+								i * scaler + (scaler >>1), 
+								j * scaler + (scaler >>1),
+								sw,
+								sh,
 								all_glyphs[packed_glyph_index],
 								texture_size * scaler, 
 								signedDistance, 
@@ -185,8 +246,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 							signedData[pixelID] = xDirection;
 							signedData[pixelID + 1] = yDirection;
-							signedData[pixelID + 2] = 0;
-							signedData[pixelID + 3] = signedDistance;
+							signedData[pixelID + 2] = signedDistance;
+							signedData[pixelID + 3] = 255;
 
 						}
 					}
@@ -198,12 +259,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-
-
-
-
-
-
+	save_png_SDFont(
+		FilePath.c_str(), ft_face->family_name,
+		texture_size, texture_size,
+		signedData, all_glyphs );
 
 	return 0;
 }
@@ -234,24 +293,20 @@ bool gen_pack_list(
 				{
 					sdf_glyph add_me;
 					//	we have the glyph, already rendered, get the data about it
-					int widthOriginal = ft_face->glyph->bitmap.width;
-					int heightOriginal = ft_face->glyph->bitmap.rows;
+					int w = ft_face->glyph->bitmap.width;
+					int h = ft_face->glyph->bitmap.rows;
 					//	oversize the holding buffer so I can smooth it!
-					//int sw = w + scaler * 4;
-					//int sh = h + scaler * 4;
+					int sw = w + scaler * 4;
+					int sh = h + scaler * 4;
 					//	do the SDF
-					//int sdfw = sw / scaler;
-					//int sdfh = sh / scaler;
-					//					rectangle_info.push_back( sdfw );
-					//				rectangle_info.push_back( sdfh );
+					int sdfw = sw / scaler;
+					int sdfh = sh / scaler;
+					rectangle_info.push_back( sdfw );
+					rectangle_info.push_back( sdfh );
 					//	add in the data I already know
 					add_me.ID = render_list[char_index];
-
-					add_me.width = widthOriginal / scaler;
-					add_me.height = heightOriginal / scaler;
-					rectangle_info.push_back( add_me.width );
-					rectangle_info.push_back( add_me.height );
-
+					add_me.width = sdfw;
+					add_me.height = sdfh;
 					//	these need to be filled in later (after packing)
 					add_me.x = -1;
 					add_me.y = -1;
@@ -294,6 +349,8 @@ void get_SDF_radial(
 	unsigned char *fontmap,
 	int locationX, 
 	int locationY,
+	int originalWidth,
+	int originalHeight,
 	const sdf_glyph& glyphData,
 	int FullTextureSize,
 	unsigned char& signedDistance,
@@ -305,7 +362,7 @@ void get_SDF_radial(
 	bool inside = false;
 
 
-	unsigned int location = locationX + locationY * glyphData.width;
+	unsigned int location = locationX + locationY * originalWidth;
 	value = fontmap[location];
 
 	unsigned char pixelValue = value;
@@ -313,11 +370,12 @@ void get_SDF_radial(
 	if(value > 0)
 		inside = true;
 
+	
 	//now check for the closest value
-	int maxRadius = std::max(glyphData.height, glyphData.width) * 2;
+	int maxRadius = scaler * 16;
 
 	float shortestDistance = static_cast<float>(maxRadius);
-	int shortestX, shortestY;
+	int shortestX = 0, shortestY = 0;
 
 	bool thresholdFound = false;
 
@@ -328,7 +386,8 @@ void get_SDF_radial(
 		//starting from left check spiral
 		for(int x = -radius; x <= radius; ++x )
 		{
-			if(locationX + x >= 0 && locationX + x < glyphData.width)
+			
+			if(locationX + x >= 0 && locationX + x < originalWidth)
 			{
 				int y = radius - abs(x);
 				float distance = sqrt( static_cast<float>( x * x + y * y) );
@@ -336,11 +395,12 @@ void get_SDF_radial(
 				{
 					MorePossibleShorterDistances = true;
 				}
-				if( (locationY + y) < glyphData.height)
+
+				if( (locationY + y) < originalHeight)
 				{
 					//check top
 
-					unsigned int testLocation = (locationX + x) + (locationY + y ) * glyphData.height;
+					unsigned int testLocation = (locationX + x) + (locationY + y ) * originalWidth;
 					value = fontmap[testLocation];
 					if(value != pixelValue)
 					{
@@ -359,18 +419,19 @@ void get_SDF_radial(
 				{
 					if( locationY - y >= 0 )
 					{
-						unsigned int testLocation = (locationX + x) + (locationY + y ) * glyphData.height;
+						unsigned int testLocation = (locationX + x) + (locationY - y ) * originalWidth;
 						value = fontmap[testLocation];
-					}
-					if(value != pixelValue)
-					{
-						thresholdFound = true;
-						//we found a break!
-						if(distance < shortestDistance)
+					
+						if(value != pixelValue)
 						{
-							shortestDistance = distance;
-							shortestX = x;
-							shortestY = -y;
+							thresholdFound = true;
+							//we found a break!
+							if(distance < shortestDistance)
+							{
+								shortestDistance = distance;
+								shortestX = x;
+								shortestY = -y;
+							}
 						}
 					}
 				}
@@ -384,15 +445,15 @@ void get_SDF_radial(
 	}
 
 	//shortest distance is in pixels, convert that to [0, 1] for the whole texture
-	float distanceTexture = shortestDistance / static_cast<float>(FullTextureSize);
+	float distanceTexture = std::max( 0.0f, std::min( 1.0f, (shortestDistance / static_cast<float>(maxRadius) ) ) );
 
 	if(inside)
-		signedDistance = (distanceTexture + 1.0f )* .5f;
+		signedDistance = ( (distanceTexture + 1.0f ) * .5f ) * 255.0f;
 	else
-		signedDistance = (distanceTexture * .5f);
+		signedDistance = ( (1.0f - distanceTexture) * .5f) * 255.0f;
 
-	float x = abs(shortestX - locationX);
-	float y = abs(shortestY - locationY);
+	float x = shortestX;
+	float y = shortestY;
 
 
 	//normalize distance vector
@@ -412,7 +473,40 @@ void get_SDF_radial(
 		}
 	}
 
-	xDirection = x;
-	yDirection = y;
+	xDirection = 255 * ( (x + 1) * .5 );
+	yDirection = 255 * ( (y + 1) * .5 );
 
+}
+
+int save_png_SDFont(
+	const char* orig_filename,
+	const char* font_name,
+	int img_width, int img_height,
+	const std::vector< unsigned char > &img_data,
+	const std::vector< sdf_glyph > &packed_glyphs )
+{
+	//	save my image
+	int fn_size = strlen( orig_filename ) + 100;
+	char *fn = new char[ fn_size ];
+	sprintf( fn, "s_sdf.png", orig_filename );
+	printf( "'%s'\n", fn );
+	LodePNG::Encoder encoder;
+	encoder.addText("Comment", "Signed Distance Font: lonesock tools, Modified by William Wood");
+	encoder.getSettings().zlibsettings.windowSize = 512; //	faster, not much worse compression
+	std::vector<unsigned char> buffer;
+
+	encoder.encode( buffer, img_data.empty() ? 0 : &img_data[0], img_width, img_height );
+	LodePNG::saveFile( buffer, fn );
+	
+	//	now save the acompanying info
+	sprintf( fn, "_sdf.xml", orig_filename );
+	for( unsigned int i = 0; i < packed_glyphs.size(); ++i )
+	{
+			
+			
+			
+	
+	}
+	delete [] fn;
+	return 0;
 }

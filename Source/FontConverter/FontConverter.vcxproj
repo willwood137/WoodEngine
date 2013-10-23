@@ -86,7 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinPacker.cpp" />
+    <ClCompile Include="EasyBMP.cpp" />
     <ClCompile Include="FontConverter.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
