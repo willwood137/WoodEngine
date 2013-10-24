@@ -107,13 +107,13 @@ namespace woodman
 		LoadMenu->EventToFire = "LoadFile";
 		m_mouse->MainMenu->subMenus.emplace_back(std::move(LoadMenu) );
  
-// 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01"), 100 );
-// 		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
-//  		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
-// 		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
-// 		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
+ 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01"), 100 );
+ 		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
+  		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
+ 		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
+ 		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
 		
-//		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
+		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
 	}
 
 

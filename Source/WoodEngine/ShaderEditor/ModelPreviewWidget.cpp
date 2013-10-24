@@ -38,7 +38,7 @@ namespace woodman
 
 	void drawOrigin(Camera* camera);
 
-	void ModelPreviewWidget::render( UIMouse* currentMouse)
+	void ModelPreviewWidget::render( UIMouse* currentMouse, float ParentLayer)
 	{
 		
 		if(isKeyDown(VK_OEM_PLUS))
@@ -212,8 +212,11 @@ namespace woodman
 		glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
 
 		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			return false;
-
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return true;
 	}
 }

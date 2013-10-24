@@ -22,7 +22,7 @@ namespace woodman
 
 		bool SetUpRenderTarget(Vector2i textureResolution);
 
-		virtual void render( UIMouse* currentMouse);
+		virtual void render( UIMouse* currentMouse, float ParentLayer );
 
 		virtual void MouseDrag( UIMouse* currentMouse);
 
