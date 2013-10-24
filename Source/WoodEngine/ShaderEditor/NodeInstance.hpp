@@ -60,6 +60,12 @@ namespace woodman
 		unsigned int lastCompile;
 	};
 
+	struct LinkSlotDataInstance
+	{
+		NodeLinkInstance* masterLink;
+		std::vector<NodeLinkInstance*> equalSizeSlaveLinks;
+	};
+
 	class NodeInstance : public UINodeBoxCallBackRecipient
 	{
 
@@ -98,8 +104,8 @@ namespace woodman
 		}
 
 	private:
-
 		ShaderNode* m_referenceNode;
+		std::vector<LinkSlotDataInstance> m_linkSlotDataInstances;
 
 		// collection of the Link instances
 		std::map< HashedString, std::unique_ptr< NodeLinkInstance > > m_linkInstances;

@@ -297,6 +297,9 @@
     <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
       <Filter>ShaderEditor\ShaderNodes</Filter>
     </Xml>
+    <Xml Include="..\..\Assets\ShaderWorkFiles\Default.xml">
+      <Filter>ShaderEditor</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Assets\Shaders\UI\CanvasBackground.frag">

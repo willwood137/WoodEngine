@@ -10,94 +10,94 @@
 namespace woodman
 {
 	void ConvertToType( const DataType& d1, const DataType& d2, const std::string& variableName, std::string& output )
-	{
-		if( d1.type == PROPERTYTYPE_VECTOR)
-		{
-			if(d2.type == PROPERTYTYPE_VECTOR || PROPERTYTYPE_FLOAT)
-			{
-
-				if(d1.currentSize > d2.currentSize)
-				{
-					if(d2.maxSize == 1)
-					{
-						output = variableName + ".x";
-					}
-					else if(d2.maxSize == 2)
-					{
-						output = variableName + ".xy";
-					}
-					else if(d2.maxSize == 3)
-					{
-						output = variableName + ".xyz";
-					}
-				}
-				else if(d1.currentSize < d2.maxSize)
-				{
-					switch(d2.maxSize)
-					{
-					case 2:
-						output = "vec2(	" + variableName + ", 0.0 )";
-						break;
-					case 3:
-						if( d1.currentSize == 1)
-						{
-							output = "vec3(	" + variableName + ", 0, 0 )";
-						}
-						else
-						{
-							output = "vec3(	" + variableName + ", 0 )";
-						}
-						break;
-					case 4:
-					default:
-						if( d1.currentSize == 1)
-						{
-							output = "vec4(	" + variableName + ", 0, 0, 0 )";
-						}
-						else if(d1.currentSize == 2)
-						{
-							output = "vec4(	" + variableName + ", 0, 1.0 )";
-						}
-						else
-						{
-							output = "vec4(	" + variableName + ", 1.0 )";
-						}
-						break;
-					}
-				}
-				else
-				{
-					output = variableName;
-				}
-			}
-		}
-		else if( d1.type == PROPERTYTYPE_FLOAT)
-		{
-			if(d2.type == PROPERTYTYPE_FLOAT)
-			{
-				output = variableName;
-			}
-			else if(d2.type == PROPERTYTYPE_VECTOR)
-			{
-				switch(d2.maxSize)
-				{
-				case 2:
-					output = "vec2(	" + variableName + ", " + variableName + " )";
-					break;
-				case 3:
-					output = "vec3(	" + variableName + ", " + variableName + ", " + variableName + " )";
-					break;
-				case 4:
-				default:
-					output = "vec4(	" + variableName + ", " + variableName + ", " + variableName + ", " + variableName + " )";
-					break;
-				}
-			}
-		}
-		else
-		{
-			output = variableName;
-		}
+ 	{
+// 		if( d1.type == PROPERTYTYPE_VECTOR)
+// 		{
+// 			if(d2.type == PROPERTYTYPE_VECTOR || PROPERTYTYPE_FLOAT)
+// 			{
+// 
+// 				if(d1.currentSize > d2.currentSize)
+// 				{
+// 					if(d2.maxSize == 1)
+// 					{
+// 						output = variableName + ".x";
+// 					}
+// 					else if(d2.maxSize == 2)
+// 					{
+// 						output = variableName + ".xy";
+// 					}
+// 					else if(d2.maxSize == 3)
+// 					{
+// 						output = variableName + ".xyz";
+// 					}
+// 				}
+// 				else if(d1.currentSize < d2.maxSize)
+// 				{
+// 					switch(d2.maxSize)
+// 					{
+// 					case 2:
+// 						output = "vec2(	" + variableName + ", 0.0 )";
+// 						break;
+// 					case 3:
+// 						if( d1.currentSize == 1)
+// 						{
+// 							output = "vec3(	" + variableName + ", 0, 0 )";
+// 						}
+// 						else
+// 						{
+// 							output = "vec3(	" + variableName + ", 0 )";
+// 						}
+// 						break;
+// 					case 4:
+// 					default:
+// 						if( d1.currentSize == 1)
+// 						{
+// 							output = "vec4(	" + variableName + ", 0, 0, 0 )";
+// 						}
+// 						else if(d1.currentSize == 2)
+// 						{
+// 							output = "vec4(	" + variableName + ", 0, 1.0 )";
+// 						}
+// 						else
+// 						{
+// 							output = "vec4(	" + variableName + ", 1.0 )";
+// 						}
+// 						break;
+// 					}
+// 				}
+// 				else
+// 				{
+// 					output = variableName;
+// 				}
+// 			}
+// 		}
+// 		else if( d1.type == PROPERTYTYPE_FLOAT)
+// 		{
+// 			if(d2.type == PROPERTYTYPE_FLOAT)
+// 			{
+// 				output = variableName;
+// 			}
+// 			else if(d2.type == PROPERTYTYPE_VECTOR)
+// 			{
+// 				switch(d2.maxSize)
+// 				{
+// 				case 2:
+// 					output = "vec2(	" + variableName + ", " + variableName + " )";
+// 					break;
+// 				case 3:
+// 					output = "vec3(	" + variableName + ", " + variableName + ", " + variableName + " )";
+// 					break;
+// 				case 4:
+// 				default:
+// 					output = "vec4(	" + variableName + ", " + variableName + ", " + variableName + ", " + variableName + " )";
+// 					break;
+// 				}
+// 			}
+// 		}
+// 		else
+// 		{
+// 			output = variableName;
+// 		}
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

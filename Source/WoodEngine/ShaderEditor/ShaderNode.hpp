@@ -33,6 +33,12 @@ namespace woodman
 
 	};
 
+	struct LinkSlotData
+	{
+		std::string Master;
+		std::vector<std::string> EqualSizeSlaves;
+	};
+
 	struct ShaderNode
 	{
 		NodeLink* getLinkByName(const std::string& name)
@@ -52,7 +58,9 @@ namespace woodman
 		std::list< std::unique_ptr<PropertyList> > propertyLists;
 		std::vector<std::unique_ptr<NodeLink> > inLinks;
 		std::vector<std::unique_ptr<NodeLink> > outLinks;
+		std::vector<LinkSlotData> linkSlotDatas;
 		std::vector<FunctionDefinition> functions;
+		
 		bool canBeVert;
 		bool canBeFrag;
 	};

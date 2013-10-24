@@ -103,11 +103,8 @@ namespace woodman
 					LinkIt->second->varInfo.variablePrefix = "mat" + sizeString;
 					break;
 				case PROPERTYTYPE_FLOAT:
-					LinkIt->second->varInfo.variablePrefix = "float";
-					break;
 				default:
-				case PROPERTYTYPE_VECTOR:
-					LinkIt->second->varInfo.variablePrefix = "vec" + sizeString;
+					LinkIt->second->varInfo.variablePrefix = "float";
 					break;
 				}
 

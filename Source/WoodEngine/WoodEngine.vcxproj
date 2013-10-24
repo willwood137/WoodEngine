@@ -189,6 +189,7 @@
     <Image Include="WoodEngine.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Assets\ShaderWorkFiles\Default.xml" />
     <Xml Include="Engine\ConsoleCommands.xml" />
     <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
       <SubType>Designer</SubType>

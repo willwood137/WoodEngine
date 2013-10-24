@@ -29,6 +29,12 @@ namespace woodman
 		virtual void setPosition(const Vector2f& position) = 0;
 	};
 
+	struct UILinkSlotData
+	{
+		UINodeLink* MasterLink;
+		std::vector<UINodeLink*> EqualSizeSlaves;
+	};
+
 	class UINodeBox : public UIWidget
 	{
 	public:
@@ -55,9 +61,10 @@ namespace woodman
 		std::string								m_title;
 		std::list<std::string>					n_data;
 		std::set< UINodeLink* >					m_linkSlots;
+		std::vector<UILinkSlotData>				m_linkSlotDatas;
 		unsigned int							m_numInSlots;
 		unsigned int							m_numOutSlots;
-
+		
 		UINodeBoxCallBackRecipient* m_callBackRecipient;
 
 		std::shared_ptr<Shader> m_nodeBoxShader;

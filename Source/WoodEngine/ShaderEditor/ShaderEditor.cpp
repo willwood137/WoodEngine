@@ -30,9 +30,9 @@ namespace woodman
 	{
 		UIController::Initialize();
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
-		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
-		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
-		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Utility.xml");
+		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
+		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
+		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Utility.xml");
 
 		//load default shader work file
 		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
@@ -247,11 +247,9 @@ namespace woodman
 
 							std::string sType = dataNode.attribute("returnType").as_string();
 
-							if(sType.compare("vector") == 0)
-							{
-								def.returnType.type = PROPERTYTYPE_VECTOR;
-							}
-							else if( sType.compare("float") == 0)
+							def.returnType.type = PROPERTYTYPE_FLOAT;
+
+							if( sType.compare("float") == 0)
 							{
 								def.returnType.type = PROPERTYTYPE_FLOAT;
 							}
@@ -268,6 +266,27 @@ namespace woodman
 							def.returnType.minSize = def.returnType.maxSize;
 
 							currentDefinition->functions.push_back(def);
+
+						}
+						else if(std::string(dataNode.name()).compare(std::string("LinkSlotData") ) == 0 )
+						{
+							LinkSlotData data;
+
+							data.Master = dataNode.attribute("master").as_string();
+
+
+							pugi::xml_node slaveNode = dataNode.first_child();
+							while(slaveNode)
+							{
+								if( std::string(slaveNode.name()).compare(std::string("EqualSizeSlave") ) == 0 )
+								{
+									data.EqualSizeSlaves.push_back( slaveNode.attribute("slot").as_string() );
+								}
+
+								slaveNode = slaveNode.next_sibling();
+							}
+
+							currentDefinition->linkSlotDatas.emplace_back(data);
 
 						}
 						else if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
@@ -287,11 +306,7 @@ namespace woodman
 									
 									std::string sType = codeNode.attribute("type").as_string();
 
-									if(sType.compare("vector") == 0)
-									{
-										dType.type = PROPERTYTYPE_VECTOR;
-									}
-									else if( sType.compare("float") == 0)
+									if( sType.compare("float") == 0 )
 									{
 										dType.type = PROPERTYTYPE_FLOAT;
 									}
