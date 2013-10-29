@@ -2,6 +2,7 @@
 
 #include "UIWidget.hpp"
 #include "UICanvas.hpp"
+#include "UIVectorMap.hpp"
 
 #include "..\Math\AABB2D.hpp"
 #include "..\Math\Vector2.hpp"
@@ -68,9 +69,9 @@ namespace woodman
 		unsigned int m_typeSize;
 
 		UIWidget* m_startTarget;
-		unsigned int m_startSize;
 		UIWidget* m_endTarget;
-		unsigned int m_endSize;
+
+		UIVectorMap m_vectorMap;
 
 		std::vector< CanvasCoordinates > m_controlPoints;
 

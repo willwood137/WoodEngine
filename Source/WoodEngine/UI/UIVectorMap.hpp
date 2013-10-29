@@ -8,7 +8,7 @@ namespace woodman
 {
 	enum VectorField
 	{
-		VECTORFIELD_X,
+		VECTORFIELD_X = 1,
 		VECTORFIELD_Y,
 		VECTORFIELD_Z,
 		VECTORFIELD_W,
@@ -28,8 +28,16 @@ namespace woodman
 	class UIVectorMap : public UIWidget
 	{
 	public:
-		UIVectorMap();
+		UIVectorMap(UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
+			const std::string& name,
+			HashedString uniqueID,
+			float RelativeLayer);
 
+		void updateInSize(unsigned int i);
+		void updateExitSize(unsigned int i);
+		void cycleMapValue(unsigned int MapIndex, bool CycleForward );
+		
 
 	private:
 		VectorMap m_mapping;
