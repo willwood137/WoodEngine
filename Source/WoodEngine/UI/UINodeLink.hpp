@@ -124,7 +124,7 @@ namespace woodman
 		virtual void move(const Vector2f& amountToMove);
 
 		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink);
-		virtual void Pair( UIOutLink* partnerLink);
+		virtual void Pair( UIOutLink* partnerLink );
 		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);
 		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip);
 		virtual UINodeLink* getPartnerSlot();

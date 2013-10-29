@@ -126,6 +126,7 @@
     <ClInclude Include="UI\UINodeBox.hpp" />
     <ClInclude Include="UI\UINodeLink.hpp" />
     <ClInclude Include="UI\UIStyle.hpp" />
+    <ClInclude Include="UI\UIVectorMap.hpp" />
     <ClInclude Include="UI\UIWidget.hpp" />
     <ClInclude Include="Utility\ConsoleRedirector.hpp" />
     <ClInclude Include="Utility\ProfileSection.hpp" />
@@ -200,6 +201,7 @@
     <Xml Include="ShaderEditor\ShaderNodes\Math.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Test.xml" />
     <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
       <SubType>Designer</SubType>
     </Xml>

@@ -142,4 +142,33 @@ namespace woodman
 		}
 
 	}
+
+	void UINodeBox::AddLinkSlotData(const LinkSlotData& data)
+	{
+		std::shared_ptr<UILinkSlotData> UIdata(new UILinkSlotData());
+
+		UIdata->Type = data.Type;
+		for( auto linkIt = m_linkSlots.begin(); linkIt != m_linkSlots.end(); ++linkIt)
+		{
+			HashedString name((*linkIt)->getName());
+			
+			if(data.Entries.find(name) != data.Entries.end() )
+			{
+				UIdata->Entries.insert( (*linkIt) );
+			}
+			
+			if(data.Users.find(name) != data.Users.end() )
+			{
+				UIdata->Users.insert( (*linkIt) );
+			}
+		}
+
+		m_linkSlotDatas.push_back(UIdata);
+	}
+
+	void UINodeBox::addLink(UINodeLink* newLink)
+	{
+		m_linkSlots.insert(newLink);
+		addChild(newLink);
+	}
 }

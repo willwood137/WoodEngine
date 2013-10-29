@@ -33,12 +33,6 @@ namespace woodman
 
 	};
 
-	struct LinkSlotData
-	{
-		std::string Master;
-		std::vector<std::string> EqualSizeSlaves;
-	};
-
 	struct ShaderNode
 	{
 		NodeLink* getLinkByName(const std::string& name)

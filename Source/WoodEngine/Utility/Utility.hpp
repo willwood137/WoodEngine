@@ -11,6 +11,7 @@
 #include "..\Math\Vector3.hpp"
 #include "..\Math\Vector4.hpp"
 #include "../stdafx.h"
+#include "..\Engine\HashedString.hpp"
 
 
 
@@ -40,6 +41,21 @@ namespace woodman
 		unsigned int maxSize;
 		unsigned int currentSize;
 	};
+
+
+	enum LinkSlotDataType
+	{
+		LINKSLOTTYPEDATA_LARGESTSIZE,
+		LINKSLOTTYPEDATA_SIZE
+	};
+
+	struct LinkSlotData
+	{
+		LinkSlotDataType Type;
+		std::set<HashedString> Entries;
+		std::set<HashedString> Users;
+	};
+
 
 
 	void ConvertToType( const DataType& d1, const DataType& d2, const std::string& variableName, std::string& output );

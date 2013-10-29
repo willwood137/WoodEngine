@@ -67,9 +67,10 @@ namespace woodman
 		PropertyType m_propertyType;
 		unsigned int m_typeSize;
 
-		//this is true if we are updateing the end point
 		UIWidget* m_startTarget;
+		unsigned int m_startSize;
 		UIWidget* m_endTarget;
+		unsigned int m_endSize;
 
 		std::vector< CanvasCoordinates > m_controlPoints;
 

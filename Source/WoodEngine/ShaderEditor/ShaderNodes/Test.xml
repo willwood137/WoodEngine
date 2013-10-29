@@ -1,0 +1,61 @@
+<ShaderEditor>
+  <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="Dividend">
+      <dataType type="float" minSize="1" maxSize="4"/>
+    </Input>
+    <Input name="Divisor">
+      <dataType type="float" minSize="1" maxSize="4"/>
+    </Input>
+    <Output name="Quotient">
+      <dataType  type ="float" defaultSize ="4"/>
+      <Shader_Code> $Dividend / $Divisor </Shader_Code>
+    </Output>
+    <LinkSlotData type="LargestSize">
+      <Entry slot="Dividend"/>
+      <Entry slot="Divisor"/>
+      <User slot="Quotient"/>
+    </LinkSlotData>
+  </NodeDefinition>
+  
+  <NodeDefinition name="Sum" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="Addend_A">
+      <dataType type="float" minSize="1" maxSize="4"/>
+    </Input>
+    <Input name="Addend_B">
+      <dataType type="float" minSize="1" maxSize="4"/>
+    </Input>
+    <Output name="Sum">
+      <dataType type="float" defaultSize="4"/>
+      <Shader_Code>$Addend_A + $Addend_B</Shader_Code>
+    </Output>
+    <LinkSlotData type="LargestSize">
+      <Entry slot="Addend_A"/>
+      <Entry slot="Addend_B"/>
+      <User slot="Sum"/>
+    </LinkSlotData>
+  </NodeDefinition>
+
+  <NodeDefinition name="Cosine" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="In">
+      <dataType type="float" size="1"/>
+    </Input>
+    <Output name="Out">
+      <dataType type="float" size="1"/>
+      <Shader_Code>cos( $In )</Shader_Code>
+    </Output>
+  </NodeDefinition>
+
+  <NodeDefinition name="Transform_Vector" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="float">
+      <dataType type="float" minSize="4" maxSize="4"/>
+    </Input>
+    <Input name="Matrix">
+      <dataType type="matrix" minSize ="4" maxSize="4"/>
+    </Input>
+    <Output name="Outfloat">
+      <dataType type="float" size="4"/>
+      <Shader_Code>$Matrix * $float</Shader_Code>
+    </Output>
+  </NodeDefinition>
+  
+</ShaderEditor>

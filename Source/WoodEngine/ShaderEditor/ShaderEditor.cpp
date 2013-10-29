@@ -29,7 +29,8 @@ namespace woodman
 	void ShaderEditor::Initialize(  )
 	{
 		UIController::Initialize();
-		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
+		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Test.xml");
+		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Math.xml");
 		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
 		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
 		//LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Utility.xml");
@@ -272,18 +273,19 @@ namespace woodman
 						{
 							LinkSlotData data;
 
-							data.Master = dataNode.attribute("master").as_string();
-
-
-							pugi::xml_node slaveNode = dataNode.first_child();
-							while(slaveNode)
+							pugi::xml_node slotNode = dataNode.first_child();
+							while(slotNode)
 							{
-								if( std::string(slaveNode.name()).compare(std::string("EqualSizeSlave") ) == 0 )
+								if( std::string(slotNode.name()).compare(std::string("Entry") ) == 0 )
 								{
-									data.EqualSizeSlaves.push_back( slaveNode.attribute("slot").as_string() );
+									data.Entries.insert( HashedString(slotNode.attribute("slot").as_string() ) );
+								}
+								else if( std::string(slotNode.name()).compare(std::string("User") ) == 0 )
+								{
+									data.Users.insert( HashedString(slotNode.attribute("slot").as_string() ) );
 								}
 
-								slaveNode = slaveNode.next_sibling();
+								slotNode = slotNode.next_sibling();
 							}
 
 							currentDefinition->linkSlotDatas.emplace_back(data);
@@ -304,7 +306,7 @@ namespace woodman
 								{
 									DataType dType;
 									
-									std::string sType = codeNode.attribute("type").as_string();
+ 									std::string sType = codeNode.attribute("type").as_string();
 
 									if( sType.compare("float") == 0 )
 									{
@@ -338,15 +340,16 @@ namespace woodman
 											dType.minSize = attrib.as_uint();
 											dType.maxSize = dType.minSize;
 										}
-										else if(std::string(attrib.name()).compare("smartSize") == 0)
+										else if(std::string(attrib.name()).compare("defaultSize") == 0)
 										{
-											std::string linkName = attrib.as_string();
-											//std::shared_ptr<NodeLink> refLink = currentDefinition->getLinkByName(linkName.substr(1));
+											dType.minSize = attrib.as_uint();
+											dType.maxSize = dType.minSize;
 										}
-									
+										
 										attrib = attrib.next_attribute();
 									}
 
+									dType.currentSize = dType.maxSize;
 									newLink->typeData = dType;
 								}
 
@@ -439,6 +442,7 @@ namespace woodman
 		
 
 		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), 100, node->getPosition() ) );
+		ShaderNode* DefinitionNode = node->getDefinitionNode();
 
 		NodeBox->setCallBackRecipient(node);
 
@@ -492,7 +496,8 @@ namespace woodman
 
 		numInSlots = 0;
 		numOutSlots = 0;
-		//Calculate the size of the NodeBox
+
+		//Now add the nodes to the nodebox
 		for(auto it = links->begin(); it != links->end(); ++it)
 		{
 			Vector2f Offset(0.0f, 0.0f);
@@ -517,7 +522,7 @@ namespace woodman
 				Offset.y -= static_cast<float>(numOutSlots) * ( style->subTitleSize + style->subTitleBuffer);
 				numOutSlots++;
 			}
-			UIWidget* newSlot;
+			UINodeLink* newSlot;
 			if((it->second)->exitNode)
 			{
 				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
@@ -526,6 +531,7 @@ namespace woodman
 			{
 				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
 			}
+			
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
 			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
@@ -533,9 +539,13 @@ namespace woodman
 			newSlot->setParentOffset(Offset);
 			newSlot->Initialize();
 			newSlot->calcFullCollisionBox();
-			NodeBox->addChild(newSlot);
+			NodeBox->addLink(newSlot);
 		}
 
+		for(auto linkSlotDataIt = DefinitionNode->linkSlotDatas.begin(); linkSlotDataIt != DefinitionNode->linkSlotDatas.end(); ++linkSlotDataIt)
+		{
+			NodeBox->AddLinkSlotData( (*linkSlotDataIt) );
+		}
 		NodeBox->calcFullCollisionBox();
 		NodeBox->Initialize();
 		canvasToPutOn->RegisterUIWidget(NodeBox);

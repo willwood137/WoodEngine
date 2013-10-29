@@ -28,11 +28,12 @@ namespace woodman
 	{
 		virtual void setPosition(const Vector2f& position) = 0;
 	};
-
+	
 	struct UILinkSlotData
 	{
-		UINodeLink* MasterLink;
-		std::vector<UINodeLink*> EqualSizeSlaves;
+		LinkSlotDataType Type;
+		std::set<UINodeLink*> Entries;
+		std::set<UINodeLink*> Users;
 	};
 
 	class UINodeBox : public UIWidget
@@ -54,16 +55,18 @@ namespace woodman
  		virtual void MouseDrag( UIMouse* currentMouse);
 
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
+		void AddLinkSlotData(const LinkSlotData& data);
+		void addLink(UINodeLink* newLink);
 
 	private:
 		//TL Corner
-		Vector2f								m_titleOffset;
-		std::string								m_title;
-		std::list<std::string>					n_data;
-		std::set< UINodeLink* >					m_linkSlots;
-		std::vector<UILinkSlotData>				m_linkSlotDatas;
-		unsigned int							m_numInSlots;
-		unsigned int							m_numOutSlots;
+		Vector2f										m_titleOffset;
+		std::string										m_title;
+		std::list<std::string>							n_data;
+		std::set< UINodeLink* >							m_linkSlots;
+		std::vector<std::shared_ptr<UILinkSlotData> >	m_linkSlotDatas;
+		unsigned int									m_numInSlots;
+		unsigned int									m_numOutSlots;
 		
 		UINodeBoxCallBackRecipient* m_callBackRecipient;
 

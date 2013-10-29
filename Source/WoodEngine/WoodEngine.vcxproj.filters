@@ -172,6 +172,9 @@
     <ClInclude Include="ShaderEditor\ShaderEditorApp.hpp">
       <Filter>ShaderEditor</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UIVectorMap.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
@@ -299,6 +302,9 @@
     </Xml>
     <Xml Include="..\..\Assets\ShaderWorkFiles\Default.xml">
       <Filter>ShaderEditor</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Test.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
