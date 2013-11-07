@@ -15,7 +15,7 @@ namespace woodman
 		unsigned int typeSize,
 		CanvasCoordinates startPoint,
 		CanvasCoordinates endPoint)
-		:UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
 		m_startVector(30.0f, 0.0f),
 		m_endVector(-30.0f, 0.0f),
 		m_propertyType(pType),
@@ -23,6 +23,34 @@ namespace woodman
 		m_startPoint(startPoint),
 		m_endPoint(endPoint)
 	{
+		m_vectorMap = nullptr;
+	}
+
+	UILinkStrip::UILinkStrip(UICanvas* ParentCanvas,
+		UIWidget* parentWidget,
+		const std::string& name,
+		HashedString uniqueID,
+		float RelativeLayer,
+		UINodeLink* OutLink,
+		UINodeLink* InLink )
+		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+		m_startVector(30.0f, 0.0f),
+		m_endVector(-30.0f, 0.0f),
+		m_startTarget(OutLink),
+		m_endTarget(InLink),
+		m_startPoint(ParentCanvas, Vector2f(0.0f, 0.0f) ),
+		m_endPoint(ParentCanvas, Vector2f(0.0f, 0.0f) )
+	{
+		m_propertyType = m_startTarget->getDataType()->type;
+		m_vectorMap = new UIVectorMap(ParentCanvas, this, name + "_VectorMap", HashedString(uniqueID.m_string + "_VectorMap"), 1.0f);
+		m_vectorMap->Initialize();
+		m_vectorMap->updateInSize(OutLink->getTypeSize());
+		m_vectorMap->updateExitSize(InLink->getTypeSize());
+		m_vectorMap->setCollisionSize(Vector2f(32.0f, 32.0f));
+		addChild(m_vectorMap);
+
+		m_startPoint.coordinatesCanvasSpace = OutLink->getCanvasCoordinates() + Vector2f(0.0f, OutLink->getCollisionSize().y * .25f);
+		m_endPoint.coordinatesCanvasSpace = InLink->getCanvasCoordinates() + Vector2f(0.0f, InLink->getCollisionSize().y * .25f);
 	}
 
 	void UILinkStrip::Initialize()
@@ -175,16 +203,22 @@ namespace woodman
 		m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth * .5f);
 		m_canvasCollisionBoxSize = maxValues - minValues + Vector2f(0.0f, m_style->LineWidth);
 		calcFullCollisionBox();
+
+		//Update vectormap
+		Vector2f midPoint = (m_controlPoints[1].coordinatesCanvasSpace + m_controlPoints[2].coordinatesCanvasSpace) / 2.0f;
+		
+		if(m_vectorMap != nullptr)
+			m_vectorMap->setCanvasCoordinates(midPoint - m_vectorMap->getCollisionSize() / 2.0f);
 	}
 
 
 
-	UIWidget* UILinkStrip::getStartTarget()
+	UINodeLink* UILinkStrip::getStartTarget()
 	{
 		return m_startTarget;
 	}
 
-	UIWidget* UILinkStrip::getEndTarget()
+	UINodeLink* UILinkStrip::getEndTarget()
 	{
 		return m_endTarget;
 	}
@@ -211,14 +245,22 @@ namespace woodman
 		return (m_endTarget != nullptr && m_startTarget != nullptr);
 	}
 
-	void UILinkStrip::updateStartTarget(UIWidget* StartTarget)
+	void UILinkStrip::updateStartTarget(UINodeLink* StartTarget)
 	{
 		m_startTarget = StartTarget;
 	}
 
-	void UILinkStrip::updateEndTarget(UIWidget* EndTarget)
+	void UILinkStrip::updateEndTarget(UINodeLink* EndTarget)
 	{
 		m_endTarget = EndTarget;
+	}
+
+	void UILinkStrip::updateVectorMap()
+	{
+		m_vectorMap->updateInSize(m_startTarget->getTypeSize());
+		m_vectorMap->updateExitSize(m_endTarget->getTypeSize());
+
+		m_vectorMap->setCollisionSize( Vector2f(32.0f, 32.0f * static_cast<float>(m_vectorMap->getExitSize()) ) );
 	}
 }
 

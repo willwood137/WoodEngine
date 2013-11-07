@@ -18,6 +18,8 @@ namespace woodman
 		VECTORFIELD_SIZE
 	};
 
+	RGBA getVectorFieldColor(VectorField vField);
+
 	struct VectorMap
 	{
 		int inSize;
@@ -34,12 +36,17 @@ namespace woodman
 			HashedString uniqueID,
 			float RelativeLayer);
 
-		void updateInSize(unsigned int i);
-		void updateExitSize(unsigned int i);
+		virtual void render( UIMouse* currentMouse, float ParentLayer );
+		virtual void Initialize();
+
+		void updateInSize(unsigned int size);
+		void updateExitSize(unsigned int size);
 		void cycleMapValue(unsigned int MapIndex, bool CycleForward );
 		
+		int getExitSize() { return m_mapping.outSize;}
 
 	private:
 		VectorMap m_mapping;
+		std::shared_ptr<Shader> m_boxShader;
 	};
 }

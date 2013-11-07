@@ -40,6 +40,9 @@ namespace woodman
 	const HashedString HASHED_STRING_u_backgroundColor("u_backgroundColor");
 	const HashedString HASHED_STRING_u_lineColor("u_lineColor");
 	const HashedString HASHED_STRING_u_boneTMs("u_boneTMs");
+	const HashedString HASHED_STRING_u_borderColor("u_borderColor");
+	const HashedString HASHED_STRING_u_borderFilter("u_borderFilter");
+	const HashedString HASHED_STRING_u_borderSize("u_borderSize");
 	const HashedString HASHED_STRING_u_BottomRight("u_BottomRight");
 	const HashedString HASHED_STRING_u_cameraPosition("u_cameraPosition");
 	const HashedString HASHED_STRING_u_color("u_color");
@@ -82,9 +85,7 @@ namespace woodman
 	const HashedString HASHED_STRING_u_windowPosition("u_windowPosition");
 	const HashedString HASHED_STRING_u_worldTransform("u_worldTransform");
 	const HashedString HASHED_STRING_u_cornerSize("u_cornerSize");
-	const HashedString HASHED_STRING_u_borderFilter("u_borderFilter");
 	const HashedString HASHED_STRING_u_filter("u_filter");
-	const HashedString HASHED_STRING_u_borderSize("u_borderSize");
 	const HashedString HASHED_STRING_u_inverseScreenResolution("u_inverseScreenResolution");
 	const HashedString HASHED_STRING_u_backgroundTexture("u_backgroundTexture");
 	const HashedString HASHED_STRING_u_backgroundResolution("u_backgroundResolution");

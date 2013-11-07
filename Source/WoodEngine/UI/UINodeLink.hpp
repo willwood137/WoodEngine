@@ -32,10 +32,9 @@ namespace woodman
 		virtual void MouseDrag( UIMouse* currentMouse);
 
 		// pure virtual functions
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink) = 0;
-		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip) = 0;
-		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip) = 0;
+		//virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink) = 0;
 		virtual UINodeLink* getPartnerSlot() = 0;
+		virtual void UpdateVectorMap() = 0;
 
 #pragma region UINodeLink_Getters
 		bool IsOutLink() const;
@@ -92,16 +91,18 @@ namespace woodman
 		virtual void MouseRelease( UIMouse* currentMouse);
 		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual void move(const Vector2f& amountToMove);
+		virtual void UpdateVectorMap();
+		
+		void unPair(UILinkStrip* linkStrip);
 
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink);
-		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);
-		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip);
 		virtual UINodeLink* getPartnerSlot();
+
+		void AddLinkStrip(UILinkStrip* strip);
 
 
 	private:
 		//Multiple partner/datastrips
-		std::set<std::shared_ptr<UILinkStrip> > m_linkStrips;
+		std::set< UILinkStrip* > m_linkStrips;
 	};
 
 	class UIInLink : public UINodeLink
@@ -122,15 +123,15 @@ namespace woodman
 		virtual void MouseRelease( UIMouse* currentMouse);
 		virtual void MouseDrag( UIMouse* currentMouse);
 		virtual void move(const Vector2f& amountToMove);
+		virtual void UpdateVectorMap();
+		
+		void unPair();
+		void SetLinkStrip(UILinkStrip* strip);
 
-		virtual void Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink);
-		virtual void Pair( UIOutLink* partnerLink );
-		virtual void unPair(std::shared_ptr<UILinkStrip> linkStrip);
-		virtual bool DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip);
 		virtual UINodeLink* getPartnerSlot();
 
 	private:
 		//singular partner/linkStrip
-		std::shared_ptr<UILinkStrip> m_linkStrip;
+		UILinkStrip* m_linkStrip;
 	};
 }

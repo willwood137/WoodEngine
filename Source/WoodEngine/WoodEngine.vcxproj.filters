@@ -267,6 +267,9 @@
     <ClCompile Include="ShaderEditor\ShaderEditorApp.cpp">
       <Filter>ShaderEditor</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UIVectorMap.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WoodEngine.rc">
@@ -355,6 +358,12 @@
     </None>
     <None Include="ShaderTest.vert">
       <Filter>ShaderEditor</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\BoxShader.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\BoxShader.vert">
+      <Filter>UI\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

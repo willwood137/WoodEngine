@@ -146,7 +146,7 @@ namespace woodman
 
 		UIOutLink* outLink = dynamic_cast<UIOutLink*>(getUIWidgetByID( HashedString( info->PartnerLinkName ) ) );
 
-		inLink->Pair(outLink);
+		//inLink->Pair(outLink);
 
 	}
 
@@ -522,6 +522,7 @@ namespace woodman
 				Offset.y -= static_cast<float>(numOutSlots) * ( style->subTitleSize + style->subTitleBuffer);
 				numOutSlots++;
 			}
+
 			UINodeLink* newSlot;
 			if((it->second)->exitNode)
 			{

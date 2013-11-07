@@ -2,6 +2,7 @@
 
 #include "UINodeLink.hpp"
 #include "UICanvas.hpp"
+#include "UINodeBox.hpp"
 
 namespace woodman
 {
@@ -109,7 +110,7 @@ namespace woodman
 
 		m_slotShader->disableAttribute(HASHED_STRING_in_position);
 
-		
+
 
 		UIWidget::render(currentMouse, layer);
 	}
@@ -218,16 +219,13 @@ namespace woodman
 
 		if(m_draggingStrip != nullptr)
 		{
-			if(DoIOwnStrip(m_draggingStrip))
-			{
-				m_draggingStrip->render(currentMouse, layer);
-			}
+			m_draggingStrip->render(currentMouse, layer);
 		}
 
-		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
-		{
-			(*it)->render(currentMouse, layer);
-		}
+// 		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
+// 		{
+// 			(*it)->render(currentMouse, layer);
+// 		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -244,22 +242,22 @@ namespace woodman
 		CanvasCoordinates startCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
 
 		std::shared_ptr<UILinkStrip> newStrip( new UILinkStrip(
-				m_parentCanvas, 
-				this, 
-				"lineSTRIP",
-				HashedString("LinkStrip"),
-				-1.0f,
-				m_parentDataType->type,
-				m_dataTypeSize, 
-				startCoords,
-				startCoords) );
+			m_parentCanvas, 
+			this, 
+			"lineSTRIP",
+			HashedString("LinkStrip"),
+			-1.0f,
+			m_parentDataType->type,
+			m_dataTypeSize, 
+			startCoords,
+			startCoords) );
 
 
 		newStrip->Initialize();
 		newStrip->updateStartTarget( this );
 
 		m_draggingStrip = newStrip;
-	
+
 	}
 
 	//-------------------------------------------------------------------------
@@ -308,25 +306,26 @@ namespace woodman
 				{
 
 					//why yes it is, LINK US UP, but first we have to unlink any other links
-					unPair(m_draggingStrip);
-					Pair(m_draggingStrip, partnerLink);
-// 					m_draggingStrip->updateStartTarget(this);
-// 					m_draggingStrip->updateEndTarget(partnerLink);
+					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
+					if(nodeBox != nullptr)
+						nodeBox->pairLinks(this, partnerLink);
+					// 					m_draggingStrip->updateStartTarget(this);
+					// 					m_draggingStrip->updateEndTarget(partnerLink);
 
 					//partnerLink->Pair(m_draggingStrip);
 				}
 				else
 				{
 					//oh no we released on not a InLink, check if it already is linked
-					UINodeLink* existingPartner = dynamic_cast<UIInLink*>(m_draggingStrip->getEndTarget() );
-					if(existingPartner != nullptr)
-					{
-						//there is! set it back to that
-						//this should be done automatically?
-						m_draggingStrip->updateEndTarget(nullptr);
-						Pair(m_draggingStrip, existingPartner);
-						existingPartner->move(Vector2f(0.0f, 0.0f));
-					}
+					// 					UINodeLink* existingPartner = dynamic_cast<UIInLink*>(m_draggingStrip->getEndTarget() );
+					// 					if(existingPartner != nullptr)
+					// 					{
+					// 						//there is! set it back to that
+					// 						//this should be done automatically?
+					// 						m_draggingStrip->updateEndTarget(nullptr);
+					// 						Pair(m_draggingStrip, existingPartner);
+					// 						existingPartner->move(Vector2f(0.0f, 0.0f));
+					// 					}
 
 				}
 
@@ -338,40 +337,42 @@ namespace woodman
 
 	//-------------------------------------------------------------------------
 
-	void UIOutLink::Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink)
-	{
-		// out links can have many partners, so just add it
-		m_linkStrips.insert(linkStrip);
-		linkStrip->updateStartTarget(this);
-		CanvasCoordinates newCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
-		linkStrip->updateStartPoint(newCoords);
-
-		UINodeLink* stripLink = dynamic_cast<UINodeLink*>(linkStrip->getEndTarget());
-		if(partnerLink != stripLink)
-		{
-			partnerLink->Pair(linkStrip, this);
-		}
-	}
+	// 	void UIOutLink::Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink)
+	// 	{
+	// 		// out links can have many partners, so just add it
+	// 		m_linkStrips.insert(linkStrip);
+	// 		linkStrip->updateStartTarget(this);
+	// 		CanvasCoordinates newCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+	// 		linkStrip->updateStartPoint(newCoords);
+	// 
+	// 		UINodeLink* stripLink = dynamic_cast<UINodeLink*>(linkStrip->getEndTarget());
+	// 		if(partnerLink != stripLink)
+	// 		{
+	// 			partnerLink->Pair(linkStrip, this);
+	// 		}
+	// 	}
 
 	//-------------------------------------------------------------------------
 
-	void UIOutLink::unPair(std::shared_ptr<UILinkStrip> linkStrip)
+	void UIOutLink::unPair(UILinkStrip* linkStrip)
 	{
 		// So we have to remove that Thing
 
 		//remove reference to us
 		linkStrip->updateStartTarget(nullptr);
-		
+
 		//then tell the other guy to remove his reference
-		
-		UINodeLink* partnerLink = dynamic_cast<UINodeLink*>(linkStrip->getEndTarget());
+
+		UIInLink* partnerLink = dynamic_cast<UIInLink*>(linkStrip->getEndTarget());
 		if(partnerLink != nullptr)
 		{
-			partnerLink->unPair(linkStrip);
+			partnerLink->unPair();
 		}
 
 		//then erase the linkStrip
 		m_linkStrips.erase(linkStrip);
+
+		removeChild(linkStrip);
 	}
 
 	//-------------------------------------------------------------------------
@@ -389,17 +390,23 @@ namespace woodman
 
 	//-------------------------------------------------------------------------
 
-	bool UIOutLink::DoIOwnStrip( std::shared_ptr<UILinkStrip> linkStrip)
-	{
-		//we are the out link, we own it
-		return true;
-	}
-
-	//-------------------------------------------------------------------------
-
 	UINodeLink* UIOutLink::getPartnerSlot()
 	{
 		return nullptr;
+	}
+
+	void UIOutLink::AddLinkStrip(UILinkStrip* strip)
+	{
+		addChild(strip);
+		m_linkStrips.insert(strip);
+	}
+
+	void UIOutLink::UpdateVectorMap()
+	{
+		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
+		{
+			(*it)->updateVectorMap();
+		}
 	}
 
 #pragma endregion
@@ -432,16 +439,7 @@ namespace woodman
 
 		if(m_draggingStrip != nullptr)
 		{
-			if(DoIOwnStrip(m_draggingStrip))
-			{
-				m_draggingStrip->render(currentMouse, layer);
-			}
-		}
-
-		if(m_linkStrip != nullptr)
-		{
-			if(DoIOwnStrip(m_linkStrip))
-				m_linkStrip->render(currentMouse, layer);
+			m_draggingStrip->render(currentMouse, layer);
 		}
 	}
 
@@ -455,15 +453,15 @@ namespace woodman
 			//but we want to know about it too
 			//m_draggingStrip = m_linkStrip;
 
-			UIOutLink* partner = dynamic_cast<UIOutLink*>(m_linkStrip->getStartTarget());
-			if(partner != nullptr)
-			{
-
-				//make the partner link start dragging the strip
-				partner->setDraggingStrip( m_linkStrip );
-				currentMouse->selectedWidget = partner;
-				m_linkStrip = nullptr;
-			}
+			// 			UIOutLink* partner = dynamic_cast<UIOutLink*>(m_linkStrip->getStartTarget());
+			// 			if(partner != nullptr)
+			// 			{
+			// 
+			// 				//make the partner link start dragging the strip
+			// 				partner->setDraggingStrip( m_linkStrip );
+			// 				currentMouse->selectedWidget = partner;
+			// 				m_linkStrip = nullptr;
+			// 			}
 		}
 		else
 		{
@@ -492,7 +490,7 @@ namespace woodman
 	{
 		if(m_linkStrip != nullptr)
 		{
-			unPair(m_linkStrip);
+			//unPair(m_linkStrip);
 		}
 	}
 
@@ -506,37 +504,34 @@ namespace woodman
 			//just to be sure check that were dragging something
 			if(m_draggingStrip != nullptr)
 			{
-				//are we the owners of the strip?
-				if(DoIOwnStrip(m_draggingStrip))
+				//is the hovering widget an OutLink? (NodeLink isn't good enough)
+				UINodeLink* partnerLink = dynamic_cast<UIOutLink*>(currentMouse->hoveringWidget);
+				if(partnerLink != nullptr)
 				{
-					//is the hovering widget an OutLink? (NodeLink isn't good enough)
-					UINodeLink* partnerLink = dynamic_cast<UIOutLink*>(currentMouse->hoveringWidget);
-					if(partnerLink != nullptr)
-					{
 
-						//why yes it is, LINK US UP, but first we have to unlink any other links
-// 						m_draggingStrip->updateEndTarget(this);
-// 						m_draggingStrip->updateStartTarget(partnerLink);
+					//why yes it is, LINK US UP, but first we have to unlink any other links
+					// 						m_draggingStrip->updateEndTarget(this);
+					// 						m_draggingStrip->updateStartTarget(partnerLink);
 
-						Pair(m_draggingStrip, partnerLink);
-					}
-					else
-					{
-						//oh no we released on not a InLink, check if it already is linked
-						if(m_draggingStrip->getEndTarget() != nullptr)
-						{
-							//there is! set it back to that
-							//this should be done automatically?
-						}
-
-					}
-
-					//set that we are not dragging anything anymore
-					m_draggingStrip = nullptr;
+					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
+					if(nodeBox != nullptr)
+						nodeBox->pairLinks(this, partnerLink);
 				}
+				else
+				{
+					//oh no we released on not a InLink, check if it already is linked
+					if(m_draggingStrip->getEndTarget() != nullptr)
+					{
+						//there is! set it back to that
+						//this should be done automatically?
+					}
+
+				}
+
+				//set that we are not dragging anything anymore
+				m_draggingStrip = nullptr;
 			}
 		}
-
 	}
 
 	//-------------------------------------------------------------------------
@@ -551,97 +546,86 @@ namespace woodman
 			//make sure that were dragging something
 			if(m_draggingStrip != nullptr)
 			{
-				if(DoIOwnStrip(m_draggingStrip))
-				{
-					Vector2f canvasCoords;
-					currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
-					CanvasCoordinates newStartPoint(currentMouse->hoveringCanvas, canvasCoords);
-					m_draggingStrip->updateStartPoint(newStartPoint);
-				}
+
+				Vector2f canvasCoords;
+				currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
+				CanvasCoordinates newStartPoint(currentMouse->hoveringCanvas, canvasCoords);
+				m_draggingStrip->updateStartPoint(newStartPoint);
 			}
+
 		}
 	}
 
 	//-------------------------------------------------------------------------
 
-	bool UIInLink::DoIOwnStrip(std::shared_ptr<UILinkStrip> linkStrip)
-	{
-		if(linkStrip->getStartTarget() != nullptr)
-			return false;
-			
-		//this is the dragging strip
-		if(linkStrip == m_draggingStrip || linkStrip == m_linkStrip)
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	//-------------------------------------------------------------------------
-
-	void UIInLink::Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink)
-	{
-		//override the current one
-		if(m_linkStrip != nullptr)
-			unPair(m_linkStrip);
-	
-		m_linkStrip = linkStrip;
-		linkStrip->updateEndTarget(this);
-		m_callBackRecipient->CallBackLinkToNodeSlot(partnerLink->getCallBackRecipient());
-
-		UINodeLink* stripLink = dynamic_cast<UINodeLink*>(linkStrip->getStartTarget());
-		if(partnerLink != stripLink)
-		{
-			partnerLink->Pair(linkStrip, this);
-		}
-	}
+	// 	void UIInLink::Pair(std::shared_ptr<UILinkStrip> linkStrip, UINodeLink* partnerLink)
+	// 	{
+	// 		//override the current one
+	// 		if(m_linkStrip != nullptr)
+	// 			unPair(m_linkStrip);
+	// 	
+	// 		m_linkStrip = linkStrip;
+	// 		linkStrip->updateEndTarget(this);
+	// 		m_callBackRecipient->CallBackLinkToNodeSlot(partnerLink->getCallBackRecipient());
+	// 
+	// 		UINodeLink* stripLink = dynamic_cast<UINodeLink*>(linkStrip->getStartTarget());
+	// 		if(partnerLink != stripLink)
+	// 		{
+	// 			partnerLink->Pair(linkStrip, this);
+	// 		}
+	// 	}
 
 	//-------------------------------------------------------------------------
 
-	void UIInLink::Pair( UIOutLink* partnerLink)
-	{
-
-		CanvasCoordinates startCoords(partnerLink->getParentCanvas(), m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
-		CanvasCoordinates endCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
-
-		m_linkStrip = std::shared_ptr<UILinkStrip>( new UILinkStrip(
-			m_parentCanvas, 
-			this, 
-			"lineSTRIP",
-			HashedString("LinkStrip"),
-			-1.0f, 
-			m_parentDataType->type,
-			m_dataTypeSize, 
-			startCoords,
-			endCoords) );
-
-		m_callBackRecipient->CallBackLinkToNodeSlot(partnerLink->getCallBackRecipient());
-
-		m_linkStrip->Initialize();
-		m_linkStrip->updateEndTarget(this);
-
-		partnerLink->Pair(m_linkStrip, this);
-	}
+	// 	void UIInLink::Pair( UIOutLink* partnerLink)
+	// 	{
+	// 
+	// 		CanvasCoordinates startCoords(partnerLink->getParentCanvas(), m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+	// 		CanvasCoordinates endCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+	// 
+	// 		m_linkStrip = std::shared_ptr<UILinkStrip>( new UILinkStrip(
+	// 			m_parentCanvas, 
+	// 			this, 
+	// 			"lineSTRIP",
+	// 			HashedString("LinkStrip"),
+	// 			-1.0f, 
+	// 			m_parentDataType->type,
+	// 			m_dataTypeSize, 
+	// 			startCoords,
+	// 			endCoords) );
+	// 
+	// 		m_callBackRecipient->CallBackLinkToNodeSlot(partnerLink->getCallBackRecipient());
+	// 
+	// 		m_linkStrip->Initialize();
+	// 		m_linkStrip->updateEndTarget(this);
+	// 
+	// 		partnerLink->Pair(m_linkStrip, this);
+	// 	}
 
 	//-------------------------------------------------------------------------
 
-	void UIInLink::unPair(std::shared_ptr<UILinkStrip> linkStrip)
+	void UIInLink::unPair()
 	{
 		// So we have to remove that Thing
 
 		//remove reference to us
-		m_linkStrip->updateEndTarget(nullptr);
-
-		//then tell the other guy to remove his reference
-		UINodeLink* partnerLink = dynamic_cast<UINodeLink*>(linkStrip->getStartTarget());
-		if(partnerLink != nullptr)
+		if(m_linkStrip != nullptr)
 		{
-			partnerLink->unPair(linkStrip);
-		}
 
-		//then erase the linkStrip
-		m_linkStrip = nullptr;
+			m_linkStrip->updateEndTarget(nullptr);
+
+			//then tell the other guy to remove his reference
+			UIOutLink* partnerLink = dynamic_cast<UIOutLink*>(m_linkStrip->getStartTarget());
+			if(partnerLink != nullptr)
+			{
+				partnerLink->unPair(m_linkStrip);
+			}
+
+			//then remove the refernece to the linkStrip
+			m_linkStrip = nullptr;
+
+
+		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -669,6 +653,19 @@ namespace woodman
 		return nullptr;
 	}
 
+	void UIInLink::SetLinkStrip(UILinkStrip* strip)
+	{
+		m_linkStrip = strip;
+		setDataSize(m_linkStrip->getStartTarget()->getTypeSize());
+	}
+
+	void UIInLink::UpdateVectorMap()
+	{
+		if(m_linkStrip != nullptr)
+		{
+			m_linkStrip->updateVectorMap();
+		}
+	}
 
 #pragma endregion
 

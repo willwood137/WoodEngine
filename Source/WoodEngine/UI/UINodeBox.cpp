@@ -171,4 +171,83 @@ namespace woodman
 		m_linkSlots.insert(newLink);
 		addChild(newLink);
 	}
+
+	void UINodeBox::pairLinks( UINodeLink* MyLink, UINodeLink* OtherLink )
+	{
+		//Check If I own MyLink
+		if( m_linkSlots.find(MyLink) == m_linkSlots.end() )
+			return;
+
+		//check if the types are the same
+		if( MyLink->getDataType()->type != OtherLink->getDataType()->type )
+			return;
+
+		//determine which link is the out and which is the in
+		UIOutLink* outLink;
+		UIInLink* inLink;
+		if(MyLink->IsOutLink())
+		{
+			outLink = dynamic_cast<UIOutLink*>(MyLink);
+			inLink = dynamic_cast<UIInLink*>(OtherLink);
+		}
+		else
+		{
+			outLink = dynamic_cast<UIOutLink*>(OtherLink);
+			inLink = dynamic_cast<UIInLink*>(MyLink);
+		}
+
+		//Check For Recursion
+		// 
+		//TODO
+
+		//Create the linkStrip
+		//
+		
+		std::string stripName = "DataStrip_" + outLink->getName() + "_" + inLink->getName();
+		UILinkStrip* linkStrip = new UILinkStrip( m_parentCanvas, outLink, stripName, HashedString(stripName), -100.0f, outLink, inLink);
+		linkStrip->Initialize();
+
+		//Pair the Links
+		//
+		outLink->AddLinkStrip(linkStrip);
+
+		inLink->unPair();
+		inLink->SetLinkStrip(linkStrip);
+
+		linkStrip->calcControlPoints();
+
+		CheckLinkSlotData();
+
+	}
+
+	void UINodeBox::CheckLinkSlotData()
+	{
+		for(auto dataIt = m_linkSlotDatas.begin(); dataIt != m_linkSlotDatas.end(); ++dataIt)
+		{
+			unsigned int largestSize = 0;
+
+			for( auto entryIt = (*dataIt)->Entries.begin(); entryIt != (*dataIt)->Entries.end(); ++entryIt)
+			{
+				largestSize = max((*entryIt)->getTypeSize(), largestSize);
+			}
+
+			//now that we have the largest sizes of the entries, set the sizes;
+
+			for( auto entryIt = (*dataIt)->Entries.begin(); entryIt != (*dataIt)->Entries.end(); ++entryIt)
+			{
+				if( (*entryIt)->getTypeSize() < largestSize)
+				{
+					(*entryIt)->setDataSize(largestSize);
+					(*entryIt)->UpdateVectorMap();
+				}
+			}
+
+			for( auto userIt = (*dataIt)->Entries.begin(); userIt != (*dataIt)->Entries.end(); ++userIt)
+			{
+				(*userIt)->setDataSize(largestSize);
+				(*userIt)->UpdateVectorMap();
+			}
+
+		}
+	}
 }

@@ -13,6 +13,9 @@
 
 namespace woodman
 {
+	class UINodeLink;
+
+
 	class UILinkStrip : public UIWidget
 	{
 	public:
@@ -27,20 +30,30 @@ namespace woodman
 			CanvasCoordinates startPoint,
 			CanvasCoordinates endPoint);
 
+		UILinkStrip(UICanvas* ParentCanvas,
+			UIWidget* parentWidget,
+			const std::string& name,
+			HashedString uniqueID,
+			float RelativeLayer,
+			UINodeLink* OutLink,
+			UINodeLink* InLink );
+
 		bool isPointInBounds(const Vector2f& point);
 
 		//Inherited Functions
 		virtual void Initialize();
 		virtual void render(UIMouse* currentMouse, float ParentLayer);
 		virtual void update(UIMouse* currentMouse);
-		
+
 		//calculates the line strip based on the start/end points/vectors
 		void calcControlPoints();
 
+		void updateVectorMap();
+
 #pragma region UILinkStrip_Getters
 
-		UIWidget* getStartTarget();
-		UIWidget* getEndTarget();
+		UINodeLink* getStartTarget();
+		UINodeLink* getEndTarget();
 		bool isGoodStrip();
 
 #pragma endregion
@@ -48,8 +61,8 @@ namespace woodman
 
 		void updateStartPoint(const CanvasCoordinates& StartPoint);
 		void updateEndPoint(const CanvasCoordinates& EndPoint);
-		void updateStartTarget( UIWidget* StartTarget);
-		void updateEndTarget( UIWidget* EndTarget);
+		void updateStartTarget( UINodeLink* StartTarget);
+		void updateEndTarget( UINodeLink* EndTarget);
 
 #pragma endregion
 
@@ -68,12 +81,13 @@ namespace woodman
 		PropertyType m_propertyType;
 		unsigned int m_typeSize;
 
-		UIWidget* m_startTarget;
-		UIWidget* m_endTarget;
-
-		UIVectorMap m_vectorMap;
+		UINodeLink* m_startTarget;
+		unsigned int m_startSize;
+		UINodeLink* m_endTarget;
+		unsigned int m_endSize;
 
 		std::vector< CanvasCoordinates > m_controlPoints;
+		UIVectorMap* m_vectorMap;
 
 		std::shared_ptr<Shader> m_lineStripShader;
 		std::shared_ptr<Shader> m_crossCanvasLineStripShader;

@@ -57,6 +57,8 @@ namespace woodman
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
 		void AddLinkSlotData(const LinkSlotData& data);
 		void addLink(UINodeLink* newLink);
+		void pairLinks( UINodeLink* MyLink, UINodeLink* OtherLink );
+		void CheckLinkSlotData();
 
 	private:
 		//TL Corner

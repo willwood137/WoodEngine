@@ -171,6 +171,7 @@
     <ClCompile Include="UI\UINodeBox.cpp" />
     <ClCompile Include="UI\UINodeLink.cpp" />
     <ClCompile Include="UI\UIStyle.cpp" />
+    <ClCompile Include="UI\UIVectorMap.cpp" />
     <ClCompile Include="UI\UIWidget.cpp" />
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -208,6 +209,8 @@
     <Xml Include="UI\DefaultStyle.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Assets\Shaders\UI\BoxShader.frag" />
+    <None Include="..\..\Assets\Shaders\UI\BoxShader.vert" />
     <None Include="..\..\Assets\Shaders\UI\CanvasBackground.frag" />
     <None Include="..\..\Assets\Shaders\UI\CanvasBackground.vert" />
     <None Include="..\..\Assets\Shaders\UI\CrossCanvasLineShader.frag" />
