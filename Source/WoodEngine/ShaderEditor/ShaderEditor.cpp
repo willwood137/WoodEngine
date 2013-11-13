@@ -108,11 +108,10 @@ namespace woodman
 		LoadMenu->EventToFire = "LoadFile";
 		m_mouse->MainMenu->subMenus.emplace_back(std::move(LoadMenu) );
  
- 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", HashedString("Previewer01"), 100 );
+ 		m_previewWidget = new ModelPreviewWidget(m_dividerCanvas, nullptr, "Previewer", 100, Vector2f(0.0f, 0.0f) );
  		m_previewWidget->SetUpRenderTarget(Vector2i(400, 512));
   		m_previewWidget->loadModelFromFile(ASSETS + "Models\\jax.xml");
- 		m_previewWidget->setCanvasCoordinates(Vector2f(-200, 450.0-512.0) );
- 		m_previewWidget->setCollisionSize(Vector2f(400.0, 512.0));
+ 		m_previewWidget->setSize(Vector2f(400.0, 512.0));
 		
 		m_dividerCanvas->RegisterUIWidget(m_previewWidget);
 	}
@@ -137,14 +136,14 @@ namespace woodman
 	void ShaderEditor::PairLinksFromData(LinkInfo* info, HashedString NodeID)
 	{
 
-		UIInLink* inLink =  dynamic_cast<UIInLink*>(getUIWidgetByID( HashedString( info->Name ) ) );
+//		UIInLink* inLink =  dynamic_cast<UIInLink*>(getUIWidgetByID( HashedString( info->Name ) ) );
 
 // 		NodeInstance* inCallBackNode = m_shaderInstance.getNodeInstanceByID(NodeID);
 // 		NodeLinkInstance* inCallBack = inCallBackNode->getLinkByID(info->Name);
 // 
 // 		inLink->set
 
-		UIOutLink* outLink = dynamic_cast<UIOutLink*>(getUIWidgetByID( HashedString( info->PartnerLinkName ) ) );
+//		UIOutLink* outLink = dynamic_cast<UIOutLink*>(getUIWidgetByID( HashedString( info->PartnerLinkName ) ) );
 
 		//inLink->Pair(outLink);
 
@@ -441,7 +440,7 @@ namespace woodman
 		
 		
 
-		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), node->getUniqueID(), 100, node->getPosition() ) );
+		UINodeBox* NodeBox(new UINodeBox(canvasToPutOn, nullptr, node->getName(), 100, node->getPosition() ) );
 		ShaderNode* DefinitionNode = node->getDefinitionNode();
 
 		NodeBox->setCallBackRecipient(node);
@@ -453,93 +452,20 @@ namespace woodman
 		std::shared_ptr<UIStyle> style = UIStyle::DefaultUIStyle;
 		NodeBox->setStyle( style );
 
-
-		float TitleWidth = Font::getLengthOfString( node->getName(), Font::CreateOrGetFont(HASHED_STRING_tahoma), style->TitleSize) + style->NodeBoxBorderLength * 2.0f + style->NodeBoxCornerSize;
-		unsigned int numInSlots = 0;
-		unsigned int numOutSlots = 0;
-		float outLongest = 0.0f;
-		float inLongest = 0.0f;
-		
-		//Calculate the size of the NodeBox
-		for(auto it = links->begin(); it != links->end(); ++it)
-		{
-			Vector2f Offset(0.0f, 0.0f);
-
-			//add in Title/title buffer
-			Offset.y += style->TitleSize + style->TitleBuffer;
-
-			float textlength = Font::getLengthOfString((it->second)->parentLink->name, Font::CreateOrGetFont(HASHED_STRING_tahoma), style->subTitleSize);
-			if(!(it->second)->exitNode)
-			{
-				//this is an entrance node, so its on the left side
-				numInSlots++;
-				if(textlength > inLongest)
-					inLongest = textlength;
-			}
-			else
-			{
-				if(textlength > outLongest)
-					outLongest = textlength;
-				numOutSlots++;
-			}
-		}
-		float totalSubLength = outLongest + inLongest + style->NodeBoxBorderLength * 2.2f + 10.0f;
-		
-		Vector2f boxSize;
-		boxSize.x = max(totalSubLength, TitleWidth);
-
-		//get height
-		boxSize.y = style->NodeBoxBorderLength * 2 + style->NodeBoxCornerSize + style->TitleSize + style->TitleBuffer + static_cast<float>(max( numInSlots, numOutSlots)) * (style->subTitleSize + style->subTitleBuffer);
-		NodeBox->setCollisionSize(boxSize);
-
-			//titleMax length
-
-		numInSlots = 0;
-		numOutSlots = 0;
-
 		//Now add the nodes to the nodebox
 		for(auto it = links->begin(); it != links->end(); ++it)
 		{
-			Vector2f Offset(0.0f, 0.0f);
-			Offset.y += boxSize.y;
-			Offset.y -= (style->NodeBoxBorderLength + style->TitleBuffer + style->TitleSize);
-			if(!(it->second)->exitNode)
-			{
-				//this is an entrance node, so its on the left side
-
-				//add in TL corner
-
-				Offset.y -= style->NodeBoxCornerSize;
-
-				//add subtile size for each slot
-				Offset.y -= static_cast<float>(numInSlots) * ( style->subTitleSize + style->subTitleBuffer);
-				numInSlots++;
-			}
-			else
-			{
-				Offset.x += boxSize.x;
-				//this is an exit node
-				Offset.y -= static_cast<float>(numOutSlots) * ( style->subTitleSize + style->subTitleBuffer);
-				numOutSlots++;
-			}
-
 			UINodeLink* newSlot;
 			if((it->second)->exitNode)
 			{
-				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, 10.0f, Vector2f(0.0f, 0.0f), &(it->second->parentLink->typeData), it->second.get() );
 			}
 			else
 			{
-				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
+				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, 10.0f, Vector2f(0.0f, 0.0f), &(it->second->parentLink->typeData), it->second.get() );
 			}
 			
 			newSlot->setStyle(UIStyle::DefaultUIStyle);
-			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
-			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
-			newSlot->setLockedToParent(true);
-			newSlot->setParentOffset(Offset);
-			newSlot->Initialize();
-			newSlot->calcFullCollisionBox();
 			NodeBox->addLink(newSlot);
 		}
 
@@ -547,7 +473,7 @@ namespace woodman
 		{
 			NodeBox->AddLinkSlotData( (*linkSlotDataIt) );
 		}
-		NodeBox->calcFullCollisionBox();
+		NodeBox->setTitle(node->getName());
 		NodeBox->Initialize();
 		canvasToPutOn->RegisterUIWidget(NodeBox);
 
@@ -612,7 +538,7 @@ namespace woodman
 			curCanvas = m_fragmentCanvas;
 		}
 
-		curCanvas->mapPointToCanvasSpace(m_mouse->prevRClickPosition, canvasPos);
+		curCanvas->mapPointToCanvasSpace( m_mouse->EventData[MOUSE_EVENT_RIGHT_CLICK].screenCoordinates, canvasPos );
 	
 		NodeInstance* newNode = m_shaderInstance.CreateNewNodeInstance(tempDef, shadertype, canvasPos);
 		CreateUINodeBoxFromNodeInstance(newNode);

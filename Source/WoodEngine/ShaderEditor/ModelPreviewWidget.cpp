@@ -5,8 +5,8 @@
 
 namespace woodman
 {
-	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID, float RelativeLayer )
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, float RelativeLayer, const Vector2f& Coordinates )
+		: UIWidget(ParentCanvas, parentWidget, name, RelativeLayer, Coordinates),
 		m_camera(new Camera(Vector3f(0.0f, 50.0f, -200.0f) ) ),
 		m_clock(HashedString("PreviewClock"), .2, Clock::MasterClock())
 	{
@@ -133,14 +133,14 @@ namespace woodman
 
 		//now render the texture
 
-		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(m_coordinates.x, m_coordinates.y), LinkBoxMax(LinkBoxMin + m_canvasCollisionBoxSize );
+		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(getAbsoluteCoordinates()), LinkBoxMax(LinkBoxMin + getSize() );
 
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
+		getParentCanvas()->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
+		getParentCanvas()->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
 
 		Vector2f LinkBoxSizeScreen = LinkBoxMaxScreen - LinkBoxMinScreen;
 
-		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
+		AABB2D screenSpaceBounds = getParentCanvas()->getScreenSpace();
 
 		m_showTextureShader->load();
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
@@ -164,10 +164,10 @@ namespace woodman
 		ss << m_clock.getTimeSeconds();
 		ss2 << "x" << m_clock.getTimeScale();
 		Vector2f screenPos;
-		m_parentCanvas->mapPointToScreenSpace(m_coordinates, screenPos);
+		getParentCanvas()->mapPointToScreenSpace(getAbsoluteCoordinates(), screenPos);
 
-		Font::DrawTextToScreen(ss.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
-		Font::DrawTextToScreen(ss2.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
+		Font::DrawTextToScreen(ss.str(),  getStyle()->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
+		Font::DrawTextToScreen(ss2.str(), getStyle()->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
 
 
 	}

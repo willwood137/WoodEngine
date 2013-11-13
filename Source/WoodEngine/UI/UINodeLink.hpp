@@ -21,9 +21,8 @@ namespace woodman
 	public:
 
 		virtual void Initialize();
-		virtual void render(UIMouse* currentMouse,float ParentLayer );
+		virtual void render(UIMouse* currentMouse, const AABB2D& CanvasBounds ) const;
 		virtual void move(const Vector2f& amountToMove);
-		virtual void update(UIMouse* currentMouse);
 
 
 		virtual void MouseClick(   UIMouse* currentMouse );
@@ -53,7 +52,6 @@ namespace woodman
 		UINodeLink(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID,
 			float RelativeLayer,
 			const Vector2f& canvasCoordinates,
 			bool outLink,
@@ -78,14 +76,13 @@ namespace woodman
 	public:
 		UIOutLink(UICanvas* ParentCanvas,
 			   UIWidget* parentWidget,
-			   const std::string& name,
-			   HashedString uniqueID, 
+			   const std::string& name, 
 			   float RelativeLayer,
 			   const Vector2f& canvasCoordinates,
 			   DataType* dType,
 			   UINodeLinkCallBackBase* callbackRecipient);
 
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
+		virtual void render(UIMouse* currentMouse, const AABB2D& CanvasBounds) const;
 		virtual void MouseClick(   UIMouse* currentMouse );
 		virtual void MouseRClick(  UIMouse* currentMouse );
 		virtual void MouseRelease( UIMouse* currentMouse);
@@ -111,13 +108,12 @@ namespace woodman
 		UIInLink(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID, 
 			float RelativeLayer,
 			const Vector2f& canvasCoordinates,
 			DataType* dType,
 			UINodeLinkCallBackBase* callbackRecipient);
 
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
+		virtual void render(UIMouse* currentMouse, const AABB2D& CanvasBounds) const;
 		virtual void MouseClick(   UIMouse* currentMouse );
 		virtual void MouseRClick(  UIMouse* currentMouse );
 		virtual void MouseRelease( UIMouse* currentMouse);

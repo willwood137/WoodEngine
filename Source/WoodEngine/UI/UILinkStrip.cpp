@@ -9,13 +9,12 @@ namespace woodman
 	UILinkStrip::UILinkStrip(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID,
 		float RelativeLayer,
 		PropertyType pType,
 		unsigned int typeSize,
 		CanvasCoordinates startPoint,
 		CanvasCoordinates endPoint)
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+		: UIWidget(ParentCanvas, parentWidget, name, RelativeLayer, Vector2f(0.0f, 0.0f)),
 		m_startVector(30.0f, 0.0f),
 		m_endVector(-30.0f, 0.0f),
 		m_propertyType(pType),
@@ -29,11 +28,10 @@ namespace woodman
 	UILinkStrip::UILinkStrip(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID,
 		float RelativeLayer,
 		UINodeLink* OutLink,
 		UINodeLink* InLink )
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+		:  UIWidget(ParentCanvas, parentWidget, name, RelativeLayer, Vector2f(0.0f, 0.0f)),
 		m_startVector(30.0f, 0.0f),
 		m_endVector(-30.0f, 0.0f),
 		m_startTarget(OutLink),
@@ -42,15 +40,15 @@ namespace woodman
 		m_endPoint(ParentCanvas, Vector2f(0.0f, 0.0f) )
 	{
 		m_propertyType = m_startTarget->getDataType()->type;
-		m_vectorMap = new UIVectorMap(ParentCanvas, this, name + "_VectorMap", HashedString(uniqueID.m_string + "_VectorMap"), 1.0f);
+		m_vectorMap = new UIVectorMap(ParentCanvas, this, name + "_VectorMap", 1.0f, Vector2f(0.0f, 0.0f) );
 		m_vectorMap->Initialize();
 		m_vectorMap->updateInSize(OutLink->getTypeSize());
 		m_vectorMap->updateExitSize(InLink->getTypeSize());
-		m_vectorMap->setCollisionSize(Vector2f(32.0f, 32.0f));
+		m_vectorMap->setSize(Vector2f(32.0f, 32.0f));
 		addChild(m_vectorMap);
 
-		m_startPoint.coordinatesCanvasSpace = OutLink->getCanvasCoordinates() + Vector2f(0.0f, OutLink->getCollisionSize().y * .25f);
-		m_endPoint.coordinatesCanvasSpace = InLink->getCanvasCoordinates() + Vector2f(0.0f, InLink->getCollisionSize().y * .25f);
+		m_startPoint.coordinatesCanvasSpace = OutLink->getAbsoluteCoordinates() + Vector2f(0.0f, OutLink->getSize().y * .25f);
+		m_endPoint.coordinatesCanvasSpace = InLink->getAbsoluteCoordinates() + Vector2f(0.0f, InLink->getSize().y * .25f);
 	}
 
 	void UILinkStrip::Initialize()
@@ -66,41 +64,8 @@ namespace woodman
 		UIWidget::Initialize();
 	}
 
-	bool UILinkStrip::isPointInBounds(const Vector2f& point)
-	{
-		// TODO check line collision
-		//
-		return UIWidget::isPointInBounds(point);
-	}
 
-	void UILinkStrip::render(UIMouse* currentMouse, float ParentLayer)
-	{
-
-		float layer = ParentLayer - m_relativeLayer;
-
-		if(m_startPoint.getOwningCanvas() == nullptr || m_endPoint.getOwningCanvas() == nullptr)
-			return;
-
-		if(m_startPoint.getOwningCanvas() == m_endPoint.getOwningCanvas())
-		{
-			renderIntraCanvas(currentMouse, layer);
-		}
-		else
-		{
-			renderCrossCanvas(currentMouse, layer);
-		}
-
-		UIWidget::render(currentMouse, layer);
-	}
-
-
-	void UILinkStrip::renderCrossCanvas(UIMouse* currentMouse, float layer)
-	{
-
-		
-	}
-
-	void UILinkStrip::renderIntraCanvas(UIMouse* currentMouse, float layer)
+	void UILinkStrip::render(UIMouse* currentMouse, const AABB2D& CanvasBounds) const
 	{
 		m_lineStripShader->load();
 
@@ -116,11 +81,11 @@ namespace woodman
 
 		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen;
 
-		m_parentCanvas->mapPointToScreenSpace(m_coordinates, NodeBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(m_coordinates + m_canvasCollisionBoxSize, NodeBoxMaxScreen);
+		getParentCanvas()->mapPointToScreenSpace(getAbsoluteCoordinates(), NodeBoxMinScreen);
+		getParentCanvas()->mapPointToScreenSpace(getAbsoluteCoordinates() + getSize(), NodeBoxMaxScreen);
 
 		Vector2f NodeBoxSizeScreen = NodeBoxMaxScreen - NodeBoxMinScreen;
-		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
+		AABB2D screenSpaceBounds = getParentCanvas()->getScreenSpace();
 
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 		glDisable(GL_CULL_FACE);
@@ -130,17 +95,17 @@ namespace woodman
 		int numPoints = canvasPoints.size();
 		int numLines = numPoints - 1;
 		Vector2f inverseScreen( 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
-		Vector3f minScreenPos(NodeBoxMinScreen, layer);
+		Vector3f minScreenPos(NodeBoxMinScreen, getAbsoluteLayer());
 
 		m_lineStripShader->SetUniformVector3(HASHED_STRING_u_position, minScreenPos, 1);
 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_size, NodeBoxSizeScreen, 1);
 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMin, screenSpaceBounds.m_vMin, 1);
 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMax, screenSpaceBounds.m_vMax, 1);
-		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMin, m_coordinates, 1);
-		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMax, m_coordinates + m_canvasCollisionBoxSize, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMin, getAbsoluteCoordinates(), 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMax, getAbsoluteCoordinates() + getSize(), 1);
 		m_lineStripShader->SetUniformInt(HASHED_STRING_u_filter, filterSlot, 1);
 
-		float screenLayer = layer / g_MaxLayer;
+		float screenLayer = getAbsoluteLayer() / g_MaxLayer;
 		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_layer, screenLayer, 1);
 
 
@@ -151,13 +116,16 @@ namespace woodman
 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_lineSegmentsStrip, canvasPoints[0], numPoints );
 		//glUniform2fv(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSegmentsStrip), numPoints, reinterpret_cast<GLfloat*>(canvasPoints.data()) );
 		m_lineStripShader->SetUniformInt(HASHED_STRING_u_numLines, numLines, 1);
-		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_lineSize, m_style->LineWidth, 1);
+		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_lineSize, getStyle()->LineWidth, 1);
 
 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_inverseScreenResolution, inverseScreen, 1 );
 
-		Texture::ApplyTexture(m_filterTexture);
+		std::shared_ptr<Texture> tempTexture = m_filterTexture;
+		Texture::ApplyTexture(tempTexture);
 
 		m_lineStripShader->renderSimpleQuad();
+
+		UIWidget::render(currentMouse, CanvasBounds);
 	}
 
 	void UILinkStrip::calcControlPoints()
@@ -200,15 +168,15 @@ namespace woodman
 			maxValues.y = max(maxValues.y, screenCoords.y);
 		}
 		
-		m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth * .5f);
-		m_canvasCollisionBoxSize = maxValues - minValues + Vector2f(0.0f, m_style->LineWidth);
+		setAbsoluteCoordinates(minValues - Vector2f(0.0f, getStyle()->LineWidth * .5f) );
+		setSize(maxValues - minValues + Vector2f(0.0f, getStyle()->LineWidth) );
 		calcFullCollisionBox();
 
 		//Update vectormap
 		Vector2f midPoint = (m_controlPoints[1].coordinatesCanvasSpace + m_controlPoints[2].coordinatesCanvasSpace) / 2.0f;
 		
 		if(m_vectorMap != nullptr)
-			m_vectorMap->setCanvasCoordinates(midPoint - m_vectorMap->getCollisionSize() / 2.0f);
+			m_vectorMap->setRelativeCoordinates(midPoint - m_vectorMap->getSize() / 2.0f);
 	}
 
 
@@ -235,9 +203,9 @@ namespace woodman
 		calcControlPoints();
 	}
 
-	void UILinkStrip::update( UIMouse* currentMouse )
+	void UILinkStrip::updateData(UIMouse* currentMouse, const ParentInfo& parent_info )
 	{
-		UIWidget::update(currentMouse);
+		UIWidget::update(currentMouse, parent_info);
 	}
 
 	bool UILinkStrip::isGoodStrip()
@@ -260,7 +228,7 @@ namespace woodman
 		m_vectorMap->updateInSize(m_startTarget->getTypeSize());
 		m_vectorMap->updateExitSize(m_endTarget->getTypeSize());
 
-		m_vectorMap->setCollisionSize( Vector2f(32.0f, 32.0f * static_cast<float>(m_vectorMap->getExitSize()) ) );
+		m_vectorMap->setSize( Vector2f(32.0f, 32.0f * static_cast<float>(m_vectorMap->getExitSize()) ) );
 	}
 }
 

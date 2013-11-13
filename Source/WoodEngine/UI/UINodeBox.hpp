@@ -3,6 +3,7 @@
 
 #include "UIWidget.hpp"
 #include "UINodeLink.hpp"
+#include "UIGrid.hpp"
 
 #include "../Math/Vector2.hpp"
 
@@ -42,23 +43,24 @@ namespace woodman
 		UINodeBox(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID, 
 			float RelativeLayer,
 			const Vector2f& canvasCoordinates);
 
 		virtual void Initialize();
-		virtual void move(	const Vector2f& amountToMove );
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
 
-// 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
-// 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
- 		virtual void MouseDrag( UIMouse* currentMouse);
+		virtual void render(  UIMouse* currentMouse, const AABB2D& CanvasBounds ) const;
+		virtual void updateData(UIMouse* currentMouse, const ParentInfo& parent_info );
+		virtual void move(const Vector2f& amountToMove);
 
+		virtual void MouseEvent( UIMouse* currentMouse, MOUSE_EVENT_TYPE mouse_event, const ParentInfo& parent_info, std::vector<int>& mouse_impulse);
+		
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
 		void AddLinkSlotData(const LinkSlotData& data);
 		void addLink(UINodeLink* newLink);
 		void pairLinks( UINodeLink* MyLink, UINodeLink* OtherLink );
 		void CheckLinkSlotData();
+		void setTitle(const std::string& title);
+		std::string getTitle();
 
 	private:
 		//TL Corner
@@ -69,6 +71,10 @@ namespace woodman
 		std::vector<std::shared_ptr<UILinkSlotData> >	m_linkSlotDatas;
 		unsigned int									m_numInSlots;
 		unsigned int									m_numOutSlots;
+
+		UIGrid*											m_inGrid;
+		UIGrid*											m_outGrid;
+
 		
 		UINodeBoxCallBackRecipient* m_callBackRecipient;
 

@@ -33,10 +33,10 @@ namespace woodman
 		UIVectorMap(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer);
+			float RelativeLayer,
+			Vector2f coordinates);
 
-		virtual void render( UIMouse* currentMouse, float ParentLayer );
+		virtual void render( UIMouse* currentMouse, const AABB2D& bounds ) const;
 		virtual void Initialize();
 
 		void updateInSize(unsigned int size);

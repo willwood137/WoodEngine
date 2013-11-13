@@ -17,6 +17,24 @@
 
 namespace woodman
 {
+	enum Direction
+	{
+		DIRECTION_UP,
+		DIRECTION_DOWN,
+		DIRECTION_LEFT,
+		DIRECTION_RIGHT,
+		DIRECTION_SIZE
+	};
+
+	enum Corner
+	{
+		CORNER_TOP_LEFT,
+		CORNER_TOP_RIGHT,
+		CORNER_BOTTOM_RIGHT,
+		CORNER_BOTTOM_LEFT,
+		CORNER_SIZE
+	};
+
 	enum PropertyType
 	{
 		PROPERTYTYPE_FLOAT,

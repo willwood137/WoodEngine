@@ -65,34 +65,34 @@ namespace woodman
 	void UICanvas::RenderCanvas( UIMouse* currentMouse )
 	{
 
-		m_backgroundShader->load();
-		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		Texture::ApplyTexture(m_backgroundTexture);
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_position), 
-			m_screenSpace.m_vMin.x, 
-			m_screenSpace.m_vMin.y);
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_size), m_screenSpace.calcSize().x, m_screenSpace.calcSize().y);
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_mousePos), m_currentMouseCanvasPosition.x, m_currentMouseCanvasPosition.y);
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_canvasMin), m_canvasSpace.m_vMin.x, m_canvasSpace.m_vMin.y  );
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_canvasMax), m_canvasSpace.m_vMax.x, m_canvasSpace.m_vMax.y);
-		glUniform1i(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundTexture), 0);
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundResolution), 1.0f / static_cast<float>(m_backgroundResolution.x), 1.0f / static_cast<float>(m_backgroundResolution.y) );
-		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
-		float layer = m_layer / g_MaxLayer;
- 		m_backgroundShader->SetUniformFloat(HASHED_STRING_u_layer, layer, 1);
-		m_backgroundShader->setAttribute(HASHED_STRING_in_position, 2, GL_FLOAT, sizeof(Vector2f), 0);
-
-		glDrawArrays( GL_QUADS, 0, 4);
+//  		m_backgroundShader->load();
+//  		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
+//  		glDisable(GL_CULL_FACE);
+//  		glDisable(GL_DEPTH_TEST);
+//  		Texture::ApplyTexture(m_backgroundTexture);
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_position), 
+//  			m_screenSpace.m_vMin.x, 
+//  			m_screenSpace.m_vMin.y);
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_size), m_screenSpace.calcSize().x, m_screenSpace.calcSize().y);
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_mousePos), m_currentMouseCanvasPosition.x, m_currentMouseCanvasPosition.y);
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_canvasMin), m_canvasSpace.m_vMin.x, m_canvasSpace.m_vMin.y  );
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_canvasMax), m_canvasSpace.m_vMax.x, m_canvasSpace.m_vMax.y);
+//  		glUniform1i(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundTexture), 0);
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_backgroundResolution), 1.0f / static_cast<float>(m_backgroundResolution.x), 1.0f / static_cast<float>(m_backgroundResolution.y) );
+//  		glUniform2f(m_backgroundShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+//  		float layer = m_layer / g_MaxLayer;
+//   		m_backgroundShader->SetUniformFloat(HASHED_STRING_u_layer, layer, 1);
+//  		m_backgroundShader->setAttribute(HASHED_STRING_in_position, 2, GL_FLOAT, sizeof(Vector2f), 0);
+ 
+ 		glDrawArrays( GL_QUADS, 0, 4);
 
 		//m_backgroundShader->disableAttribute(HASHED_STRING_in_position);
 
-
+		
 		//render my nodeBoxes
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->render( currentMouse, m_layer );
+			(*it)->render( currentMouse, m_canvasSpace );
 		}
 	}
 
@@ -106,15 +106,21 @@ namespace woodman
  
  			Vector2f mouseDelta = m_currentMouseCanvasPosition - m_prevMouseCanvasPosition;
 
+			ParentInfo info;
+
+			info.Layer = m_layer;
+			info.Coordinates = Vector2f(0.0f, 0.0f);
+			info.CanvasBounds = m_canvasSpace;
+
 			for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 			{
-				(*it)->update(currentMouse);
+				(*it)->update(currentMouse, info);
 			}
 
 
  			if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas == this)
  			{
- 				if(currentMouse->selectedWidget == nullptr)
+ 				if( m_selectedWidget == nullptr)
  				{
 					//move canvas
 					m_center -= mouseDelta;
@@ -187,26 +193,52 @@ namespace woodman
 
 		UIWidget* topWidget = nullptr;
 
+		ParentInfo info;
+
+		info.Layer = m_layer;
+		info.Coordinates = Vector2f(0.0f, 0.0f);
+		info.CanvasBounds = m_canvasSpace;
+		float HighestLayer = 0.0f;
+
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->getTopWidgetColliding(PointCanvasSpace, topWidget, m_layer, m_layer );
+			(*it)->getTopWidgetColliding(PointCanvasSpace, info, HighestLayer );
 		}
 		
 		return topWidget;
 	}
 
 
-	UIWidget* UICanvas::getUIWidgetByID(HashedString ID)
+// 	UIWidget* UICanvas::getUIWidgetByID(HashedString ID)
+// 	{
+// 		UIWidget* result = nullptr;
+// 
+// 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
+// 		{
+// 			result = (*it)->getUIWidgetByID(ID);
+// 			if(result != nullptr)
+// 				return result;
+// 		}
+// 
+// 		return nullptr;
+// 	}
+
+	void UICanvas::setSelectedWidget( UIWidget* widget )
 	{
-		UIWidget* result = nullptr;
-
-		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
-		{
-			result = (*it)->getUIWidgetByID(ID);
-			if(result != nullptr)
-				return result;
-		}
-
-		return nullptr;
+		m_selectedWidget = widget;
 	}
+
+	UIWidget* UICanvas::getSelectedWidget()
+	{
+		return m_selectedWidget;
+	}
+
+	void UICanvas::MouseDrag( UIMouse* currentMouse )
+	{
+		if(m_selectedWidget != nullptr)
+		{
+
+		}
+	}
+
 }

@@ -29,20 +29,36 @@ namespace woodman
 		bool open;
 	};
 
+	enum MOUSE_EVENT_TYPE
+	{
+		MOUSE_EVENT_LEFT_CLICK = 0,
+		MOUSE_EVENT_LEFT_RELEASE,
+		MOUSE_EVENT_LEFT_DRAG,
+		MOUSE_EVENT_MIDDLE_CLICK,
+		MOUSE_EVENT_MIDDLE_RELEASE,
+		MOUSE_EVENT_MIDDLE_DRAG,
+		MOUSE_EVENT_RIGHT_CLICK,
+		MOUSE_EVENT_RIGHT_RELEASE,
+		MOUSE_EVENT_RIGHT_DRAG,
+		MOUSE_EVENT_SIZE
+	};
+
+	struct MouseEventData
+	{
+		UIWidget*	widget;
+		Vector2f	relativeWidgetCoordinates;
+		Vector2f	screenCoordinates;
+		Vector2f	prevScreenCoordinates;
+	};
+
 	struct UIMouse
 	{
 
-		UIMouse()
-			:menuOpen(false),
-			isPressed(false),
-			selectedWidget(nullptr),
-			hoveringWidget(nullptr),
-			selectedCanvas(nullptr),
-			hoveringCanvas(nullptr)
-		{
+		UIMouse();
 
-		}
-
+		UIWidget* hoveringWidget;
+		UICanvas* hoveringCanvas;
+		UICanvas* selectedCanvas;
 
 		void render();
 		bool clickMenu(  MouseMenu* menu, const Vector2f& menuPosition, EventSystem* eventSystem);
@@ -50,22 +66,11 @@ namespace woodman
 
 		Vector2f screenPosition;
 		Vector2f prevScreenPosition;
-		Vector2f prevClickPosition;
-		Vector2f prevRClickPosition;
-		Vector2f prevReleasePosition;
 
-		UIWidget* selectedWidget;
-		UIWidget* hoveringWidget;
-
-		UICanvas* selectedCanvas;
-		UICanvas* hoveringCanvas;
-
-		//where in relation the last Click was to the selected widgets coordinates (canvas space)
-		Vector2f relativeOriginalPosition;
+		std::array<MouseEventData, MOUSE_EVENT_SIZE> EventData;		
 
 		bool menuOpen;
 		bool isPressed;
-
 
 		std::shared_ptr<Shader> mouseMenuShader;
 		std::unique_ptr<MouseMenu> MainMenu;

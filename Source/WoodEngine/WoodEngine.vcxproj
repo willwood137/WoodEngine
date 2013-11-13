@@ -121,6 +121,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UI\UICanvas.hpp" />
     <ClInclude Include="UI\UIController.hpp" />
+    <ClInclude Include="UI\UIGrid.hpp" />
     <ClInclude Include="UI\UILinkStrip.hpp" />
     <ClInclude Include="UI\UIMouse.hpp" />
     <ClInclude Include="UI\UINodeBox.hpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="UI\UIStyle.hpp" />
     <ClInclude Include="UI\UIVectorMap.hpp" />
     <ClInclude Include="UI\UIWidget.hpp" />
+    <ClInclude Include="UI\UIWidgetContainer.hpp" />
     <ClInclude Include="Utility\ConsoleRedirector.hpp" />
     <ClInclude Include="Utility\ProfileSection.hpp" />
     <ClInclude Include="Utility\Utility.hpp" />
@@ -166,6 +168,7 @@
     </ClCompile>
     <ClCompile Include="UI\UICanvas.cpp" />
     <ClCompile Include="UI\UIController.cpp" />
+    <ClCompile Include="UI\UIGrid.cpp" />
     <ClCompile Include="UI\UILinkStrip.cpp" />
     <ClCompile Include="UI\UIMouse.cpp" />
     <ClCompile Include="UI\UINodeBox.cpp" />
@@ -173,6 +176,7 @@
     <ClCompile Include="UI\UIStyle.cpp" />
     <ClCompile Include="UI\UIVectorMap.cpp" />
     <ClCompile Include="UI\UIWidget.cpp" />
+    <ClCompile Include="UI\UIWidgetContainer.cpp" />
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>

@@ -14,11 +14,7 @@ namespace woodman
 	class ModelPreviewWidget : public UIWidget
 	{
 	public:
-		ModelPreviewWidget( UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer);
+		ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, float RelativeLayer, const Vector2f& Coordinates);
 
 		bool SetUpRenderTarget(Vector2i textureResolution);
 

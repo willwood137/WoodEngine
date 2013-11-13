@@ -32,8 +32,8 @@ namespace woodman
 	}
 
 
-	UIVectorMap::UIVectorMap(UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID, float RelativeLayer)
-		:UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer)
+	UIVectorMap::UIVectorMap(UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, float RelativeLayer, Vector2f coordinates)
+		:UIWidget(ParentCanvas, parentWidget, name, RelativeLayer, coordinates)
 	{
 
 	}
@@ -164,16 +164,16 @@ namespace woodman
 	}
 
 
-	void UIVectorMap::render( UIMouse* currentMouse, float ParentLayer )
+	void UIVectorMap::render(UIMouse* currentMouse, const AABB2D& bounds ) const
 	{
 		
 		size_t numBoxes = m_mapping.mapping.size();
 		
 		//render outer Box
-		Vector2f OuterBoxMinScreen, OuterBoxMaxScreen, OuterBoxMin(m_coordinates), OuterBoxMax(OuterBoxMin + m_canvasCollisionBoxSize);
-		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
-		m_parentCanvas->mapPointToScreenSpace(OuterBoxMin, OuterBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(OuterBoxMax, OuterBoxMaxScreen);
+		Vector2f OuterBoxMinScreen, OuterBoxMaxScreen, OuterBoxMin(getAbsoluteCoordinates()), OuterBoxMax(OuterBoxMin + getSize());
+		AABB2D screenSpaceBounds = getParentCanvas()->getScreenSpace();
+		getParentCanvas()->mapPointToScreenSpace(OuterBoxMin, OuterBoxMinScreen);
+		getParentCanvas()->mapPointToScreenSpace(OuterBoxMax, OuterBoxMaxScreen);
 		Vector2f OuterBoxSizeScreen = OuterBoxMaxScreen - OuterBoxMinScreen;
 
 		Vector2f inverseScreenRes( 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
@@ -207,12 +207,12 @@ namespace woodman
 		{
 			RGBA color = getVectorFieldColor(m_mapping.mapping[i]);
 
-			float y = m_coordinates.y + m_canvasCollisionBoxSize.y - 32.0f * static_cast<float>(i) - 24.0f;
-			float x = m_coordinates.x + 6.0f;
+			float y = getAbsoluteCoordinates().y + getSize().y - 32.0f * static_cast<float>(i) - 24.0f;
+			float x = getAbsoluteCoordinates().x + 6.0f;
 
 			Vector2f BoxMinScreen, BoxMaxScreen, BoxMin(x, y), BoxMax(BoxMin + Vector2f(20.0f, 20.0f));
-			m_parentCanvas->mapPointToScreenSpace(BoxMin, BoxMinScreen);
-			m_parentCanvas->mapPointToScreenSpace(BoxMax, BoxMaxScreen);
+			getParentCanvas()->mapPointToScreenSpace(BoxMin, BoxMinScreen);
+			getParentCanvas()->mapPointToScreenSpace(BoxMax, BoxMaxScreen);
 			Vector2f BoxSizeScreen = BoxMaxScreen - BoxMinScreen;
 
 
@@ -234,5 +234,7 @@ namespace woodman
 			glDrawArrays( GL_QUADS, 0, 4);
 			m_boxShader->disableAttribute(HASHED_STRING_in_position);
 		}
+
+		UIWidget::render(currentMouse, bounds);
 	}
 }

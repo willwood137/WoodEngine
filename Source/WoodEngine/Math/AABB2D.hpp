@@ -30,6 +30,7 @@ namespace woodman
 
 			AABB2D& stretchToIncludePoint( const Vector2f& point);
 			AABB2D& stretchToIncludeAABB2D( const AABB2D& box );
+			AABB2D& clip(const AABB2D& box );
 			AABB2D& Translate( const Vector2f& translation );
 			AABB2D& ScaleUniform( float scale );
 			AABB2D& ScaleNonUniform( float scaleX, float scaleY );
@@ -194,6 +195,22 @@ namespace woodman
 	{
 		stretchToIncludePoint( box.m_vMin );
 		stretchToIncludePoint( box.m_vMax );
+
+		return *this;
+	}
+
+	inline AABB2D& AABB2D::clip( const AABB2D& box )
+	{
+		m_vMin.x = max(m_vMin.x, box.m_vMin.x);
+		m_vMax.x = min(m_vMax.x, box.m_vMax.x);
+		if(m_vMin.x > m_vMax.x)
+			m_vMax.x = m_vMin.x;
+
+
+		m_vMin.y = max(m_vMin.y, box.m_vMin.y);
+		m_vMax.y = min(m_vMax.y, box.m_vMax.y);
+		if(m_vMin.y > m_vMax.y)
+			m_vMax.y = m_vMin.y;
 
 		return *this;
 	}

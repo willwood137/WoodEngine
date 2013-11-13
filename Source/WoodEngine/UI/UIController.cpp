@@ -50,9 +50,11 @@ namespace woodman
 
 		if(m_mouse->isPressed)
 		{
-			if(m_mouse->selectedWidget != nullptr)
+			UIWidget* prevClicked = m_mouse->EventData[MOUSE_EVENT_LEFT_CLICK].widget;
+			if(prevClicked!= nullptr)
 			{
-				m_mouse->selectedWidget->MouseDrag(m_mouse.get());
+				ParentInfo info;
+				prevClicked->MouseEvent(m_mouse.get(), MOUSE_EVENT_LEFT_DRAG, info); 
 			}
 		}
 
@@ -112,20 +114,6 @@ namespace woodman
 		}
 	}
 
-	UIWidget* UIController::getUIWidgetByID(HashedString ID)
-	{
-		UIWidget* result = nullptr;
-
-		for(auto it = m_canvases.begin(); it != m_canvases.end(); ++it)
-		{
-			result = (*it)->getUIWidgetByID(ID);
-			if(result != nullptr)
-				return result;
-		}
-
-		return nullptr;
-	}
-
 	//------------------------------------------------------------------------------------------------------------------------
 	//----Event Functions                                                                                               ------
 	//------------------------------------------------------------------------------------------------------------------------
@@ -141,11 +129,12 @@ namespace woodman
 	void UIController::catchLMouseDown(NamedPropertyContainer& parameters)
 	{
 		m_mouse->isPressed = true;
-		m_mouse->prevClickPosition = m_mouse->screenPosition;
+		m_mouse->EventData[MOUSE_EVENT_LEFT_CLICK].prevScreenCoordinates = m_mouse->EventData[MOUSE_EVENT_LEFT_CLICK].screenCoordinates;
+		m_mouse->EventData[MOUSE_EVENT_LEFT_CLICK].screenCoordinates = m_mouse->screenPosition;
 
 		if(m_mouse->menuOpen)
 		{
-			bool clickedMenu = m_mouse->clickMenu(m_mouse->MainMenu.get(), m_mouse->prevRClickPosition, p_eventSystem);
+			bool clickedMenu = m_mouse->clickMenu(m_mouse->MainMenu.get(), m_mouse->EventData[MOUSE_EVENT_RIGHT_CLICK].screenCoordinates, p_eventSystem);
 			if(!clickedMenu)
 			{
 				m_mouse->menuOpen = false;
@@ -155,8 +144,8 @@ namespace woodman
 		{
 			if(m_mouse->hoveringWidget != nullptr)
 			{
-				m_mouse->selectedWidget = m_mouse->hoveringWidget;
-				m_mouse->hoveringWidget->MouseClick(m_mouse.get());
+				ParentInfo info;
+				m_mouse->hoveringWidget->MouseEvent(m_mouse.get(), MOUSE_EVENT_LEFT_CLICK, info);
 			}
 			else
 			{
@@ -184,14 +173,17 @@ namespace woodman
 	{
 		if(!m_mouse->isPressed)
 		{
-			m_mouse->prevRClickPosition = m_mouse->screenPosition;
+			m_mouse->EventData[MOUSE_EVENT_RIGHT_CLICK].prevScreenCoordinates = m_mouse->EventData[MOUSE_EVENT_RIGHT_CLICK].screenCoordinates;
+			m_mouse->EventData[MOUSE_EVENT_RIGHT_CLICK].screenCoordinates = m_mouse->screenPosition;
+
 			if(m_mouse->hoveringWidget == nullptr)
 			{
 				m_mouse->menuOpen = true;
 			}
 			else
 			{
-				m_mouse->hoveringWidget->MouseRClick(m_mouse.get());
+				ParentInfo info;
+				m_mouse->hoveringWidget->MouseEvent(m_mouse.get(), MOUSE_EVENT_RIGHT_CLICK, info);
 			}
 		}
 	}
@@ -200,11 +192,17 @@ namespace woodman
 	{
 		m_mouse->isPressed = false;
 		m_mouse->selectedCanvas = nullptr;
+
+		m_mouse->EventData[MOUSE_EVENT_LEFT_RELEASE].prevScreenCoordinates = m_mouse->EventData[MOUSE_EVENT_LEFT_RELEASE].screenCoordinates;
+		m_mouse->EventData[MOUSE_EVENT_LEFT_RELEASE].screenCoordinates = m_mouse->screenPosition;
 		
-		if(m_mouse->selectedWidget != nullptr)
+
+		m_mouse->EventData[MOUSE_EVENT_LEFT_RELEASE].widget = m_mouse->hoveringWidget;
+		UIWidget* widget = m_mouse->EventData[MOUSE_EVENT_LEFT_RELEASE].widget;
+		if( widget != nullptr)
 		{
-			m_mouse->selectedWidget->MouseRelease(m_mouse.get());
+			ParentInfo info;
+			widget->MouseEvent(m_mouse.get(), MOUSE_EVENT_LEFT_RELEASE, info);
 		}
-		m_mouse->selectedWidget = m_mouse->hoveringWidget;
 	}
 }

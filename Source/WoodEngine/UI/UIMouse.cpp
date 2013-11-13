@@ -7,9 +7,25 @@
 
 namespace woodman
 {
+	UIMouse::UIMouse()
+		:menuOpen(false),
+		isPressed(false),
+		selectedCanvas(nullptr),
+		hoveringCanvas(nullptr),
+		hoveringWidget(nullptr)
+	{
+		for(size_t i = 0; i < MOUSE_EVENT_SIZE; ++i)
+		{
+			EventData[i].widget = nullptr;
+			EventData[i].relativeWidgetCoordinates = Vector2f(0.0f, 0.0f);
+			EventData[i].screenCoordinates = Vector2f(0.0f, 0.0f);
+			EventData[i].prevScreenCoordinates = Vector2f(0.0f, 0.0f);
+		}
+	}
+
 	void UIMouse::render()
 	{
-		renderMenu(MainMenu.get(), prevRClickPosition, UIStyle::DefaultUIStyle);
+		renderMenu(MainMenu.get(), EventData[MOUSE_EVENT_RIGHT_CLICK].screenCoordinates, UIStyle::DefaultUIStyle);
 		
 	}
 
@@ -58,9 +74,9 @@ namespace woodman
 
 		AABB2D menuBox(Vector2f(menuPosition.x, menuPosition.y + menuSize.y), Vector2f(menuPosition.x + menuSize.x, menuPosition.y) );
 
-		if(menuBox.isPointInsideBounds(prevClickPosition))
+		if(menuBox.isPointInsideBounds(EventData[MOUSE_EVENT_LEFT_CLICK].screenCoordinates))
 		{
-			int menuItem = floor( ( menuPosition.y - prevClickPosition.y) / UIStyle::DefaultUIStyle->MouseMenuHeight );
+			int menuItem = static_cast<int>(floor( ( menuPosition.y - EventData[MOUSE_EVENT_LEFT_CLICK].screenCoordinates.y) / UIStyle::DefaultUIStyle->MouseMenuHeight ) );
 
 			menuItem = clamp<int>(menuItem, 0, menu->subMenus.size() - 1);
 			if(menu->subMenus[menuItem]->subMenus.size() > 0)

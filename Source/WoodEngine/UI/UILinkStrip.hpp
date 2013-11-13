@@ -23,7 +23,6 @@ namespace woodman
 		UILinkStrip(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID,
 			float RelativeLayer,
 			PropertyType pType,
 			unsigned int typeSize,
@@ -33,17 +32,14 @@ namespace woodman
 		UILinkStrip(UICanvas* ParentCanvas,
 			UIWidget* parentWidget,
 			const std::string& name,
-			HashedString uniqueID,
 			float RelativeLayer,
 			UINodeLink* OutLink,
 			UINodeLink* InLink );
 
-		bool isPointInBounds(const Vector2f& point);
-
 		//Inherited Functions
 		virtual void Initialize();
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
-		virtual void update(UIMouse* currentMouse);
+		virtual void render(UIMouse* currentMouse, const AABB2D& CanvasBounds) const;
+		virtual void updateData(UIMouse* currentMouse, const ParentInfo& parent_info );
 
 		//calculates the line strip based on the start/end points/vectors
 		void calcControlPoints();
@@ -68,9 +64,6 @@ namespace woodman
 
 
 	private:
-
-		void renderCrossCanvas(UIMouse* currentMouse, float layer );
-		void renderIntraCanvas(UIMouse* currentMouse, float layer );
 
 
 		CanvasCoordinates m_startPoint;

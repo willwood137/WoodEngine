@@ -175,6 +175,12 @@
     <ClInclude Include="UI\UIVectorMap.hpp">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UIGrid.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIWidgetContainer.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
@@ -268,6 +274,12 @@
       <Filter>ShaderEditor</Filter>
     </ClCompile>
     <ClCompile Include="UI\UIVectorMap.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIGrid.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIWidgetContainer.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>

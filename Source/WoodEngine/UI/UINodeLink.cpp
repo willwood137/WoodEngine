@@ -14,13 +14,12 @@ namespace woodman
 	UINodeLink::UINodeLink(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID, 
 		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		bool outLink,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates),
+		: UIWidget(ParentCanvas, parentWidget, name, RelativeLayer, canvasCoordinates),
 		m_isOutLink(outLink),
 		m_parentDataType(dType),
 		m_callBackRecipient(callbackRecipient)
@@ -33,10 +32,9 @@ namespace woodman
 		m_slotShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LinkNode");
 	}
 
-	void UINodeLink::render(UIMouse* currentMouse, float ParentLayer )
+	void UINodeLink::render( UIMouse* currentMouse, const AABB2D& CanvasBounds ) const
 	{
-		float zoomScale = m_parentCanvas->getZoomScale();
-		float layer = ParentLayer - m_relativeLayer;
+		float zoomScale = getParentCanvas()->getZoomScale();
 
 		ALIGNMENT ali;
 		float boxOffset;
@@ -46,34 +44,34 @@ namespace woodman
 		{
 			ali = ALIGNMENT_RIGHT;
 			boxOffset = -10.0f;
-			textOffset = -m_style->NodeBoxBorderLength -4.0f;
+			textOffset = -getStyle()->NodeBoxBorderLength -4.0f;
 		}
 		else
 		{
 			ali = ALIGNMENT_LEFT;
 			boxOffset = -8.0f;
-			textOffset = m_style->NodeBoxBorderLength + 4.0f;
+			textOffset = getStyle()->NodeBoxBorderLength + 4.0f;
 		}
 
-		Vector2f TextCanvas( m_coordinates + Vector2f(textOffset, 0.0f)), TextScreen;
-		m_parentCanvas->mapPointToScreenSpace(TextCanvas, TextScreen);
+		Vector2f TextCanvas( getAbsoluteCoordinates() + Vector2f(textOffset, 0.0f)), TextScreen;
+		getParentCanvas()->mapPointToScreenSpace(TextCanvas, TextScreen);
 
-		Font::DrawTextToScreen( m_name, 
-			m_style->subTitleTextFont,
-			m_style->subTitleColor,
+		Font::DrawTextToScreen( getName(), 
+			getStyle()->subTitleTextFont,
+			getStyle()->subTitleColor,
 			TextScreen,
-			m_style->subTitleSize * zoomScale,
+			getStyle()->subTitleSize * zoomScale,
 			ali);
 
 		//due canvas to screen conversions
-		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(m_coordinates.x + boxOffset, m_coordinates.y - 5), LinkBoxMax(LinkBoxMin + m_canvasCollisionBoxSize );
+		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(getAbsoluteCoordinates().x + boxOffset, getAbsoluteCoordinates().y - 5), LinkBoxMax(LinkBoxMin + getSize() );
 
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
+		getParentCanvas()->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
+		getParentCanvas()->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
 
 		Vector2f LinkBoxSizeScreen = LinkBoxMaxScreen - LinkBoxMinScreen;
 
-		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
+		AABB2D screenSpaceBounds = getParentCanvas()->getScreenSpace();
 
 		m_slotShader->load();
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
@@ -85,10 +83,10 @@ namespace woodman
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_screenMax), screenSpaceBounds.m_vMax.x, screenSpaceBounds.m_vMax.y);
 		glUniform2f(m_slotShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
 
-		float glLayer = layer / g_MaxLayer;
+		float glLayer = getAbsoluteLayer() / g_MaxLayer;
 		m_slotShader->SetUniformFloat(HASHED_STRING_u_layer, glLayer, 1);
 
-		if(currentMouse->selectedWidget == this)
+		if(getParentCanvas()->getSelectedWidget() == this)
 		{
 			if(currentMouse->isPressed)
 				glUniform4f(m_slotShader->getUniformID(HASHED_STRING_u_color), 0.0f, 1.0f, .5f, 1.0f);
@@ -112,28 +110,25 @@ namespace woodman
 
 
 
-		UIWidget::render(currentMouse, layer);
+		UIWidget::render(currentMouse, CanvasBounds);
 	}
 
 
 	void UINodeLink::MouseRelease( UIMouse* currentMouse)
 	{
-		UIWidget::MouseRelease(currentMouse);
+		
 	}
 
 	void UINodeLink::MouseRClick( UIMouse* currentMouse)
 	{
-		UIWidget::MouseRClick(currentMouse);
 	}
 
 	void UINodeLink::MouseClick( UIMouse* currentMouse)
 	{
-		UIWidget::MouseClick(currentMouse);
 	}
 
 	void UINodeLink::MouseDrag( UIMouse* currentMouse)
 	{
-		UIWidget::MouseDrag(currentMouse);
 	}
 
 	void UINodeLink::move(const Vector2f& amountToMove)
@@ -141,11 +136,6 @@ namespace woodman
 		UIWidget::move(amountToMove);
 	}
 
-
-	void UINodeLink::update(UIMouse* currentMouse)
-	{
-		UIWidget::update(currentMouse);
-	}
 
 #pragma region UINodeLink_Getters
 
@@ -201,25 +191,23 @@ namespace woodman
 	UIOutLink::UIOutLink(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID,
 		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates, true, dType, callbackRecipient )
+		:UINodeLink(ParentCanvas, parentWidget, name, RelativeLayer, canvasCoordinates, true, dType, callbackRecipient )
 	{
 
 	}
 
-	void UIOutLink::render(UIMouse* currentMouse, float ParentLayer)
+	void UIOutLink::render(UIMouse* currentMouse, const AABB2D& CanvasBounds) const
 	{
-		UINodeLink::render(currentMouse, ParentLayer );
+		UINodeLink::render(currentMouse, CanvasBounds );
 
-		float layer = ParentLayer - m_relativeLayer;
-
+		
 		if(m_draggingStrip != nullptr)
 		{
-			m_draggingStrip->render(currentMouse, layer);
+			m_draggingStrip->render(currentMouse, CanvasBounds);
 		}
 
 // 		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
@@ -239,13 +227,12 @@ namespace woodman
 
 		//create a new one
 
-		CanvasCoordinates startCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+		CanvasCoordinates startCoords(getParentCanvas(), getAbsoluteCoordinates() + Vector2f(0.0, getSize().y * .25f));
 
 		std::shared_ptr<UILinkStrip> newStrip( new UILinkStrip(
-			m_parentCanvas, 
+			getParentCanvas(), 
 			this, 
 			"lineSTRIP",
-			HashedString("LinkStrip"),
 			-1.0f,
 			m_parentDataType->type,
 			m_dataTypeSize, 
@@ -267,17 +254,17 @@ namespace woodman
 		UINodeLink::MouseDrag(currentMouse);
 
 		//so are we the one who is selected?
-		if(currentMouse->selectedWidget == this)
-		{
-			//make sure that were dragging something
-			if(m_draggingStrip != nullptr)
-			{
-				Vector2f canvasCoords;
-				currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
-				CanvasCoordinates newEndPoint(currentMouse->hoveringCanvas, canvasCoords);
-				m_draggingStrip->updateEndPoint(newEndPoint);
-			}
-		}
+// 		if(currentMouse->selectedWidget == this)
+// 		{
+// 			//make sure that were dragging something
+// 			if(m_draggingStrip != nullptr)
+// 			{
+// 				Vector2f canvasCoords;
+// 				currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
+// 				CanvasCoordinates newEndPoint(currentMouse->hoveringCanvas, canvasCoords);
+// 				m_draggingStrip->updateEndPoint(newEndPoint);
+// 			}
+// 		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -295,44 +282,44 @@ namespace woodman
 	void UIOutLink::MouseRelease( UIMouse* currentMouse)
 	{
 		//so are we the one who is selected
-		if(currentMouse->selectedWidget == this)
-		{
-			//just to be sure check that were dragging something
-			if(m_draggingStrip != nullptr)
-			{
-				//is the hovering widget an InLink? (NodeLink isn't good enough)
-				UINodeLink* partnerLink = dynamic_cast<UIInLink*>(currentMouse->hoveringWidget);
-				if(partnerLink != nullptr)
-				{
-
-					//why yes it is, LINK US UP, but first we have to unlink any other links
-					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
-					if(nodeBox != nullptr)
-						nodeBox->pairLinks(this, partnerLink);
-					// 					m_draggingStrip->updateStartTarget(this);
-					// 					m_draggingStrip->updateEndTarget(partnerLink);
-
-					//partnerLink->Pair(m_draggingStrip);
-				}
-				else
-				{
-					//oh no we released on not a InLink, check if it already is linked
-					// 					UINodeLink* existingPartner = dynamic_cast<UIInLink*>(m_draggingStrip->getEndTarget() );
-					// 					if(existingPartner != nullptr)
-					// 					{
-					// 						//there is! set it back to that
-					// 						//this should be done automatically?
-					// 						m_draggingStrip->updateEndTarget(nullptr);
-					// 						Pair(m_draggingStrip, existingPartner);
-					// 						existingPartner->move(Vector2f(0.0f, 0.0f));
-					// 					}
-
-				}
-
-				//set that we are not dragging anything anymore
-				m_draggingStrip = nullptr;
-			}
-		}
+// 		if(currentMouse->selectedWidget == this)
+// 		{
+// 			//just to be sure check that were dragging something
+// 			if(m_draggingStrip != nullptr)
+// 			{
+// 				//is the hovering widget an InLink? (NodeLink isn't good enough)
+// 				UINodeLink* partnerLink = dynamic_cast<UIInLink*>(currentMouse->hoveringWidget);
+// 				if(partnerLink != nullptr)
+// 				{
+// 
+// 					//why yes it is, LINK US UP, but first we have to unlink any other links
+// 					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
+// 					if(nodeBox != nullptr)
+// 						nodeBox->pairLinks(this, partnerLink);
+// 					// 					m_draggingStrip->updateStartTarget(this);
+// 					// 					m_draggingStrip->updateEndTarget(partnerLink);
+// 
+// 					//partnerLink->Pair(m_draggingStrip);
+// 				}
+// 				else
+// 				{
+// 					//oh no we released on not a InLink, check if it already is linked
+// 					// 					UINodeLink* existingPartner = dynamic_cast<UIInLink*>(m_draggingStrip->getEndTarget() );
+// 					// 					if(existingPartner != nullptr)
+// 					// 					{
+// 					// 						//there is! set it back to that
+// 					// 						//this should be done automatically?
+// 					// 						m_draggingStrip->updateEndTarget(nullptr);
+// 					// 						Pair(m_draggingStrip, existingPartner);
+// 					// 						existingPartner->move(Vector2f(0.0f, 0.0f));
+// 					// 					}
+// 
+// 				}
+// 
+// 				//set that we are not dragging anything anymore
+// 				m_draggingStrip = nullptr;
+// 			}
+// 		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -381,7 +368,7 @@ namespace woodman
 	{
 		UINodeLink::move(amountToMove);
 
-		CanvasCoordinates newCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+		CanvasCoordinates newCoords(getParentCanvas(), getAbsoluteCoordinates() + Vector2f(0.0, getSize().y * .25f));
 		for(auto it = m_linkStrips.begin(); it != m_linkStrips.end(); ++it)
 		{
 			(*it)->updateStartPoint(newCoords);
@@ -421,25 +408,22 @@ namespace woodman
 	UIInLink::UIInLink(UICanvas* ParentCanvas,
 		UIWidget* parentWidget,
 		const std::string& name,
-		HashedString uniqueID,
 		float RelativeLayer,
 		const Vector2f& canvasCoordinates,
 		DataType* dType,
 		UINodeLinkCallBackBase* callbackRecipient)
-		:UINodeLink(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates, false, dType, callbackRecipient )
+		:UINodeLink(ParentCanvas, parentWidget, name, RelativeLayer, canvasCoordinates, false, dType, callbackRecipient )
 	{
 
 	}
 
-	void UIInLink::render(UIMouse* currentMouse, float ParentLayer)
+	void UIInLink::render( UIMouse* currentMouse, const AABB2D& CanvasBounds ) const
 	{
-		UINodeLink::render(currentMouse, ParentLayer);
-
-		float layer = ParentLayer - m_relativeLayer;
+		UINodeLink::render(currentMouse, CanvasBounds);
 
 		if(m_draggingStrip != nullptr)
 		{
-			m_draggingStrip->render(currentMouse, layer);
+			m_draggingStrip->render(currentMouse, CanvasBounds);
 		}
 	}
 
@@ -466,13 +450,12 @@ namespace woodman
 		else
 		{
 			//otherwise create a new one
-			CanvasCoordinates startCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+			CanvasCoordinates startCoords(getParentCanvas(), getAbsoluteCoordinates() + Vector2f(0.0, getSize().y * .25f));
 
 			m_draggingStrip = std::shared_ptr<UILinkStrip>( new UILinkStrip(
-				m_parentCanvas, 
+				getParentCanvas(), 
 				this, 
 				"lineSTRIP",
-				HashedString("LinkStrip"),
 				-1.0f,
 				m_parentDataType->type,
 				m_dataTypeSize, 
@@ -499,61 +482,61 @@ namespace woodman
 	void UIInLink::MouseRelease( UIMouse* currentMouse)
 	{
 		//so are we the one who is selected
-		if(currentMouse->selectedWidget == this)
-		{
-			//just to be sure check that were dragging something
-			if(m_draggingStrip != nullptr)
-			{
-				//is the hovering widget an OutLink? (NodeLink isn't good enough)
-				UINodeLink* partnerLink = dynamic_cast<UIOutLink*>(currentMouse->hoveringWidget);
-				if(partnerLink != nullptr)
-				{
-
-					//why yes it is, LINK US UP, but first we have to unlink any other links
-					// 						m_draggingStrip->updateEndTarget(this);
-					// 						m_draggingStrip->updateStartTarget(partnerLink);
-
-					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
-					if(nodeBox != nullptr)
-						nodeBox->pairLinks(this, partnerLink);
-				}
-				else
-				{
-					//oh no we released on not a InLink, check if it already is linked
-					if(m_draggingStrip->getEndTarget() != nullptr)
-					{
-						//there is! set it back to that
-						//this should be done automatically?
-					}
-
-				}
-
-				//set that we are not dragging anything anymore
-				m_draggingStrip = nullptr;
-			}
-		}
+// 		if(currentMouse->selectedWidget == this)
+// 		{
+// 			//just to be sure check that were dragging something
+// 			if(m_draggingStrip != nullptr)
+// 			{
+// 				//is the hovering widget an OutLink? (NodeLink isn't good enough)
+// 				UINodeLink* partnerLink = dynamic_cast<UIOutLink*>(currentMouse->hoveringWidget);
+// 				if(partnerLink != nullptr)
+// 				{
+// 
+// 					//why yes it is, LINK US UP, but first we have to unlink any other links
+// 					// 						m_draggingStrip->updateEndTarget(this);
+// 					// 						m_draggingStrip->updateStartTarget(partnerLink);
+// 
+// 					UINodeBox* nodeBox = dynamic_cast<UINodeBox*>(m_parentWidget);
+// 					if(nodeBox != nullptr)
+// 						nodeBox->pairLinks(this, partnerLink);
+// 				}
+// 				else
+// 				{
+// 					//oh no we released on not a InLink, check if it already is linked
+// 					if(m_draggingStrip->getEndTarget() != nullptr)
+// 					{
+// 						//there is! set it back to that
+// 						//this should be done automatically?
+// 					}
+// 
+// 				}
+// 
+// 				//set that we are not dragging anything anymore
+// 				m_draggingStrip = nullptr;
+// 			}
+// 		}
 	}
 
 	//-------------------------------------------------------------------------
 
 	void UIInLink::MouseDrag( UIMouse* currentMouse)
 	{
-		UIWidget::MouseDrag(currentMouse);
-
-		//so are we the one who is selected?
-		if(currentMouse->selectedWidget == this)
-		{
-			//make sure that were dragging something
-			if(m_draggingStrip != nullptr)
-			{
-
-				Vector2f canvasCoords;
-				currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
-				CanvasCoordinates newStartPoint(currentMouse->hoveringCanvas, canvasCoords);
-				m_draggingStrip->updateStartPoint(newStartPoint);
-			}
-
-		}
+// 		UIWidget::MouseDrag(currentMouse);
+// 
+// 		//so are we the one who is selected?
+// 		if(currentMouse->selectedWidget == this)
+// 		{
+// 			//make sure that were dragging something
+// 			if(m_draggingStrip != nullptr)
+// 			{
+// 
+// 				Vector2f canvasCoords;
+// 				currentMouse->hoveringCanvas->mapPointToCanvasSpace(currentMouse->screenPosition, canvasCoords);
+// 				CanvasCoordinates newStartPoint(currentMouse->hoveringCanvas, canvasCoords);
+// 				m_draggingStrip->updateStartPoint(newStartPoint);
+// 			}
+// 
+// 		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -636,7 +619,7 @@ namespace woodman
 
 		if(m_linkStrip != nullptr)
 		{
-			CanvasCoordinates newCoords(m_parentCanvas, m_coordinates + Vector2f(0.0, m_canvasCollisionBoxSize.y * .25f));
+			CanvasCoordinates newCoords(getParentCanvas(), getAbsoluteCoordinates() + Vector2f(0.0, getSize().y * .25f));
 			m_linkStrip->updateEndPoint(newCoords);
 		}
 	}

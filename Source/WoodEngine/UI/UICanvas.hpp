@@ -41,6 +41,8 @@ namespace woodman
 
 		void RenderCanvas( UIMouse* currentMouse);
 
+		void MouseDrag(UIMouse* currentMouse);
+
 		/* PresentCanvasToScreen
 		*	
 		*	Renders the current generated texture to the screen in a box topleft to bottomRight
@@ -68,7 +70,7 @@ namespace woodman
 		}
 
 		UIWidget* getUIWidgetatPoint(const Vector2f& PointScreenSpace);
-		UIWidget* getUIWidgetByID(HashedString ID);
+		//UIWidget* getUIWidgetByID(HashedString ID);
 
 
 		void mapPointToCanvasSpace(Vector2f pointToMap, Vector2f& pointInCanvasSpace);
@@ -89,6 +91,10 @@ namespace woodman
 		}
 
 		bool m_moveable;
+
+		UIWidget* getSelectedWidget();
+		void setSelectedWidget( UIWidget* widget);
+
 		
 	private:
 
@@ -96,7 +102,7 @@ namespace woodman
 		void calcCanvasSpace();
 
 		//EventSystem* p_eventSystem;
-
+		UIWidget* m_selectedWidget;
 		
 		/* zoom level  [1 - 20] */
 		int m_zoom;
