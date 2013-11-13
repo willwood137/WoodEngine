@@ -60,6 +60,14 @@ namespace woodman
 		unsigned int lastCompile;
 	};
 
+	struct DataFieldInstance
+	{
+		DataFieldInstance(HashedString id) : m_uniqueID(id) {}
+		std::string m_name;
+		HashedString m_uniqueID;
+		float m_value;
+	};
+
 	class NodeInstance : public UINodeBoxCallBackRecipient
 	{
 
@@ -83,8 +91,10 @@ namespace woodman
 		{
 			return &m_linkInstances;
 		}
+		std::map< HashedString, std::unique_ptr<DataFieldInstance> >* getDataFields();
 		NodeLinkInstance* getLinkByID(HashedString uniqueID);
 		NodeLinkInstance* getLinkInstanceByName(const std::string& linkName);
+		DataFieldInstance* getDataFieldInstanceByName(const std::string& fieldName);
 
 		HashedString getUniqueID()
 		{
@@ -97,12 +107,16 @@ namespace woodman
 			m_position = position;
 		}
 
+
+		virtual void setDataField(HashedString fieldName, float value);
+
 	private:
 
 		ShaderNode* m_referenceNode;
 
 		// collection of the Link instances
 		std::map< HashedString, std::unique_ptr< NodeLinkInstance > > m_linkInstances;
+		std::map< HashedString, std::unique_ptr<DataFieldInstance> > m_dataFields;
 		
 		HashedString					m_uniqueID;
 		SHADER_TYPE						m_shaderType;

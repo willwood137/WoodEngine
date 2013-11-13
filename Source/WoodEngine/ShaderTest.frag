@@ -7,41 +7,27 @@ uniform mat4 u_projection;
 uniform mat4 u_viewMatrix;
 uniform sampler2D u_diffuse;
 uniform float u_time;
-uniform vec3 u_light;
 
 in vec2 v_uv;
-in vec3 v_normal;
 in vec3 v_worldPosition;
 
 layout(location = 0) out vec4 OutputColor;
 
 
-
-      vec4 Twist( vec4 Position, float twistAmount )
-      {
-
-      float ySquared = twistAmount * Position.y  * Position.y * .00314159;
-      float cosA = cos(ySquared);
-      float sinA = sin(ySquared);
-
-      float newX = Position.x * cosA + ( Position.z * -sinA );
-      float newZ = Position.x * sinA + ( Position.z * cosA );
-
-      return vec4(newX, Position.y, newZ, 1.0);
-      }
-    
-
-      vec4 Phong_Lighting( sampler2D diffuse, vec2 textureCoordinates, vec3 normal, vec3 worldPosition, vec3 lightPosition)
-      {
-      float LightIntensity = dot( normal, normalize(lightPosition - worldPosition) );
-      vec4 difResult = texture2D( diffuse, textureCoordinates );
-      return  vec4( difResult.rgb * LightIntensity, difResult.a);
-      }
-
-    
 void main(void)
 {
-vec4 Phong_Lighting_0_Color = Phong_Lighting( u_diffuse, v_uv, v_normal, v_worldPosition, u_light) ;
-OutputColor = Phong_Lighting_0_Color;
+vec4 TextureSampler_0_Color = texture2D( u_diffuse, v_uv) ;
+float Constant_1_Constant = 0;
+float Cosine_0_Out = cos( u_time) ;
+float Constant_0_Constant = 2.4;
+float Sum1_0_Sum = u_time+ Constant_0_Constant;
+float Cosine_1_Out = cos( Sum1_0_Sum) ;
+float Max_0_Max = max( Cosine_0_Out, Cosine_1_Out) ;
+float Plus_One_div_2_0_newValue = ( Max_0_Max+ 1 ) * .5 ;
+float Multiply1_1_Sum = Plus_One_div_2_0_newValue* Plus_One_div_2_0_newValue;
+float Multiply1_0_Sum = Multiply1_1_Sum* Multiply1_1_Sum;
+vec4 Append_Vector4_0_Vector4 = vec4( Constant_1_Constant, Multiply1_0_Sum, Multiply1_0_Sum, Constant_1_Constant) ;
+vec4 Subtracion4_0_Difference = TextureSampler_0_Color- Append_Vector4_0_Vector4;
+OutputColor = Subtracion4_0_Difference;
 
 }

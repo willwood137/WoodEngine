@@ -9,8 +9,8 @@ namespace woodman
 	const int CHARACTERS_PER_ROW = 16;
 	const float CHARACTERS_TEXCOORD_SIZE = 1.0f / CHARACTERS_PER_ROW;
 
-	const std::string CONSOLE_SHADER_PATH ="Shaders\\Console";
-	const std::string CURSOR_SHADER_PATH ="Shaders\\TextCursor";
+	const std::string CONSOLE_SHADER_PATH =ASSETS + "Shaders\\Console";
+	const std::string CURSOR_SHADER_PATH = ASSETS + "Shaders\\TextCursor";
 
 #define DEVELOPER_CONSOLE_ENABLED
 
@@ -62,17 +62,17 @@ namespace woodman
 
 		m_shaderConsole.loadShader(CONSOLE_SHADER_PATH);
 		m_shaderCursor.loadShader(CURSOR_SHADER_PATH); 
-		m_shaderConsole.addAttribute(HASHED_STRING_a_position);
-		m_shaderConsole.addUniform(HASHED_STRING_u_TopLeft);
-		m_shaderConsole.addUniform(HASHED_STRING_u_BottomRight);
-		m_shaderConsole.addUniform(HASHED_STRING_u_middleLine);
-		m_shaderConsole.addUniform(HASHED_STRING_u_color);
-
-		m_shaderCursor.addAttribute(HASHED_STRING_a_position);
-		m_shaderCursor.addUniform(HASHED_STRING_u_position);
-		m_shaderCursor.addUniform(HASHED_STRING_u_color);
-		m_shaderCursor.addUniform(HASHED_STRING_u_size);
-		m_shaderCursor.addUniform(HASHED_STRING_u_debugInt);
+// 		m_shaderConsole.addAttribute(HASHED_STRING_a_position);
+// 		m_shaderConsole.addUniform(HASHED_STRING_u_TopLeft);
+// 		m_shaderConsole.addUniform(HASHED_STRING_u_BottomRight);
+// 		m_shaderConsole.addUniform(HASHED_STRING_u_middleLine);
+// 		m_shaderConsole.addUniform(HASHED_STRING_u_color);
+// 
+// 		m_shaderCursor.addAttribute(HASHED_STRING_a_position);
+// 		m_shaderCursor.addUniform(HASHED_STRING_u_position);
+// 		m_shaderCursor.addUniform(HASHED_STRING_u_color);
+// 		m_shaderCursor.addUniform(HASHED_STRING_u_size);
+// 		m_shaderCursor.addUniform(HASHED_STRING_u_debugInt);
 	}
 
 	void DevConsole::loadCommands( const std::string& filePath )
@@ -125,7 +125,8 @@ namespace woodman
 				m_shaderConsole.load();
 
 				glBindBuffer(GL_ARRAY_BUFFER, m_idVBO_background);
-				glFrontFace(GL_CW);
+				glDisable(GL_CULL_FACE);
+				//glFrontFace(GL_CW);
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glUniform2f(m_shaderConsole.getUniformID(HASHED_STRING_u_TopLeft), -1.0f, 1.0f );

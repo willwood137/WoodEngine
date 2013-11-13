@@ -19,7 +19,8 @@ namespace woodman
 		m_lockedToParent(false),
 		m_canvasCollisionBoxOffset( 0.0f, 0.0f ),
 		m_id(0),
-		m_uniqueID(uniqueID)
+		m_uniqueID(uniqueID),
+		m_lockKeyboard(false)
 	{
 
 	}
@@ -38,7 +39,8 @@ namespace woodman
 		m_lockedToParent(false),	
 		m_canvasCollisionBoxOffset( 0.0f, 0.0f ),
 		m_id(0),
-		m_uniqueID(uniqueID)
+		m_uniqueID(uniqueID),
+		m_lockKeyboard(false)
 
 	{
 
@@ -201,6 +203,16 @@ namespace woodman
 		}
 
 		return nullptr;
+	}
+
+	bool UIWidget::getLockKeyboard()
+	{
+		return m_lockKeyboard;
+	}
+
+	void UIWidget::setLockKeyboard( bool lock )
+	{
+		m_lockKeyboard = lock;
 	}
 
 }

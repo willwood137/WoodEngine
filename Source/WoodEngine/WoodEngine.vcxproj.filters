@@ -172,6 +172,9 @@
     <ClInclude Include="ShaderEditor\ShaderEditorApp.hpp">
       <Filter>ShaderEditor</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UITextEntry.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
@@ -264,6 +267,9 @@
     <ClCompile Include="ShaderEditor\ShaderEditorApp.cpp">
       <Filter>ShaderEditor</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UITextEntry.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WoodEngine.rc">
@@ -295,6 +301,12 @@
       <Filter>ShaderEditor\ShaderNodes</Filter>
     </Xml>
     <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Constant.xml">
+      <Filter>ShaderEditor\ShaderNodes</Filter>
+    </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Vector.xml">
       <Filter>ShaderEditor\ShaderNodes</Filter>
     </Xml>
   </ItemGroup>
@@ -346,6 +358,12 @@
     </None>
     <None Include="ShaderTest.vert">
       <Filter>ShaderEditor</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\TextBox.frag">
+      <Filter>UI\Shaders</Filter>
+    </None>
+    <None Include="..\..\Assets\Shaders\UI\TextBox.vert">
+      <Filter>UI\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

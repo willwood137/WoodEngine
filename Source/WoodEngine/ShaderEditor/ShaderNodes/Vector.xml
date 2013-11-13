@@ -1,0 +1,32 @@
+<ShaderEditor>
+
+  <NodeDefinition name="Append_Vector4" category ="Vector" canBeVertex="true" canBeFrag="true">
+
+    <Input name="x">
+      <dataType type="float" size="1" />
+      <Uniform name="time" />
+    </Input>
+    <Input name="y">
+      <dataType type="float" size="1" />
+      <Uniform name="time" />
+    </Input>
+    <Input name="z">
+      <dataType type="float" size="1" />
+      <Uniform name="time" />
+    </Input>
+    <Input name="w">
+      <dataType type="float" size="1" />
+      <Uniform name="time" />
+    </Input>
+    <Output name="Vector4">
+      <dataType type="vector" size="4" />
+      <Shader_Code> vec4( $x , $y , $z , $w )</Shader_Code>
+    </Output>
+
+  </NodeDefinition>
+
+  
+  
+
+
+</ShaderEditor>

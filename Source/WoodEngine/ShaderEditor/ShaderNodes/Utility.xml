@@ -22,23 +22,6 @@
 
   </NodeDefinition>
 
-
-  <NodeDefinition name="Interpolate" category ="Utility" canBeVertex="false" canBeFrag="true">
-    <Input name="A">
-      <dataType type="vector" minSize="1" maxSize="4"/>
-    </Input>
-    <Input name="B">
-      <dataType type="vector" minSize="1" maxSize="4"/>
-    </Input>
-    <Input name="Fraction">
-      <dataType type="float" size="1"/>
-    </Input>
-    <Output name="Sum">
-      <dataType type="vector" size="4"/>
-      <Shader_Code>$A * $Fraction + (1 - $Fraction ) * $B</Shader_Code>
-    </Output>
-  </NodeDefinition>
-
   <NodeDefinition name="Twist" category ="Utility" canBeVertex="false" canBeFrag="true">
     <Function>
       vec4 Twist( vec4 Position, float twistAmount )
@@ -66,6 +49,21 @@
       <Shader_Code>Twist( $World_Position , $TwistAmount )</Shader_Code>
     </Output>
   </NodeDefinition>
+
+  <NodeDefinition name="Max" category ="Utility" canBeVertex="true" canBeFrag="true">
+    <Input name="A">
+      <dataType type="float" size="1" />
+    </Input>
+    <Input name="B">
+      <dataType type="float" size="1" />
+    </Input>
+    <Output name="Max">
+      <dataType type="float" size="1" />
+      <Shader_Code> max( $A , $B )</Shader_Code>
+    </Output>
+
+  </NodeDefinition>
+  
 
 
 </ShaderEditor>

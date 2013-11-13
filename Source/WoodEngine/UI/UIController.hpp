@@ -33,7 +33,7 @@ namespace woodman
 
 	protected:
 
-		std::set<std::unique_ptr<UICanvas> > m_canvases;
+		std::list<std::unique_ptr<UICanvas> > m_canvases;
 		std::unique_ptr<UIMouse> m_mouse;
 	};
 }

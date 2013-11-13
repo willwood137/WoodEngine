@@ -3,6 +3,7 @@
 
 #include "UIWidget.hpp"
 #include "UINodeLink.hpp"
+#include "UITextEntry.hpp"
 
 #include "../Math/Vector2.hpp"
 
@@ -27,6 +28,7 @@ namespace woodman
 	struct UINodeBoxCallBackRecipient
 	{
 		virtual void setPosition(const Vector2f& position) = 0;
+		virtual void setDataField(HashedString fieldName, float value) = 0;
 	};
 
 	class UINodeBox : public UIWidget
@@ -42,12 +44,15 @@ namespace woodman
 		virtual void Initialize();
 		virtual void move(	const Vector2f& amountToMove );
 		virtual void render(UIMouse* currentMouse, float ParentLayer);
+		virtual void update(UIMouse* currentMouse);
 
 // 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 // 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
- 		virtual void MouseDrag( UIMouse* currentMouse);
+		virtual void MouseDrag( UIMouse* currentMouse);
+		virtual void MouseClick( UIMouse* currentMouse );
 
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
+		void addDataField(UITextEntry* field);
 
 	private:
 		//TL Corner
@@ -55,6 +60,7 @@ namespace woodman
 		std::string								m_title;
 		std::list<std::string>					n_data;
 		std::set< UINodeLink* >					m_linkSlots;
+		std::vector< UITextEntry* >				m_dataFields;
 		unsigned int							m_numInSlots;
 		unsigned int							m_numOutSlots;
 

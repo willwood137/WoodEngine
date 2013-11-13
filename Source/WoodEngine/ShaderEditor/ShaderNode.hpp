@@ -33,6 +33,11 @@ namespace woodman
 
 	};
 
+	struct DataField
+	{
+		std::string name;
+	};
+
 	struct ShaderNode
 	{
 		NodeLink* getLinkByName(const std::string& name)
@@ -49,7 +54,8 @@ namespace woodman
 
 		std::string name;
 		std::string category;
-		std::list< std::unique_ptr<PropertyList> > propertyLists;
+		//std::list< std::unique_ptr<PropertyList> > propertyLists;
+		std::vector< DataField > dataFields;
 		std::vector<std::unique_ptr<NodeLink> > inLinks;
 		std::vector<std::unique_ptr<NodeLink> > outLinks;
 		std::vector<FunctionDefinition> functions;

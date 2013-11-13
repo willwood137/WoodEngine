@@ -18,9 +18,8 @@ namespace woodman
 
 	void ShaderEditorApp::updateFrame()
 	{
-		OpenGLApp::updateFrame();
-
 		m_shaderEditor->update(m_mouseScreenPos);
+		OpenGLApp::updateFrame();
 	}
 
 	void ShaderEditorApp::render()

@@ -126,6 +126,7 @@
     <ClInclude Include="UI\UINodeBox.hpp" />
     <ClInclude Include="UI\UINodeLink.hpp" />
     <ClInclude Include="UI\UIStyle.hpp" />
+    <ClInclude Include="UI\UITextEntry.hpp" />
     <ClInclude Include="UI\UIWidget.hpp" />
     <ClInclude Include="Utility\ConsoleRedirector.hpp" />
     <ClInclude Include="Utility\ProfileSection.hpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="UI\UINodeBox.cpp" />
     <ClCompile Include="UI\UINodeLink.cpp" />
     <ClCompile Include="UI\UIStyle.cpp" />
+    <ClCompile Include="UI\UITextEntry.cpp" />
     <ClCompile Include="UI\UIWidget.cpp" />
     <ClCompile Include="Utility\ConsoleRedirector.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -193,6 +195,7 @@
     <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Constant.xml" />
     <Xml Include="ShaderEditor\ShaderNodes\Core.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -202,6 +205,7 @@
     <Xml Include="ShaderEditor\ShaderNodes\Utility.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="ShaderEditor\ShaderNodes\Vector.xml" />
     <Xml Include="UI\DefaultStyle.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +223,8 @@
     <None Include="..\..\Assets\Shaders\UI\NodeBox.vert" />
     <None Include="..\..\Assets\Shaders\UI\PreviewWindow.frag" />
     <None Include="..\..\Assets\Shaders\UI\PreviewWindow.vert" />
+    <None Include="..\..\Assets\Shaders\UI\TextBox.frag" />
+    <None Include="..\..\Assets\Shaders\UI\TextBox.vert" />
     <None Include="ShaderTest.frag" />
     <None Include="ShaderTest.vert" />
   </ItemGroup>

@@ -52,7 +52,10 @@ namespace woodman
 		{
 			if(m_mouse->selectedWidget != nullptr)
 			{
-				m_mouse->selectedWidget->MouseDrag(m_mouse.get());
+				if(m_mouse->selectedWidget->getParentCanvas() == m_mouse->hoveringCanvas)
+				{
+					m_mouse->selectedWidget->MouseDrag(m_mouse.get());
+				}
 			}
 		}
 
@@ -135,7 +138,10 @@ namespace woodman
 		unsigned int key; 
 		parameters.getNamedData(HashedString("Key"), key);
 
-		KeyDown(key);
+		if(m_mouse->selectedWidget == nullptr || ( m_mouse->selectedWidget != nullptr && !m_mouse->selectedWidget->getLockKeyboard() ) )
+		{
+			KeyDown(key);
+		}
 	}
 
 	void UIController::catchLMouseDown(NamedPropertyContainer& parameters)

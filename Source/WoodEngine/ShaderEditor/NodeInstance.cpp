@@ -62,9 +62,14 @@ namespace woodman
 			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
 
-		// get title Size
-
-
+		//create datafields
+		for( auto it = NodeReference->dataFields.begin(); it != NodeReference->dataFields.end(); ++it)
+		{
+			HashedString uniqueID(uniqueID.m_string + "_" + (*it).name );
+			DataFieldInstance* field = new DataFieldInstance(uniqueID);
+			field->m_name = (*it).name;
+			m_dataFields.insert( std::make_pair(uniqueID, std::unique_ptr<DataFieldInstance>(field)));
+		}
 	}
 
 
@@ -128,6 +133,15 @@ namespace woodman
 								insertString += variableConversion; 
 							}
 						}
+						else if(tempString[0] == '#')
+						{
+							//this is a variable, get its value
+							DataFieldInstance* inst = getDataFieldInstanceByName(tempString.substr(1) );
+
+							std::stringstream ssData;
+							ssData << inst->m_value;
+							insertString += ssData.str();
+						}
 						else
 						{
 							insertString += tempString + " ";
@@ -176,4 +190,32 @@ namespace woodman
 
 		return nullptr;
 	}
+
+	std::map< HashedString, std::unique_ptr<DataFieldInstance> >* NodeInstance::getDataFields()
+	{
+		return &m_dataFields;
+	}
+
+	void NodeInstance::setDataField( HashedString fieldName, float value )
+	{
+		auto fieldIt = m_dataFields.find(fieldName);
+		if(fieldIt != m_dataFields.end() )
+		{
+			fieldIt->second->m_value = value;
+		}
+	}
+
+	DataFieldInstance* NodeInstance::getDataFieldInstanceByName( const std::string& fieldName )
+	{
+		for(auto it = m_dataFields.begin(); it != m_dataFields.end(); ++it)
+		{
+			if( (it->second)->m_name.compare(fieldName) == 0 )
+			{
+				return it->second.get();
+			}
+		}
+
+		return nullptr;
+	}
+
 }

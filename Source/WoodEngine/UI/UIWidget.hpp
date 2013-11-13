@@ -120,6 +120,9 @@ namespace woodman
 			return m_uniqueID;
 		}
 
+		void setLockKeyboard( bool lock );
+		bool getLockKeyboard();
+
 // 		float getLayer()
 // 		{
 // 			return m_layer;
@@ -160,6 +163,9 @@ namespace woodman
 		float m_relativeLayer;
 
 		unsigned int m_id;
+
+		//do we want to prevent other things from using the keyboard when we are selected
+		bool m_lockKeyboard;
 		
 
 	};

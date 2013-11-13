@@ -4,6 +4,7 @@
 #include "..\Libs\pugixml.hpp"
 #include "..\Math\AABB2D.hpp"
 #include "..\UI\UINodeBox.hpp"
+#include "..\UI\UITextEntry.hpp"
 #include "..\Utility\Utility.hpp"
 
 
@@ -18,10 +19,10 @@ namespace woodman
 		m_vertexToFragmentRatio(1.0f),
 		m_vertexToFramentRatioGoal(1.0f)
 	{
-		m_canvases.insert(std::unique_ptr<UICanvas>(m_vertexCanvas) );
-		m_canvases.insert(std::unique_ptr<UICanvas>(m_dividerCanvas) );
+		m_canvases.push_back(std::unique_ptr<UICanvas>(m_vertexCanvas) );
+		m_canvases.push_back(std::unique_ptr<UICanvas>(m_fragmentCanvas) );
+		m_canvases.push_back(std::unique_ptr<UICanvas>(m_dividerCanvas) );
 		m_dividerCanvas->m_moveable = false;
-		m_canvases.insert(std::unique_ptr<UICanvas>(m_fragmentCanvas) );
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------
@@ -33,11 +34,13 @@ namespace woodman
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Core.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Color.xml");
 		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Utility.xml");
+		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Constant.xml");
+		LoadNodeDefinitionsFromFile("ShaderEditor\\ShaderNodes\\Vector.xml");
 
 		//load default shader work file
 		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
 
-		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkFiles\\Default.xml", nodeInstanceData);
+		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkfiles\\" + "temp.xml", nodeInstanceData);
 
 		// create Nodes
 		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
@@ -58,6 +61,7 @@ namespace woodman
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchPreview, "Preview");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchKeyDown, "KeyDown");
 		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchSaveFile, "SaveFile");
+		p_eventSystem->RegisterObjectForEvent(this, &ShaderEditor::catchLoadFile, "LoadFile");
 
 
 		//create Menu
@@ -269,6 +273,12 @@ namespace woodman
 
 							currentDefinition->functions.push_back(def);
 
+						}
+						if(std::string(dataNode.name()).compare(std::string("DataField") ) == 0 )
+						{
+							DataField field;
+							field.name = dataNode.attribute("name").as_string();
+							currentDefinition->dataFields.push_back(field);
 						}
 						else if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
 						{
@@ -521,6 +531,22 @@ namespace woodman
 			NodeBox->addChild(newSlot);
 		}
 
+		//add the data fields
+		std::map< HashedString, std::unique_ptr<DataFieldInstance> >* fields = node->getDataFields();
+		unsigned int n = 1;
+		for( auto it = fields->begin(); it != fields->end(); ++it )
+		{
+			UITextEntry* text(new UITextEntry(m_dividerCanvas, nullptr, (it->second)->m_name, (it->second)->m_uniqueID, 20.0f, p_eventSystem) );
+			text->setCanvasCoordinates(Vector2f(-200, 450.0 - 500 - 50 * n) );
+			NodeBox->addDataField(text);
+			text->Initialize();
+			text->setCollisionOffset(Vector2f(40.0f, -6.0f));
+			text->setCollisionSize(Vector2f(180.0f, 30.0f));
+			text->calcFullCollisionBox();
+			m_dividerCanvas->RegisterUIWidget(text);
+			n++;
+		}
+
 		NodeBox->calcFullCollisionBox();
 		NodeBox->Initialize();
 		canvasToPutOn->RegisterUIWidget(NodeBox);
@@ -618,5 +644,27 @@ namespace woodman
 	void ShaderEditor::catchSaveFile(NamedPropertyContainer& parameters)
 	{
 		m_shaderInstance.SaveShaderInstance(ASSETS + "ShaderWorkfiles\\" + "temp.xml");
+	}
+
+	void ShaderEditor::catchLoadFile(NamedPropertyContainer& parameters)
+	{
+		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
+
+		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkfiles\\" + "temp.xml", nodeInstanceData);
+
+		// create Nodes
+		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
+		{
+			CreateNodeInstanceFromData( (*it).get() );
+		}
+		// Pair up nodeLinks
+		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
+		{
+			for(auto linkIt = (*it)->LinkInfos.begin(); linkIt != (*it)->LinkInfos.end(); ++linkIt)
+			{
+				PairLinksFromData( (*linkIt).get(), HashedString( (*it)->Name) );
+			}
+		}
+
 	}
 }

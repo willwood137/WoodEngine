@@ -275,7 +275,7 @@ namespace woodman
 
 	void OpenGLApp::render()
 	{
-
+		m_devConsole.render();
 	}
 
 	void OpenGLApp::postRender()

@@ -17,6 +17,7 @@ namespace woodman
 
 	class UIWidget;
 	class UICanvas;
+	class UINodeBox;
 
 	struct MouseMenu
 	{
@@ -55,6 +56,7 @@ namespace woodman
 		Vector2f prevReleasePosition;
 
 		UIWidget* selectedWidget;
+		UINodeBox* selectedNodeBox;
 		UIWidget* hoveringWidget;
 
 		UICanvas* selectedCanvas;

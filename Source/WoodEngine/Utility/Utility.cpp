@@ -73,7 +73,7 @@ namespace woodman
 		}
 		else if( d1.type == PROPERTYTYPE_FLOAT)
 		{
-			if(d2.type == PROPERTYTYPE_FLOAT)
+			if(d2.type == PROPERTYTYPE_FLOAT || d2.currentSize == 1)
 			{
 				output = variableName;
 			}

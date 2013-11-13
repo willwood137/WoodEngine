@@ -98,32 +98,29 @@ namespace woodman
 
 	void UICanvas::update( UIMouse* currentMouse )
 	{
-		if(m_screenSpace.isPointInsideBounds(currentMouse->screenPosition) )
-		{
-			m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
-			mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
+		m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
+		mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
 		
  
- 			Vector2f mouseDelta = m_currentMouseCanvasPosition - m_prevMouseCanvasPosition;
+ 		Vector2f mouseDelta = m_currentMouseCanvasPosition - m_prevMouseCanvasPosition;
 
-			for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
-			{
-				(*it)->update(currentMouse);
-			}
-
-
- 			if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas == this)
- 			{
- 				if(currentMouse->selectedWidget == nullptr)
- 				{
-					//move canvas
-					m_center -= mouseDelta;
-					calcCanvasSpace();
-					m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
-					mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
- 				}
- 			}
+		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
+		{
+			(*it)->update(currentMouse);
 		}
+
+
+ 		if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas == this)
+ 		{
+ 			if(currentMouse->selectedWidget == nullptr)
+ 			{
+				//move canvas
+				m_center -= mouseDelta;
+				calcCanvasSpace();
+				m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
+				mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
+ 			}
+ 			}
 	}
 
 	void UICanvas::catchMouseWheel(NamedPropertyContainer& parameters)

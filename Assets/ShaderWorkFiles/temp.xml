@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <Shader_WorkFile name="">
-	<Node Name="TextureSampler_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="TextureSampler" x_Position="-331.25" y_Position="157.5">
+	<Node Name="Max_0" ShaderType="1" DefinitionCategory="Utility" DefinitionNode="Max" x_Position="-226.25" y_Position="-110">
+		<Link Name="Max_0_A">
+			<Partner PartnerNodeName="Cosine_0" PartnerLinkName="Cosine_0_Out" />
+		</Link>
+		<Link Name="Max_0_B">
+			<Partner PartnerNodeName="Cosine_1" PartnerLinkName="Cosine_1_Out" />
+		</Link>
+	</Node>
+	<Node Name="TextureSampler_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="TextureSampler" x_Position="-350.714" y_Position="405.357">
 		<Link Name="TextureSampler_0_Texture">
 			<Partner PartnerNodeName="Diffuse_0" PartnerLinkName="Diffuse_0_diffuse" />
 		</Link>
@@ -8,15 +16,61 @@
 			<Partner PartnerNodeName="Fragment_UV_0" PartnerLinkName="Fragment_UV_0_UV" />
 		</Link>
 	</Node>
-	<Node Name="ModelViewProjection_Matrix_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="ModelViewProjection_Matrix" x_Position="-709" y_Position="-492" />
-	<Node Name="Diffuse_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Diffuse" x_Position="-638.75" y_Position="233.75" />
-	<Node Name="OutputColor_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="OutputColor" x_Position="76.2501" y_Position="195">
-		<Link Name="OutputColor_0_OutputColor">
+	<Node Name="Multiply1_0" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Multiply1" x_Position="66.0684" y_Position="41.159">
+		<Link Name="Multiply1_0_A">
+			<Partner PartnerNodeName="Multiply1_1" PartnerLinkName="Multiply1_1_Sum" />
+		</Link>
+		<Link Name="Multiply1_0_B">
+			<Partner PartnerNodeName="Multiply1_1" PartnerLinkName="Multiply1_1_Sum" />
+		</Link>
+	</Node>
+	<Node Name="Multiply1_1" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Multiply1" x_Position="-15.8788" y_Position="-231.283">
+		<Link Name="Multiply1_1_A">
+			<Partner PartnerNodeName="Plus_One_div_2_0" PartnerLinkName="Plus_One_div_2_0_newValue" />
+		</Link>
+		<Link Name="Multiply1_1_B">
+			<Partner PartnerNodeName="Plus_One_div_2_0" PartnerLinkName="Plus_One_div_2_0_newValue" />
+		</Link>
+	</Node>
+	<Node Name="Multiply1_2" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Multiply1" x_Position="-956.5" y_Position="-364.5">
+		<Link Name="Multiply1_2_A">
+			<Partner PartnerNodeName="Time_0" PartnerLinkName="Time_0_Time" />
+		</Link>
+		<Link Name="Multiply1_2_B">
+			<Partner PartnerNodeName="Constant_3" PartnerLinkName="Constant_3_Constant" />
+		</Link>
+	</Node>
+	<Node Name="Multiply4_0" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Multiply4" x_Position="432.667" y_Position="812.107">
+		<Link Name="Multiply4_0_A">
 			<Partner PartnerNodeName="TextureSampler_0" PartnerLinkName="TextureSampler_0_Color" />
+		</Link>
+		<Link Name="Multiply4_0_B">
+			<Partner PartnerNodeName="Append_Vector4_0" PartnerLinkName="Append_Vector4_0_Vector4" />
+		</Link>
+	</Node>
+	<Node Name="ModelViewProjection_Matrix_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="ModelViewProjection_Matrix" x_Position="-774" y_Position="-182" />
+	<Node Name="Diffuse_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Diffuse" x_Position="-598.214" y_Position="597.143" />
+	<Node Name="OutputColor_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="OutputColor" x_Position="1042.75" y_Position="347.25">
+		<Link Name="OutputColor_0_OutputColor">
+			<Partner PartnerNodeName="Subtracion4_0" PartnerLinkName="Subtracion4_0_Difference" />
+		</Link>
+	</Node>
+	<Node Name="Append_Vector4_0" ShaderType="1" DefinitionCategory="Vector" DefinitionNode="Append_Vector4" x_Position="384.485" y_Position="1.87875">
+		<Link Name="Append_Vector4_0_w">
+			<Partner PartnerNodeName="Constant_1" PartnerLinkName="Constant_1_Constant" />
+		</Link>
+		<Link Name="Append_Vector4_0_x">
+			<Partner PartnerNodeName="Constant_1" PartnerLinkName="Constant_1_Constant" />
+		</Link>
+		<Link Name="Append_Vector4_0_y">
+			<Partner PartnerNodeName="Multiply1_0" PartnerLinkName="Multiply1_0_Sum" />
+		</Link>
+		<Link Name="Append_Vector4_0_z">
+			<Partner PartnerNodeName="Multiply1_0" PartnerLinkName="Multiply1_0_Sum" />
 		</Link>
 	</Node>
 	<Node Name="Standard_Vertex_Info_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Standard_Vertex_Info" x_Position="-675" y_Position="168" />
-	<Node Name="Transform_Vector_0" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-282.083" y_Position="3.528">
+	<Node Name="Transform_Vector_0" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-170.083" y_Position="-108.472">
 		<Link Name="Transform_Vector_0_Matrix">
 			<Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_Model" />
 		</Link>
@@ -24,12 +78,12 @@
 			<Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
 		</Link>
 	</Node>
-	<Node Name="Transform_Vector_1" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="469.857" y_Position="-376.246">
+	<Node Name="Transform_Vector_1" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="-151.393" y_Position="105.754">
 		<Link Name="Transform_Vector_1_Matrix">
 			<Partner PartnerNodeName="ModelViewProjection_Matrix_0" PartnerLinkName="ModelViewProjection_Matrix_0_MVP" />
 		</Link>
 		<Link Name="Transform_Vector_1_Vector">
-			<Partner PartnerNodeName="Twist_0" PartnerLinkName="Twist_0_Twisted_Position" />
+			<Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Position" />
 		</Link>
 	</Node>
 	<Node Name="Transform_Vector_2" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Transform_Vector" x_Position="167.079" y_Position="1011.94" />
@@ -38,27 +92,49 @@
 			<Partner PartnerNodeName="Standard_Vertex_Info_0" PartnerLinkName="Standard_Vertex_Info_0_Texture_Coordinates" />
 		</Link>
 	</Node>
-	<Node Name="Twist_0" ShaderType="0" DefinitionCategory="Utility" DefinitionNode="Twist" x_Position="97.0001" y_Position="-102.667">
-		<Link Name="Twist_0_World_Position">
-			<Partner PartnerNodeName="Transform_Vector_0" PartnerLinkName="Transform_Vector_0_OutVector" />
-		</Link>
-		<Link Name="Twist_0_TwistAmount">
-			<Partner PartnerNodeName="Cosine_0" PartnerLinkName="Cosine_0_Out" />
+	<Node Name="Plus_One_div_2_0" ShaderType="1" DefinitionCategory="Utility" DefinitionNode="Plus_One_div_2" x_Position="-304" y_Position="119">
+		<Link Name="Plus_One_div_2_0_Value">
+			<Partner PartnerNodeName="Max_0" PartnerLinkName="Max_0_Max" />
 		</Link>
 	</Node>
-	<Node Name="Time_0" ShaderType="0" DefinitionCategory="Utility" DefinitionNode="Time" x_Position="-722.333" y_Position="-105" />
-	<Node Name="Fragment_UV_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Fragment_UV" x_Position="-613.75" y_Position="-27.5" />
-	<Node Name="Cosine_0" ShaderType="0" DefinitionCategory="Math" DefinitionNode="Cosine" x_Position="-520.333" y_Position="-110">
+	<Node Name="Sum1_0" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Sum1" x_Position="-538.75" y_Position="-303.75">
+		<Link Name="Sum1_0_A">
+			<Partner PartnerNodeName="Time_0" PartnerLinkName="Time_0_Time" />
+		</Link>
+		<Link Name="Sum1_0_B">
+			<Partner PartnerNodeName="Constant_0" PartnerLinkName="Constant_0_Constant" />
+		</Link>
+	</Node>
+	<Node Name="Time_0" ShaderType="1" DefinitionCategory="Utility" DefinitionNode="Time" x_Position="-1023.75" y_Position="-80" />
+	<Node Name="Fragment_UV_0" ShaderType="1" DefinitionCategory="Core" DefinitionNode="Fragment_UV" x_Position="-665.143" y_Position="335.929" />
+	<Node Name="Cosine_0" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Cosine" x_Position="-467.5" y_Position="-67.5">
 		<Link Name="Cosine_0_In">
 			<Partner PartnerNodeName="Time_0" PartnerLinkName="Time_0_Time" />
 		</Link>
 	</Node>
-	<Node Name="Final_Position_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Final_Position" x_Position="610.829" y_Position="-74.0554">
+	<Node Name="Cosine_1" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Cosine" x_Position="-373.75" y_Position="-245">
+		<Link Name="Cosine_1_In">
+			<Partner PartnerNodeName="Sum1_0" PartnerLinkName="Sum1_0_Sum" />
+		</Link>
+	</Node>
+	<Node Name="Subtracion4_0" ShaderType="1" DefinitionCategory="Math" DefinitionNode="Subtracion4" x_Position="378.417" y_Position="401.25">
+		<Link Name="Subtracion4_0_Subtrahend">
+			<Partner PartnerNodeName="Append_Vector4_0" PartnerLinkName="Append_Vector4_0_Vector4" />
+		</Link>
+		<Link Name="Subtracion4_0_Minuend">
+			<Partner PartnerNodeName="TextureSampler_0" PartnerLinkName="TextureSampler_0_Color" />
+		</Link>
+	</Node>
+	<Node Name="Constant_0" ShaderType="1" DefinitionCategory="Constant" DefinitionNode="Constant" x_Position="-765" y_Position="-351.857" />
+	<Node Name="Constant_1" ShaderType="1" DefinitionCategory="Constant" DefinitionNode="Constant" x_Position="-12.0754" y_Position="254.23" />
+	<Node Name="Constant_2" ShaderType="1" DefinitionCategory="Constant" DefinitionNode="Constant" x_Position="174.175" y_Position="-144.936" />
+	<Node Name="Constant_3" ShaderType="1" DefinitionCategory="Constant" DefinitionNode="Constant" x_Position="-1075.25" y_Position="-343.25" />
+	<Node Name="Final_Position_0" ShaderType="0" DefinitionCategory="Core" DefinitionNode="Final_Position" x_Position="330.829" y_Position="-36.8055">
 		<Link Name="Final_Position_0_ScreenPosition">
 			<Partner PartnerNodeName="Transform_Vector_1" PartnerLinkName="Transform_Vector_1_OutVector" />
 		</Link>
 		<Link Name="Final_Position_0_worldPosition">
-			<Partner PartnerNodeName="Twist_0" PartnerLinkName="Twist_0_Twisted_Position" />
+			<Partner PartnerNodeName="Transform_Vector_0" PartnerLinkName="Transform_Vector_0_OutVector" />
 		</Link>
 	</Node>
 </Shader_WorkFile>

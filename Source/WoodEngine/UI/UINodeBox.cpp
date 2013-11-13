@@ -39,6 +39,8 @@ namespace woodman
 		UIWidget::Initialize();
 	}
 
+
+	
 	void UINodeBox::render( UIMouse* currentMouse, float ParentLayer )
 	{
 		float zoomScale = m_parentCanvas->getZoomScale();
@@ -114,6 +116,14 @@ namespace woodman
 
 		//BASE RENDER CALL
 		UIWidget::render(currentMouse, ParentLayer);
+
+		if(currentMouse->selectedNodeBox == this)
+		{
+			for(auto it = m_dataFields.begin(); it != m_dataFields.end(); ++it)
+			{
+				(*it)->setToRender(true);
+			}
+		}
 	}
 
 
@@ -142,4 +152,24 @@ namespace woodman
 		}
 
 	}
+
+	void UINodeBox::MouseClick( UIMouse* currentMouse )
+	{
+		currentMouse->selectedNodeBox = this;
+	}
+
+	void UINodeBox::addDataField( UITextEntry* field )
+	{
+		m_dataFields.push_back(field);
+	}
+
+	void UINodeBox::update( UIMouse* currentMouse )
+	{
+		UIWidget::update(currentMouse);
+		for(auto it = m_dataFields.begin(); it != m_dataFields.end(); ++it)
+		{
+			m_callBackRecipient->setDataField((*it)->getUniqueID(), (*it)->getValue() );
+		}
+	}
+
 }
