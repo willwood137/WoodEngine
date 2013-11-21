@@ -1,7 +1,10 @@
 #include "../stdafx.h"
 
 #include "UINodeBox.hpp"
+#include "UINodeLink.hpp"
+#include "UITextEntry.hpp"
 #include "UICanvas.hpp"
+#include "UIController.hpp"
 
 namespace woodman
 {
@@ -11,14 +14,32 @@ namespace woodman
 	//----------NODEBOX----------------NODEBOX---------------NODEBOX----------NODEBOX------------NODEBOX-----------NODEBOX----------NODEBOX--------NODEBOX-----------NODEBOX--------
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	std::weak_ptr<UINodeBox> UINodeBox::CreateUINodeBox( const std::string& _Title, 
+		UIController* _ParentController, 
+		std::weak_ptr<UICanvas> _ParentCanvas, 
+		std::weak_ptr<UIWidget> _ParentWidget, 
+		const HashedString& _ID, 
+		float _RelativeLayer, 
+		const Vector2f& _RelativeCoordinates, 
+		const Vector2f& _CollisionSize )
+	{
+		assert(_ParentController != nullptr);
+		std::shared_ptr<UINodeBox> newBox(new UINodeBox(_Title, _ParentController, _ParentCanvas, _ParentWidget, _ID, _RelativeLayer, _RelativeCoordinates, _CollisionSize) );
+		_ParentController->RegisterUIWidget(std::dynamic_pointer_cast<UIWidget>(newBox) );
+		newBox->Initialize();
+		return std::weak_ptr<UINodeBox>(newBox);
+	}
 
-	UINodeBox::UINodeBox(UICanvas* ParentCanvas,
-		UIWidget* parentWidget,
-		const std::string& name,
-		HashedString uniqueID,
-		float RelativeLayer,
-		const Vector2f& canvasCoordinates)
-			: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer, canvasCoordinates)
+	UINodeBox::UINodeBox( const std::string& Title, 
+		UIController* parentController, 
+		std::weak_ptr<UICanvas> ParentCanvas, 
+		std::weak_ptr<UIWidget> parentWidget, 
+		HashedString uniqueID, 
+		float RelativeLayer, 
+		const Vector2f& relativeCoordinates, 
+		const Vector2f& collisionSize )
+		: UIWidget( parentController, ParentCanvas, parentWidget, uniqueID, RelativeLayer, relativeCoordinates, collisionSize ),
+		m_title(Title)
 	{
 
 	}
@@ -37,27 +58,30 @@ namespace woodman
 		m_borderFilterSelected = Texture::CreateOrGetTexture(ASSETS + "FilterFunctions\\Filter_1D_Green.png", tf);
 
 		UIWidget::Initialize();
+
+		m_titleOffset = Vector2f(0.0f, 0.0f);
+			//Vector2f( (m_canvasCollisionBoxSize.x - m_style->NodeBoxCornerSize) * .5f + m_style->NodeBoxCornerSize,
+			//m_canvasCollisionBoxSize.y - m_style->NodeBoxBorderLength - m_style->TitleSize);
 	}
 
 
 	
-	void UINodeBox::render( UIMouse* currentMouse, float ParentLayer )
+	void UINodeBox::render( std::shared_ptr<UIMouse> currentMouse )
 	{
-		float zoomScale = m_parentCanvas->getZoomScale();
-		float layer = ParentLayer - m_relativeLayer;
+		float zoomScale = m_parentCanvas.lock()->getZoomScale();
 
 		//--------------------------
 		// Render the box
 		//--------------------------
 		m_nodeBoxShader->load();
 
-		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen, NodeBoxMin(m_coordinates.x, m_coordinates.y), NodeBoxMax(NodeBoxMin + m_canvasCollisionBoxSize );
+		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen, NodeBoxMin(getAbsoluteCoordinates()), NodeBoxMax(NodeBoxMin + getCollisionSize() );
 
-		m_parentCanvas->mapPointToScreenSpace(NodeBoxMin, NodeBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(NodeBoxMax, NodeBoxMaxScreen);
+		m_parentCanvas.lock()->mapPointToScreenSpace(NodeBoxMin, NodeBoxMinScreen);
+		m_parentCanvas.lock()->mapPointToScreenSpace(NodeBoxMax, NodeBoxMaxScreen);
 
 		Vector2f NodeBoxSizeScreen = NodeBoxMaxScreen - NodeBoxMinScreen;
-		AABB2D CanvasScreenSpace = m_parentCanvas->getScreenSpace();
+		AABB2D CanvasScreenSpace = m_parentCanvas.lock()->getScreenSpace();
 
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 		glDisable(GL_CULL_FACE);
@@ -69,18 +93,18 @@ namespace woodman
 		glUniform2f(m_nodeBoxShader->getUniformID(HASHED_STRING_u_screenMax), CanvasScreenSpace.m_vMax.x, CanvasScreenSpace.m_vMax.y);
 		glUniform1i(m_nodeBoxShader->getUniformID(HASHED_STRING_u_borderFilter), 0);
 		glUniform2f(m_nodeBoxShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
-		float mapLayer = layer / g_MaxLayer;
+		float mapLayer = getAbsoluteLayer() / g_MaxLayer;
 		m_nodeBoxShader->SetUniformFloat(HASHED_STRING_u_layer, mapLayer, 1);
 
 
-		if( currentMouse->selectedWidget == this)
+		if( currentMouse->selectedWidget.lock().get() == this)
 		{
 			if(currentMouse->isPressed)
 				Texture::ApplyTexture(m_borderFilterDrag);
 			else
 				Texture::ApplyTexture(m_borderFilterSelected);
 		}
-		else if( currentMouse->hoveringWidget == this )
+		else if( currentMouse->hoveringWidget.lock().get() == this )
 		{
 			Texture::ApplyTexture(m_borderFilterHover);
 		}
@@ -98,15 +122,14 @@ namespace woodman
 		//--------------------------
 		//render the Title
 		//--------------------------
-		Vector2f TitleOffset = Vector2f( (m_canvasCollisionBoxSize.x - m_style->NodeBoxCornerSize) * .5f + m_style->NodeBoxCornerSize,
-											m_canvasCollisionBoxSize.y - m_style->NodeBoxBorderLength - m_style->TitleSize);
-		Vector2f TextCanvas(m_coordinates + TitleOffset ), TextScreen;
-		m_parentCanvas->mapPointToScreenSpace(TextCanvas, TextScreen);
+		
+		Vector2f TextCanvas(getAbsoluteCoordinates() + m_titleOffset ), TextScreen;
+		m_parentCanvas.lock()->mapPointToScreenSpace(TextCanvas, TextScreen);
 
 		// 		Vector2f( (nodeBoxToRender->size.x + style->NodeBoxCornerSize) * .5f, 
 		// 			nodeBoxToRender->size.y - style->NodeBoxBorderLength - style->TitleSize) ) * zoomScale,
 
-		Font::DrawTextToScreen(m_name, 
+		Font::DrawTextToScreen(m_title, 
 			m_style->TitleTextFont,
 			m_style->TitleColor,
 			TextScreen,
@@ -115,13 +138,13 @@ namespace woodman
 
 
 		//BASE RENDER CALL
-		UIWidget::render(currentMouse, ParentLayer);
+		UIWidget::render(currentMouse);
 
-		if(currentMouse->selectedNodeBox == this)
+		if(currentMouse->selectedNodeBox.lock().get() == this)
 		{
 			for(auto it = m_dataFields.begin(); it != m_dataFields.end(); ++it)
 			{
-				(*it)->setToRender(true);
+				(*it).lock()->setToRender(true);
 			}
 		}
 	}
@@ -133,13 +156,13 @@ namespace woodman
 		
 		if(m_callBackRecipient != nullptr)
 		{
-			m_callBackRecipient->setPosition(m_coordinates);
+			m_callBackRecipient->setPosition(getAbsoluteCoordinates());
 		}
 	}
 
-	void UINodeBox::MouseDrag(UIMouse* currentMouse)
+	void UINodeBox::MouseDrag(std::shared_ptr<UIMouse> currentMouse)
 	{
-		move(m_parentCanvas->getCurrentMouseCanvasPosition() - m_parentCanvas->getPrevMouseCanvasPosition() );
+		move(m_parentCanvas.lock()->getCurrentMouseCanvasPosition() - m_parentCanvas.lock()->getPrevMouseCanvasPosition() );
 	}
 
 	void UINodeBox::setCallBackRecipient( UINodeBoxCallBackRecipient* recipient )
@@ -148,28 +171,30 @@ namespace woodman
 
 		if(m_callBackRecipient != nullptr)
 		{
-			m_callBackRecipient->setPosition(m_coordinates);
+			m_callBackRecipient->setPosition(getAbsoluteCoordinates());
 		}
 
 	}
 
-	void UINodeBox::MouseClick( UIMouse* currentMouse )
+	void UINodeBox::MouseClick( std::shared_ptr<UIMouse> currentMouse )
 	{
-		currentMouse->selectedNodeBox = this;
+		currentMouse->selectedNodeBox = std::dynamic_pointer_cast<UINodeBox>(m_parentController->getUIWidgetByID(getUniqueID()).lock());
 	}
 
-	void UINodeBox::addDataField( UITextEntry* field )
+	void UINodeBox::addDataField( std::weak_ptr<UITextEntry> field )
 	{
 		m_dataFields.push_back(field);
 	}
 
-	void UINodeBox::update( UIMouse* currentMouse )
+	void UINodeBox::update( std::shared_ptr<UIMouse> currentMouse )
 	{
 		UIWidget::update(currentMouse);
 		for(auto it = m_dataFields.begin(); it != m_dataFields.end(); ++it)
 		{
-			m_callBackRecipient->setDataField((*it)->getUniqueID(), (*it)->getValue() );
+			m_callBackRecipient->setDataField((*it).lock()->getUniqueID(), (*it).lock()->getValue() );
 		}
 	}
+
+	
 
 }

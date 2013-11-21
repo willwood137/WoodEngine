@@ -1,9 +1,6 @@
 #ifndef UIWIDGET_HPP
 #define UIWIDGET_HPP
 
-#include "UIStyle.hpp"
-#include "UIMouse.hpp"
-
 #include "pugixml.hpp"
 #include "..\Math\AABB2D.hpp"
 #include "..\Math\Vector2.hpp"
@@ -24,149 +21,111 @@ namespace woodman
 	};
 
 	class UICanvas;
-	
+	class UIController;
+	struct UIStyle;
+	struct UIMouse;
+
+	struct UIWidgetParentInfo
+	{
+		UIWidgetParentInfo( const Vector2f& _Position, float _Layer) : Position(_Position), Layer(_Layer) {}
+		Vector2f Position;
+		float Layer;
+	};
+
+
 	class UIWidget
 	{
 	public:
-		UIWidget(UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer);
-
-		UIWidget(UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer,
-			const Vector2f& canvasCoordinates);
 
 		virtual ~UIWidget();
-
 		virtual void Initialize();
-		virtual void update( UIMouse* currentMouse);
-		virtual void render( UIMouse* currentMouse, float ParentLayer );
+		virtual void update( std::shared_ptr<UIMouse> currentMouse);
+		virtual void render( std::shared_ptr<UIMouse> currentMouse );
 		virtual void move(	const Vector2f& amountToMove );
-		virtual void MouseClick( UIMouse* currentMouse );
-		virtual void MouseRClick( UIMouse* currentMouse );
-		virtual void MouseRelease( UIMouse* currentMouse);
-		virtual void MouseDrag( UIMouse* currentMouse);
+		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
+		virtual void MouseRClick( std::shared_ptr<UIMouse> currentMouse );
+		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
+		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
 		virtual bool isPointInBounds(const Vector2f& point);
-		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer );
+		virtual std::weak_ptr<UIWidget> getTopWidgetColliding( const Vector2f& PointCanvasSpace );
 
 
-		void addChild( UIWidget* child);
-		void removeChild( UIWidget* child);
+		void addChild( std::shared_ptr<UIWidget> child);
+		void removeChild( std::shared_ptr<UIWidget> child);
+
+
 		AABB2D calcFullCollisionBox();
+		void calcAbsoluteData(const UIWidgetParentInfo& info);
 
-		
-		//Getters and setters
+		//////////////////////////////////////////////////////////////////////////
+		//	Getters and setters
+		//////////////////////////////////////////////////////////////////////////
+		void setRelativeCoordinates( const Vector2f& RelativeCoordinates );
+		Vector2f getRelativeCoordinates() const;
 
-		void setParentOffset( const Vector2f& offset)
-		{
-			m_parentCoordinatesOffset = offset;
-		}
-		void setCollisionSize( const Vector2f& size)
-		{
-			m_canvasCollisionBoxSize = size;
-		}
-		void setCollisionOffset( const Vector2f& offset)
-		{
-			m_canvasCollisionBoxOffset = offset;
-		}
+		void setCollisionSize( const Vector2f& size);
+		Vector2f getCollisionSize() const;
 
-		void setStyle( std::shared_ptr<UIStyle> style)
-		{
-			m_style = style;
-		}
+		void setCollisionOffset( const Vector2f& offset);
+		Vector2f getCollisionOffset() const;
 
-		void setLockedToParent( bool lockToParent )
-		{
-			m_lockedToParent = lockToParent;
-		}
+		void setStyle( std::shared_ptr<UIStyle> style);
+		std::shared_ptr<UIStyle> getStyle() const;
 
-		bool getLockedToParent()
-		{
-			return m_lockedToParent;
-		}
+		void setLockedToParent( bool lockToParent );
+		bool getLockedToParent() const;
 
-		Vector2f getCanvasCoordinates() const
-		{
-			return m_coordinates;
-		}
 
-		void setCanvasCoordinates(const Vector2f& coords) 
-		{
-			m_coordinates = coords;
-		}
-
-		Vector2f getCollisionSize() const
-		{
-			return m_canvasCollisionBoxSize;
-		}
-
-		std::string getName() const
-		{
-			return m_name;
-		}
-
-		std::shared_ptr<UIStyle> getStyle()
-		{
-			return m_style;
-		}
-
-		HashedString getUniqueID()
-		{
-			return m_uniqueID;
-		}
+		HashedString getUniqueID();
 
 		void setLockKeyboard( bool lock );
 		bool getLockKeyboard();
 
-// 		float getLayer()
-// 		{
-// 			return m_layer;
-// 		}
+		std::weak_ptr<UICanvas> getParentCanvas();
+		std::weak_ptr<UIWidget> getParentWidget();
+		UIController* getParentController() const;
 
-		UICanvas* getParentCanvas();
-		UIWidget* getUIWidgetByID(HashedString ID);
+		float getAbsoluteLayer() const;
+		Vector2f getAbsoluteCoordinates() const;
+		AABB2D getAbsoluteCollisionBox() const;
 
 	protected:
-		std::string m_name;
 
-		//this is how we get back to our data
-		HashedString m_uniqueID;
+		UIWidget( UIController* parentController,
+			std::weak_ptr<UICanvas> ParentCanvas,
+			std::weak_ptr<UIWidget> parentWidget,
+			HashedString uniqueID,
+			float RelativeLayer,
+			const Vector2f& relativeCoordinates,
+			const Vector2f& collisionSize );
 
-		Vector2f m_coordinates;
-
-		//This is just the widget itself, not includeing any children
-		Vector2f m_canvasCollisionBoxOffset;
-		Vector2f m_canvasCollisionBoxSize;
-		AABB2D m_canvasCollisionBox;
 		
-		//This is the collision Box that encompases all the children
-		AABB2D m_fullCanvasCollisionBox;
+		
 
-		//any children UIWidgets
-		std::set<std::unique_ptr<UIWidget> > m_children;
-
-		// to do with the parent
-		UIWidget* m_parentWidget;
-		Vector2f  m_parentCoordinatesOffset;
-
-		UICanvas* m_parentCanvas;
+		std::set< std::shared_ptr<UIWidget> > m_children;  
+		std::weak_ptr<UIWidget> m_parentWidget;
+		std::weak_ptr<UICanvas> m_parentCanvas;
+		UIController* m_parentController;
 
 		std::shared_ptr<UIStyle> m_style;
 
-		bool m_lockedToParent;
-
-		float m_relativeLayer;
-
-		unsigned int m_id;
-
-		//do we want to prevent other things from using the keyboard when we are selected
-		bool m_lockKeyboard;
+		bool m_blockKeyboard;			//do we want to prevent other things from using the keyboard when we are selected
+		bool m_blockedToParent;			//is it locked to its parent
 		
+	private:
+
+		
+		HashedString m_uniqueID;
+		Vector2f m_relativeCoordinates;
+		Vector2f m_canvasCollisionBoxSize;
+		Vector2f m_canvasCollisionBoxOffset;
+		float m_relativeLayer;
+		float m_absoluteLayer;
+		Vector2f m_absoluteCoordinates;
+		AABB2D m_absoluteCanvasCollisionBox;
+		AABB2D m_fullCanvasCollisionBox;				//This is the collision Box that encompasses all the children
+		std::weak_ptr<UIWidget> m_selfPtr;
+
 
 	};
 

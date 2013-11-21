@@ -9,18 +9,22 @@ namespace woodman
 	{
 	public:
 
-		UITextEntry(UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer,
-			EventSystem* pEventSystem);
+		
+		static std::weak_ptr<UITextEntry> CreateUITextEntry(const std::string& _Title,
+			EventSystem* pEventSystem, 
+			UIController* _ParentController,
+			std::weak_ptr<UICanvas> _ParentCanvas,
+			std::weak_ptr<UIWidget> _ParentWidget,
+			const HashedString& _ID,
+			float _RelativeLayer,
+			const Vector2f& _RelativeCoordinates,
+			const Vector2f& _CollisionSize );
 
-		virtual void render( UIMouse* currentMouse, float ParentLayer );
-		virtual void update( UIMouse* currentMouse);
+		virtual void render( std::shared_ptr<UIMouse> currentMouse, float ParentLayer );
+		virtual void update( std::shared_ptr<UIMouse> currentMouse);
 		virtual void Initialize();
-		virtual void MouseClick( UIMouse* currentMouse );
-		virtual void getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer );
+		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
+		virtual std::weak_ptr<UIWidget> getTopWidgetColliding(const Vector2f& PointCanvasSpace);
 
 		void catchKeyDown(NamedPropertyContainer& parameters);
 		void setToRender(bool renderThisFrame);
@@ -28,6 +32,17 @@ namespace woodman
 		float getValue();
 
 	private:
+	
+		UITextEntry( const std::string& Title,
+			EventSystem* pEventSystem, 
+			UIController* parentController,
+			std::weak_ptr<UICanvas> ParentCanvas,
+			std::weak_ptr<UIWidget> parentWidget,
+			HashedString uniqueID,
+			float RelativeLayer,
+			const Vector2f& relativeCoordinates,
+			const Vector2f& collisionSize );
+
 		std::string m_title;
 		std::string m_entry;
 		float m_number;

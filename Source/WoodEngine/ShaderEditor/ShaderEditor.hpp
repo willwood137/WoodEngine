@@ -34,6 +34,7 @@ namespace woodman
 		ShaderNode* getDefinitionNode( HashedString name );
 
 		virtual void KeyDown(unsigned int key);
+		void DeleteNodeBox( UINodeBox* NodeBoxToDelete );
 		void catchAddNode(NamedPropertyContainer& parameters);
 		void catchCompile(NamedPropertyContainer& parameters);
 		void catchPreview(NamedPropertyContainer& parameters);
@@ -56,10 +57,10 @@ namespace woodman
 
 		// shader Instances?
 		ShaderInstance m_shaderInstance;
-		UICanvas* m_vertexCanvas;
-		UICanvas* m_fragmentCanvas;
-		UICanvas* m_dividerCanvas;
-		ModelPreviewWidget* m_previewWidget;
+		std::weak_ptr<UICanvas> m_vertexCanvas;
+		std::weak_ptr<UICanvas> m_fragmentCanvas;
+		std::weak_ptr<UICanvas> m_dividerCanvas;
+		std::weak_ptr<ModelPreviewWidget> m_previewWidget;
 
 
 	};

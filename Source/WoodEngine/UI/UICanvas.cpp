@@ -1,6 +1,7 @@
 #include "../stdafx.h"
 
 #include "UICanvas.hpp"
+#include "UIMouse.hpp"
 #include "UINodeBox.hpp"
 #include "UILinkStrip.hpp"
 #include "../ShaderEditor/NodeInstance.hpp"
@@ -43,18 +44,14 @@ namespace woodman
  		return true;
 	}
 
-	void UICanvas::RegisterUIWidget( UIWidget* widget)
+	void UICanvas::RegisterUIWidget( std::shared_ptr<UIWidget> widget)
 	{
-		m_UIWidgets.insert(std::unique_ptr<UIWidget>(widget));
+		m_UIWidgets.insert(widget);
 	}
 
-	void UICanvas::UnRegisterUIWidget( UIWidget* widget )
+	void UICanvas::UnRegisterUIWidget( std::shared_ptr<UIWidget> widget )
 	{
-		//Actually erase stuff
-		//
-		// Todo
-
-		//m_UIWidgets.erase( widget );
+		m_UIWidgets.erase( widget );
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -62,7 +59,7 @@ namespace woodman
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-	void UICanvas::RenderCanvas( UIMouse* currentMouse )
+	void UICanvas::RenderCanvas( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 		m_backgroundShader->load();
@@ -92,16 +89,14 @@ namespace woodman
 		//render my nodeBoxes
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->render( currentMouse, m_layer );
+			(*it)->render( currentMouse );
 		}
 	}
 
-	void UICanvas::update( UIMouse* currentMouse )
+	void UICanvas::update( std::shared_ptr<UIMouse> currentMouse )
 	{
 		m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
 		mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
-		
- 
  		Vector2f mouseDelta = m_currentMouseCanvasPosition - m_prevMouseCanvasPosition;
 
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
@@ -109,10 +104,9 @@ namespace woodman
 			(*it)->update(currentMouse);
 		}
 
-
- 		if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas == this)
+ 		if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas.lock().get() == this)
  		{
- 			if(currentMouse->selectedWidget == nullptr)
+ 			if(currentMouse->selectedWidget.expired())
  			{
 				//move canvas
 				m_center -= mouseDelta;
@@ -120,7 +114,7 @@ namespace woodman
 				m_prevMouseCanvasPosition = m_currentMouseCanvasPosition;
 				mapPointToCanvasSpace(currentMouse->screenPosition, m_currentMouseCanvasPosition);
  			}
- 			}
+ 		}
 	}
 
 	void UICanvas::catchMouseWheel(NamedPropertyContainer& parameters)
@@ -135,7 +129,6 @@ namespace woodman
 		{
 			m_zoom--;
 		}
-
 		m_zoom = clamp(m_zoom, m_zoomBounds.x, m_zoomBounds.y);
 		calcCanvasSpace();
 	}
@@ -177,33 +170,25 @@ namespace woodman
 		return m_screenSpace;
 	}
 
-	UIWidget* UICanvas::getUIWidgetatPoint(const Vector2f& PointScreenSpace)
+	std::weak_ptr<UIWidget> UICanvas::getUIWidgetatPoint(const Vector2f& PointScreenSpace)
 	{
 		Vector2f PointCanvasSpace;
 		mapPointToCanvasSpace(PointScreenSpace, PointCanvasSpace);
 
-		UIWidget* topWidget = nullptr;
+		std::weak_ptr<UIWidget> topWidget;
 
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->getTopWidgetColliding(PointCanvasSpace, topWidget, m_layer, m_layer );
+			std::weak_ptr<UIWidget> tempTopWidget = (*it)->getTopWidgetColliding(PointCanvasSpace);
+
+			if( !tempTopWidget.expired() )
+			{
+				if( topWidget.expired() || tempTopWidget.lock()->getAbsoluteLayer() > topWidget.lock()->getAbsoluteLayer() )
+					topWidget = tempTopWidget;
+			}
 		}
 		
 		return topWidget;
 	}
 
-
-	UIWidget* UICanvas::getUIWidgetByID(HashedString ID)
-	{
-		UIWidget* result = nullptr;
-
-		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
-		{
-			result = (*it)->getUIWidgetByID(ID);
-			if(result != nullptr)
-				return result;
-		}
-
-		return nullptr;
-	}
 }

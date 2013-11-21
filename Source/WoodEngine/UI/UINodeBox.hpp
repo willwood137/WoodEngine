@@ -1,9 +1,8 @@
 #ifndef UINODEBOX_HPP
 #define UINODEBOX_HPP
 
+
 #include "UIWidget.hpp"
-#include "UINodeLink.hpp"
-#include "UITextEntry.hpp"
 
 #include "../Math/Vector2.hpp"
 
@@ -14,7 +13,8 @@
 
 namespace woodman
 {	
-	class UICanvas;
+	class UINodeLink;
+	class UITextEntry;
 
 	enum MOUSE_STATUS
 	{
@@ -31,38 +31,65 @@ namespace woodman
 		virtual void setDataField(HashedString fieldName, float value) = 0;
 	};
 
+	struct LinkDefinition
+	{
+		std::string name;
+		DataType typeInfo;
+	};
+
+	struct UINodeBoxDefinition
+	{
+		std::vector< LinkDefinition > inLinks;
+		std::vector< LinkDefinition > outLinks;
+
+	};
+
 	class UINodeBox : public UIWidget
 	{
 	public:
-		UINodeBox(UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID, 
-			float RelativeLayer,
-			const Vector2f& canvasCoordinates);
+		
+		static std::weak_ptr<UINodeBox> CreateUINodeBox(const std::string& _Title, 
+			UIController* _ParentController,
+			std::weak_ptr<UICanvas> _ParentCanvas,
+			std::weak_ptr<UIWidget> _ParentWidget,
+			const HashedString& _ID,
+			float _RelativeLayer,
+			const Vector2f& _RelativeCoordinates,
+			const Vector2f& _CollisionSize );
 
 		virtual void Initialize();
 		virtual void move(	const Vector2f& amountToMove );
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
-		virtual void update(UIMouse* currentMouse);
+		virtual void render(std::shared_ptr<UIMouse> currentMouse);
+		virtual void update(std::shared_ptr<UIMouse> currentMouse);
 
 // 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 // 		virtual void MouseRelease( std::shared_ptr<UIMouse> currentMouse);
-		virtual void MouseDrag( UIMouse* currentMouse);
-		virtual void MouseClick( UIMouse* currentMouse );
+		virtual void MouseDrag( std::shared_ptr<UIMouse> currentMouse);
+		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
 
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
-		void addDataField(UITextEntry* field);
+		void addDataField( std::weak_ptr<UITextEntry> field);
+		void addLink( std::weak_ptr<UINodeLink> link);
 
 	private:
+
+		UINodeBox( const std::string& Title,
+			UIController* parentController,
+			std::weak_ptr<UICanvas> ParentCanvas,
+			std::weak_ptr<UIWidget> parentWidget,
+			HashedString uniqueID,
+			float RelativeLayer,
+			const Vector2f& relativeCoordinates,
+			const Vector2f& collisionSize );
+
 		//TL Corner
-		Vector2f								m_titleOffset;
-		std::string								m_title;
-		std::list<std::string>					n_data;
-		std::set< UINodeLink* >					m_linkSlots;
-		std::vector< UITextEntry* >				m_dataFields;
-		unsigned int							m_numInSlots;
-		unsigned int							m_numOutSlots;
+		Vector2f									m_titleOffset;
+		std::string									m_title;
+		std::list<std::string>						n_data;
+		std::set< std::weak_ptr<UINodeLink> >		m_linkSlots;
+		std::vector< std::weak_ptr<UITextEntry> >	m_dataFields;
+		unsigned int								m_numInSlots;
+		unsigned int								m_numOutSlots;
 
 		UINodeBoxCallBackRecipient* m_callBackRecipient;
 

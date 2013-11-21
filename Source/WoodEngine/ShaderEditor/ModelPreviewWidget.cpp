@@ -1,15 +1,34 @@
 #include "../stdafx.h"
 
 #include "ModelPreviewWidget.hpp"
+#include "..\\UI\\UIController.hpp"
 #include "..\\UI\\UICanvas.hpp"
 
 namespace woodman
 {
-	ModelPreviewWidget::ModelPreviewWidget( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID, float RelativeLayer )
-		: UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+	
+
+	ModelPreviewWidget::ModelPreviewWidget( UIController* parentController, 
+		std::weak_ptr<UICanvas> ParentCanvas, 
+		std::weak_ptr<UIWidget> parentWidget, 
+		HashedString uniqueID, 
+		float RelativeLayer, 
+		const Vector2f& relativeCoordinates, 
+		const Vector2f& collisionSize )
+		: UIWidget(parentController, ParentCanvas, parentWidget, uniqueID, RelativeLayer, relativeCoordinates, collisionSize),
 		m_camera(new Camera(Vector3f(0.0f, 50.0f, -200.0f) ) ),
 		m_clock(HashedString("PreviewClock"), .2, Clock::MasterClock())
 	{
+
+	}
+
+	std::weak_ptr<ModelPreviewWidget> ModelPreviewWidget::CreateModelPreviewWidget( UIController* _ParentController, std::weak_ptr<UICanvas> _ParentCanvas, std::weak_ptr<UIWidget> _ParentWidget, const HashedString& _ID, float _RelativeLayer, const Vector2f& _RelativeCoordinates, const Vector2f& _CollisionSize )
+	{
+		assert(_ParentController != nullptr);
+		std::shared_ptr<ModelPreviewWidget> newBox(new ModelPreviewWidget( _ParentController, _ParentCanvas, _ParentWidget, _ID, _RelativeLayer, _RelativeCoordinates, _CollisionSize) );
+		_ParentController->RegisterUIWidget(std::dynamic_pointer_cast<UIWidget>(newBox) );
+		newBox->Initialize();
+		return std::weak_ptr<ModelPreviewWidget>(newBox);
 	}
 
 	void ModelPreviewWidget::loadBackgroundTexture( const std::string& texturePath )
@@ -38,7 +57,7 @@ namespace woodman
 
 	void drawOrigin(Camera* camera);
 
-	void ModelPreviewWidget::render( UIMouse* currentMouse, float ParentLayer)
+	void ModelPreviewWidget::render( std::shared_ptr<UIMouse> currentMouse )
 	{
 		
 		if(isKeyDown(VK_OEM_PLUS))
@@ -133,14 +152,14 @@ namespace woodman
 
 		//now render the texture
 
-		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(m_coordinates.x, m_coordinates.y), LinkBoxMax(LinkBoxMin + m_canvasCollisionBoxSize );
+		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin(getAbsoluteCoordinates()), LinkBoxMax(LinkBoxMin + getCollisionSize() );
 
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
-		m_parentCanvas->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
+		m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
+		m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
 
 		Vector2f LinkBoxSizeScreen = LinkBoxMaxScreen - LinkBoxMinScreen;
 
-		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
+		AABB2D screenSpaceBounds = m_parentCanvas.lock()->getScreenSpace();
 
 		m_showTextureShader->load();
 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
@@ -164,7 +183,7 @@ namespace woodman
 		ss << m_clock.getTimeSeconds();
 		ss2 << "x" << m_clock.getTimeScale();
 		Vector2f screenPos;
-		m_parentCanvas->mapPointToScreenSpace(m_coordinates, screenPos);
+		m_parentCanvas.lock()->mapPointToScreenSpace(getAbsoluteCoordinates(), screenPos);
 
 		Font::DrawTextToScreen(ss.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 30.0f), 20.0f, ALIGNMENT_LEFT  );
 		Font::DrawTextToScreen(ss2.str(), m_style->TitleTextFont, RGBA(1.0f, 0.0f, 0.0f, .8f), screenPos + Vector2f(10.0, 10.0f), 20.0f, ALIGNMENT_LEFT  );
@@ -172,7 +191,7 @@ namespace woodman
 
 	}
 
-	void ModelPreviewWidget::MouseDrag( UIMouse* currentMouse )
+	void ModelPreviewWidget::MouseDrag( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 	}
@@ -219,4 +238,7 @@ namespace woodman
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return true;
 	}
+
+	
+
 }

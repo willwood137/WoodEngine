@@ -1,13 +1,31 @@
 #include "../stdafx.h"
 
 #include "UITextEntry.hpp"
+#include "UIWidget.hpp"
 #include "UICanvas.hpp"
+#include "UIMouse.hpp"
+#include "UIController.hpp"
 
 namespace woodman
 {
+	std::weak_ptr<UITextEntry> UITextEntry::CreateUITextEntry( const std::string& _Title, 
+		EventSystem* pEventSystem, 
+		UIController* _ParentController, 
+		std::weak_ptr<UICanvas> _ParentCanvas, 
+		std::weak_ptr<UIWidget> _ParentWidget, 
+		const HashedString& _ID, 
+		float _RelativeLayer, 
+		const Vector2f& _RelativeCoordinates, 
+		const Vector2f& _CollisionSize )
+	{
+		assert(_ParentController != nullptr);
+		std::shared_ptr<UITextEntry> newWidget(new UITextEntry(_Title, pEventSystem, _ParentController, _ParentCanvas, _ParentWidget, _ID, _RelativeLayer, _RelativeCoordinates, _CollisionSize) );
+		_ParentController->RegisterUIWidget(std::dynamic_pointer_cast<UIWidget>(newWidget) );
+		newWidget->Initialize();
+		return std::weak_ptr<UITextEntry>(newWidget);
+	}
 
-
-	void UITextEntry::render( UIMouse* currentMouse, float ParentLayer )
+	void UITextEntry::render( std::shared_ptr<UIMouse> currentMouse, float ParentLayer )
 	{
 
 		if(m_renderThisFrame)
@@ -16,9 +34,9 @@ namespace woodman
 			glDisable(GL_CULL_FACE);
 			glDisable(GL_DEPTH_TEST);
 			Vector2f TextScreen;
-			m_parentCanvas->mapPointToScreenSpace(m_coordinates, TextScreen);
+			m_parentCanvas.lock()->mapPointToScreenSpace(getAbsoluteCoordinates(), TextScreen);
 
-			Font::DrawTextToScreen(m_name + " :", 
+			Font::DrawTextToScreen(m_title + " :", 
 				m_style->TitleTextFont,
 				RGBA(1.0f, 0.0f, 0.0f, .8f),
 				TextScreen,
@@ -26,13 +44,12 @@ namespace woodman
 				ALIGNMENT_LEFT);
 
 			//render box
-			float zoomScale = m_parentCanvas->getZoomScale();
-			float layer = ParentLayer - m_relativeLayer;
-			Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin( m_coordinates + m_canvasCollisionBoxOffset), LinkBoxMax(LinkBoxMin + m_canvasCollisionBoxSize );
-			m_parentCanvas->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
-			m_parentCanvas->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
+			float zoomScale = m_parentCanvas.lock()->getZoomScale();
+			Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin( getAbsoluteCoordinates() + getCollisionOffset()), LinkBoxMax(LinkBoxMin + getCollisionSize() );
+			m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
+			m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
 			Vector2f LinkBoxSizeScreen = LinkBoxMaxScreen - LinkBoxMinScreen;
-			AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
+			AABB2D screenSpaceBounds = m_parentCanvas.lock()->getScreenSpace();
 			m_boxShader->load();
 			glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
 			glDisable(GL_CULL_FACE);
@@ -43,7 +60,7 @@ namespace woodman
 			glUniform2f(m_boxShader->getUniformID(HASHED_STRING_u_screenMax), screenSpaceBounds.m_vMax.x, screenSpaceBounds.m_vMax.y);
 			glUniform2f(m_boxShader->getUniformID(HASHED_STRING_u_inverseScreenResolution), 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
 
-			float glLayer = layer / g_MaxLayer;
+			float glLayer = getAbsoluteLayer() / g_MaxLayer;
 			m_boxShader->SetUniformFloat(HASHED_STRING_u_layer, glLayer, 1);
 
 
@@ -57,9 +74,9 @@ namespace woodman
 			m_boxShader->disableAttribute(HASHED_STRING_in_position);
 
 			//render entry
-			Vector2f entryPos = m_coordinates + m_canvasCollisionBoxOffset + Vector2f( 4.0f, 6.0f);
+			Vector2f entryPos = getAbsoluteCoordinates() + getCollisionOffset() + Vector2f( 4.0f, 6.0f);
 			Vector2f entryPosScreen;
-			m_parentCanvas->mapPointToScreenSpace(entryPos, entryPosScreen);
+			m_parentCanvas.lock()->mapPointToScreenSpace(entryPos, entryPosScreen);
 			Font::DrawTextToScreen(m_entry, 
 				m_style->TitleTextFont,
 				RGBA(0.0f, 0.0f, 0.0f, 1.0f),
@@ -76,10 +93,10 @@ namespace woodman
 	{
 		m_boxShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\TextBox");
 		p_eventSystem->RegisterObjectForEvent( this, &UITextEntry::catchKeyDown, "KeyDown" );
-		m_lockKeyboard = true;
+		m_blockKeyboard = true;
 	}
 
-	void UITextEntry::MouseClick( UIMouse* currentMouse )
+	void UITextEntry::MouseClick( std::shared_ptr<UIMouse> currentMouse )
 	{
 		m_cursorPosition = m_entry.size();
 	}
@@ -157,12 +174,10 @@ namespace woodman
 		}
 	}
 
-	UITextEntry::UITextEntry( UICanvas* ParentCanvas, UIWidget* parentWidget, const std::string& name, HashedString uniqueID, float RelativeLayer, EventSystem* pEventSystem )
-		:UIWidget(ParentCanvas, parentWidget, name, uniqueID, RelativeLayer),
+	UITextEntry::UITextEntry( const std::string& Title, EventSystem* pEventSystem, UIController* parentController, std::weak_ptr<UICanvas> ParentCanvas, std::weak_ptr<UIWidget> parentWidget, HashedString uniqueID, float RelativeLayer, const Vector2f& relativeCoordinates, const Vector2f& collisionSize )
+		: UIWidget( parentController, ParentCanvas, parentWidget, uniqueID, RelativeLayer, relativeCoordinates, collisionSize ),
 		EventRecipient(pEventSystem),
-		m_number(0.0f),
-		m_cursorPosition(0),
-		m_entry("0.0")
+		m_title(Title)
 	{
 
 	}
@@ -172,9 +187,9 @@ namespace woodman
 		m_renderThisFrame = renderThisFrame;
 	}
 
-	void UITextEntry::update( UIMouse* currentMouse )
+	void UITextEntry::update( std::shared_ptr<UIMouse> currentMouse )
 	{
-		if(currentMouse->selectedWidget == this)
+		if(currentMouse->selectedWidget.expired())
 		{
 			m_selectedThisFrame = true;
 		}
@@ -186,12 +201,14 @@ namespace woodman
 		UIWidget::update(currentMouse);
 	}
 
-	void UITextEntry::getTopWidgetColliding( const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer )
+	std::weak_ptr<UIWidget> UITextEntry::getTopWidgetColliding( const Vector2f& PointCanvasSpace )
 	{
 		if(m_renderThisFrame)
 		{
-			UIWidget::getTopWidgetColliding(PointCanvasSpace, TopWidget, ParentLayer, CurrentLayer);
+			return UIWidget::getTopWidgetColliding(PointCanvasSpace);
 		}
+
+		return std::weak_ptr<UIWidget>();
 	}
 
 	void UITextEntry::readValue()
@@ -205,5 +222,7 @@ namespace woodman
 	{
 		return m_number;
 	}
+
+	
 
 }

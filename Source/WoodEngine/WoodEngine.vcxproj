@@ -195,7 +195,9 @@
     <Xml Include="ShaderEditor\ShaderNodes\Color.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="ShaderEditor\ShaderNodes\Constant.xml" />
+    <Xml Include="ShaderEditor\ShaderNodes\Constant.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="ShaderEditor\ShaderNodes\Core.xml">
       <SubType>Designer</SubType>
     </Xml>

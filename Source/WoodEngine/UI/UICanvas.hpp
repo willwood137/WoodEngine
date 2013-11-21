@@ -29,17 +29,17 @@ namespace woodman
 
 		UICanvas( EventSystem* eventsystem, const AABB2D& canvasScreenSpace, const std::string& backgroundTexturePath, const Vector2i& backgroundResolution, Vector2i zoomBounds, float Layer );
 
-		void update( UIMouse* currentMouse );
+		void update( std::shared_ptr<UIMouse> currentMouse );
 
 		// from (-1, -1) to (1, 1)
 		void setScreenSpace( const AABB2D& ScreenSpace );
 
-		void RegisterUIWidget( UIWidget* widget );
-		void UnRegisterUIWidget(  UIWidget* widget  );
+		void RegisterUIWidget( std::shared_ptr<UIWidget> widget );
+		void UnRegisterUIWidget(  std::shared_ptr<UIWidget> widget  );
 
 		bool Initialize();
 
-		void RenderCanvas( UIMouse* currentMouse);
+		void RenderCanvas( std::shared_ptr<UIMouse> currentMouse);
 
 		/* PresentCanvasToScreen
 		*	
@@ -67,9 +67,8 @@ namespace woodman
 			return m_layer;
 		}
 
-		UIWidget* getUIWidgetatPoint(const Vector2f& PointScreenSpace);
-		UIWidget* getUIWidgetByID(HashedString ID);
-
+		std::weak_ptr<UIWidget> getUIWidgetatPoint(const Vector2f& PointScreenSpace);
+		
 
 		void mapPointToCanvasSpace(Vector2f pointToMap, Vector2f& pointInCanvasSpace);
 		void mapPointToScreenSpace(Vector2f pointToMap, Vector2f& pointInScreenSpace);
@@ -127,49 +126,13 @@ namespace woodman
 		Vector2f m_prevMouseCanvasPosition;
 
 		//UIWidgets
-		std::set< std::unique_ptr<UIWidget> > m_UIWidgets;
+		std::set< std::shared_ptr<UIWidget> > m_UIWidgets;
 
 		float m_layer;
 
 		std::shared_ptr<Font> m_textFont;
 		std::shared_ptr<Texture> m_backgroundTexture;
 		std::shared_ptr<Shader> m_backgroundShader;
-	};
-
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	struct CanvasCoordinates
-	{
-		CanvasCoordinates(UICanvas* Owner, const Vector2f& canvasCoordinates)
-			: OwningCanvas(Owner),
-			coordinatesCanvasSpace(canvasCoordinates)
-		{
-
-		}
-
-		Vector2f getScreenCoordinates()
-		{
-			Vector2f screenSpace;
-			OwningCanvas->mapPointToScreenSpace(coordinatesCanvasSpace, screenSpace);
-			return screenSpace;
-		}
-
-		void ChangeCanvas(UICanvas* newOwner)
-		{
-			OwningCanvas = newOwner;
-		}
-
-		UICanvas* getOwningCanvas()
-		{
-			return OwningCanvas;
-		}
-
-		Vector2f coordinatesCanvasSpace;
-
-	private:
-		UICanvas* OwningCanvas;
 	};
 
 }

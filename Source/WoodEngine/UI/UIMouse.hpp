@@ -35,11 +35,7 @@ namespace woodman
 
 		UIMouse()
 			:menuOpen(false),
-			isPressed(false),
-			selectedWidget(nullptr),
-			hoveringWidget(nullptr),
-			selectedCanvas(nullptr),
-			hoveringCanvas(nullptr)
+			isPressed(false)
 		{
 
 		}
@@ -55,12 +51,12 @@ namespace woodman
 		Vector2f prevRClickPosition;
 		Vector2f prevReleasePosition;
 
-		UIWidget* selectedWidget;
-		UINodeBox* selectedNodeBox;
-		UIWidget* hoveringWidget;
+		std::weak_ptr<UIWidget> selectedWidget;
+		std::weak_ptr<UINodeBox> selectedNodeBox;
+		std::weak_ptr<UIWidget> hoveringWidget;
 
-		UICanvas* selectedCanvas;
-		UICanvas* hoveringCanvas;
+		std::weak_ptr<UICanvas> selectedCanvas;
+		std::weak_ptr<UICanvas> hoveringCanvas;
 
 		//where in relation the last Click was to the selected widgets coordinates (canvas space)
 		Vector2f relativeOriginalPosition;

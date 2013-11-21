@@ -16,51 +16,63 @@ namespace woodman
 	{
 	public:
 
-		UILinkStrip(UICanvas* ParentCanvas,
-			UIWidget* parentWidget,
-			const std::string& name,
-			HashedString uniqueID,
-			float RelativeLayer,
-			PropertyType pType,
-			unsigned int typeSize,
-			CanvasCoordinates startPoint,
-			CanvasCoordinates endPoint);
+		static std::weak_ptr<UILinkStrip> CreateUILinkStrip( const Vector2f& startPoint,
+			const Vector2f& endPoint,
+			UIController* _ParentController,
+			std::weak_ptr<UICanvas> _ParentCanvas,
+			std::weak_ptr<UIWidget> _ParentWidget,
+			const HashedString& _ID,
+			float _RelativeLayer,
+			const Vector2f& _RelativeCoordinates,
+			const Vector2f& _CollisionSize );
+
+		virtual ~UILinkStrip();
 
 		bool isPointInBounds(const Vector2f& point);
 
 		//Inherited Functions
 		virtual void Initialize();
-		virtual void render(UIMouse* currentMouse, float ParentLayer);
-		virtual void update(UIMouse* currentMouse);
+		virtual void render(std::shared_ptr<UIMouse> currentMouse);
+		virtual void update(std::shared_ptr<UIMouse> currentMouse);
 		
 		//calculates the line strip based on the start/end points/vectors
 		void calcControlPoints();
 
 #pragma region UILinkStrip_Getters
 
-		UIWidget* getStartTarget();
-		UIWidget* getEndTarget();
+		std::shared_ptr<UIWidget> getStartTarget();
+		std::shared_ptr<UIWidget> getEndTarget();
 		bool isGoodStrip();
 
 #pragma endregion
 #pragma region UILinkStrip_Setters
 
-		void updateStartPoint(const CanvasCoordinates& StartPoint);
-		void updateEndPoint(const CanvasCoordinates& EndPoint);
-		void updateStartTarget( UIWidget* StartTarget);
-		void updateEndTarget( UIWidget* EndTarget);
+		void updateStartPoint(const Vector2f& StartPoint);
+		void updateEndPoint(const Vector2f& EndPoint);
+		void updateStartTarget( std::shared_ptr<UIWidget> StartTarget);
+		void updateEndTarget( std::shared_ptr<UIWidget> EndTarget);
 
 #pragma endregion
 
 
 	private:
 
-		void renderCrossCanvas(UIMouse* currentMouse, float layer );
-		void renderIntraCanvas(UIMouse* currentMouse, float layer );
+		UILinkStrip(const Vector2f& startPoint,
+			const Vector2f& endPoint,
+			UIController* _ParentController,
+			std::weak_ptr<UICanvas> _ParentCanvas,
+			std::weak_ptr<UIWidget> _ParentWidget,
+			const HashedString& _ID,
+			float _RelativeLayer,
+			const Vector2f& _RelativeCoordinates,
+			const Vector2f& _CollisionSize );
+
+		void renderCrossCanvas(std::shared_ptr<UIMouse> currentMouse, float layer );
+		void renderIntraCanvas(std::shared_ptr<UIMouse> currentMouse, float layer );
 
 
-		CanvasCoordinates m_startPoint;
-		CanvasCoordinates m_endPoint;
+		Vector2f m_startPoint;
+		Vector2f m_endPoint;
 		Vector2f m_startVector;
 		Vector2f m_endVector;
 
@@ -68,10 +80,10 @@ namespace woodman
 		unsigned int m_typeSize;
 
 		//this is true if we are updateing the end point
-		UIWidget* m_startTarget;
-		UIWidget* m_endTarget;
+		std::shared_ptr<UIWidget> m_startTarget;
+		std::shared_ptr<UIWidget> m_endTarget;
 
-		std::vector< CanvasCoordinates > m_controlPoints;
+		std::vector< Vector2f > m_controlPoints;
 
 		std::shared_ptr<Shader> m_lineStripShader;
 		std::shared_ptr<Shader> m_crossCanvasLineStripShader;

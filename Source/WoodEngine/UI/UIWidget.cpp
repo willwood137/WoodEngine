@@ -2,78 +2,77 @@
 
 #include "UIWidget.hpp"
 #include "UICanvas.hpp"
+#include "UIController.hpp"
 
 namespace woodman
 {
-	UIWidget::UIWidget(UICanvas* ParentCanvas,
-		UIWidget* parentWidget,
-		const std::string& name,
-		HashedString uniqueID,
-		float RelativeLayer)
-		: m_parentCanvas(ParentCanvas),
-		m_parentWidget(parentWidget),
-		m_name(name),
-		m_relativeLayer(RelativeLayer),
-		m_coordinates(0.0f, 0.0f),
-		m_style(UIStyle::DefaultUIStyle),
-		m_lockedToParent(false),
-		m_canvasCollisionBoxOffset( 0.0f, 0.0f ),
-		m_id(0),
-		m_uniqueID(uniqueID),
-		m_lockKeyboard(false)
-	{
-
-	}
-
-	UIWidget::UIWidget( UICanvas* ParentCanvas,
-		UIWidget* parentWidget,
-		const std::string& name,
-		HashedString uniqueID,
+	UIWidget::UIWidget( UIController* parentController, 
+		std::weak_ptr<UICanvas> ParentCanvas, 
+		std::weak_ptr<UIWidget> parentWidget, 
+		HashedString uniqueID, 
 		float RelativeLayer, 
-		const Vector2f& canvasCoordinates)
-		: m_parentCanvas(ParentCanvas),
-		m_parentWidget(parentWidget),
-		m_name(name),
-		m_relativeLayer(RelativeLayer),
-		m_coordinates(canvasCoordinates),
-		m_lockedToParent(false),	
-		m_canvasCollisionBoxOffset( 0.0f, 0.0f ),
-		m_id(0),
-		m_uniqueID(uniqueID),
-		m_lockKeyboard(false)
-
+		const Vector2f& relativeCoordinates,
+		const Vector2f& collisionSize )
+		: m_uniqueID(uniqueID),
+		m_parentCanvas( ParentCanvas ),
+		m_parentWidget( parentWidget ),
+		m_relativeLayer( RelativeLayer ),
+		m_relativeCoordinates( relativeCoordinates ),
+		m_canvasCollisionBoxSize( collisionSize)
 	{
 
 	}
 
-
-	void UIWidget::addChild(UIWidget* child)
+	void UIWidget::Initialize( )
 	{
-		m_children.insert(std::unique_ptr<UIWidget>(child));
-	}
-
-	void UIWidget::removeChild(UIWidget* child)
-	{
-		for(auto it = m_children.begin(); it != m_children.end(); ++it)
+		m_selfPtr = m_parentController->getUIWidgetByID(m_uniqueID);
+		if(m_parentWidget.lock() != nullptr)
 		{
-			if((*it).get() == child)
-			{
-				//we need to get rid of this
-				m_children.erase(it);
-				
-				break;
-			}
+			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
+			calcAbsoluteData(info);
 		}
+		else
+		{
+			calcAbsoluteData( UIWidgetParentInfo( Vector2f(0.0f, 0.0f), m_parentCanvas.lock()->getLayer() ) );
+		}
+
+		calcFullCollisionBox();
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	void UIWidget::addChild( std::shared_ptr<UIWidget> child )
+	{
+		m_children.insert(child);
+	}
+
+	void UIWidget::removeChild( std::shared_ptr<UIWidget> child )
+	{
+		//we need to get rid of this
+		m_children.erase(child);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 
 	void UIWidget::move( const Vector2f& amountToMove )
 	{
-		m_coordinates += amountToMove;
-		m_canvasCollisionBox += amountToMove;
+		m_relativeCoordinates += amountToMove;
+		
+		calcFullCollisionBox();
+	}
 
+
+	void UIWidget::calcAbsoluteData( const UIWidgetParentInfo& info )
+	{
+		m_absoluteLayer = info.Layer + m_relativeLayer;
+		m_absoluteCoordinates = info.Position + m_relativeCoordinates;
+		m_absoluteCanvasCollisionBox.m_vMin = m_absoluteCoordinates + m_canvasCollisionBoxOffset;
+		m_absoluteCanvasCollisionBox.m_vMax = m_absoluteCanvasCollisionBox.m_vMin + m_canvasCollisionBoxSize;
+
+		UIWidgetParentInfo pInfo(m_absoluteCoordinates, m_absoluteLayer);
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->move(amountToMove);
+			(*it)->calcAbsoluteData(pInfo);
 		}
 
 		calcFullCollisionBox();
@@ -81,9 +80,9 @@ namespace woodman
 
 	AABB2D UIWidget::calcFullCollisionBox()
 	{
-		Vector2f vMin = m_coordinates + m_canvasCollisionBoxOffset;
-		m_canvasCollisionBox = AABB2D( vMin, vMin + m_canvasCollisionBoxSize);
-		m_fullCanvasCollisionBox = m_canvasCollisionBox;
+		Vector2f vMin = m_absoluteCoordinates + m_canvasCollisionBoxOffset;
+		m_absoluteCanvasCollisionBox = AABB2D( vMin, vMin + m_canvasCollisionBoxSize);
+		m_fullCanvasCollisionBox = m_absoluteCanvasCollisionBox;
 
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
@@ -93,25 +92,22 @@ namespace woodman
 		return m_fullCanvasCollisionBox;
 	}
 
-	void UIWidget::render( UIMouse* currentMouse, float ParentLayer)
+	//////////////////////////////////////////////////////////////////////////
+
+	void UIWidget::render( std::shared_ptr<UIMouse> currentMouse )
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->render(currentMouse, ParentLayer - m_relativeLayer );
+			(*it)->render(currentMouse);
 		}
 	}
 
-	void UIWidget::update( UIMouse* currentMouse)
+	void UIWidget::update( std::shared_ptr<UIMouse> currentMouse)
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
 			(*it)->update(currentMouse);		
 		}
-	}
-
-	void UIWidget::Initialize( )
-	{
-		calcFullCollisionBox();
 	}
 
 	UIWidget::~UIWidget()
@@ -127,92 +123,177 @@ namespace woodman
 
 
 	//top widget is the widget colliding with the point with the lowest layer
-	void UIWidget::getTopWidgetColliding(const Vector2f& PointCanvasSpace, UIWidget*& TopWidget, float ParentLayer, float CurrentLayer)
+	std::weak_ptr<UIWidget> UIWidget::getTopWidgetColliding( const Vector2f& PointCanvasSpace )
 	{
+		std::weak_ptr<UIWidget> TopWidget;
 		//this has a chance of being on us
 		if( isPointInBounds(PointCanvasSpace) )
 		{
-			
-			float layer = ParentLayer - m_relativeLayer;
-
 			//is it colliding me?
-			if(m_canvasCollisionBox.isPointInsideBounds(PointCanvasSpace))
+			if(m_absoluteCanvasCollisionBox.isPointInsideBounds(PointCanvasSpace))
 			{
-				//if its nothing set it to this
-				if(TopWidget == nullptr)
-				{
-					TopWidget = this;
-				}
-				else
-				{
-					//if the current topWidget is farther from the screen than this, set it to this
-					if(layer < CurrentLayer )
-					{
-						TopWidget = this;
-						CurrentLayer = layer;
-					}
-				}
+				TopWidget = m_selfPtr;
 			}
 
 			//check if theres anything lower in the children
 			for(auto it = m_children.begin(); it != m_children.end(); ++it)
 			{
-				(*it)->getTopWidgetColliding(PointCanvasSpace, TopWidget, layer, CurrentLayer);
+				std::weak_ptr<UIWidget> tempTopWidget = (*it)->getTopWidgetColliding(PointCanvasSpace);
+				
+				if( !tempTopWidget.expired() )
+				{
+					if( TopWidget.expired() || tempTopWidget.lock()->getAbsoluteLayer() < TopWidget.lock()->getAbsoluteLayer() )
+						TopWidget = tempTopWidget;
+				}
 			}
 		}
+		return TopWidget;
 	}
 
-	void UIWidget::MouseDrag( UIMouse* currentMouse )
+	void UIWidget::MouseDrag( std::shared_ptr<UIMouse> currentMouse )
 	{
 	
 	}
-	void UIWidget::MouseClick( UIMouse* currentMouse )
+	void UIWidget::MouseClick( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 	}
-	void UIWidget::MouseRClick( UIMouse* currentMouse )
+	void UIWidget::MouseRClick( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 	}
-	void UIWidget::MouseRelease( UIMouse* currentMouse )
+	void UIWidget::MouseRelease( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 	}
 
 
 
-	UICanvas* UIWidget::getParentCanvas()
+	
+
+	//////////////////////////////////////////////////////////////////////////
+	//			Getters / Setters											//
+	//////////////////////////////////////////////////////////////////////////
+
+	std::weak_ptr<UICanvas> UIWidget::getParentCanvas()
 	{
 		return m_parentCanvas;
 	}
-
-	UIWidget* UIWidget::getUIWidgetByID(HashedString ID)
-	{
-		if( ! (ID < m_uniqueID) && !(m_uniqueID < ID ) )
-			return this;
-
-		UIWidget* result = nullptr;
-
-
-		for(auto it = m_children.begin(); it != m_children.end(); ++it)
-		{
-			result = (*it)->getUIWidgetByID(ID);
-			
-			if(result != nullptr)
-				return result;
-		}
-
-		return nullptr;
-	}
-
 	bool UIWidget::getLockKeyboard()
 	{
-		return m_lockKeyboard;
+		return m_blockKeyboard;
 	}
-
 	void UIWidget::setLockKeyboard( bool lock )
 	{
-		m_lockKeyboard = lock;
+		m_blockKeyboard = lock;
 	}
 
+	void UIWidget::setRelativeCoordinates( const Vector2f& RelativeCoordinates )
+	{
+		m_relativeCoordinates = RelativeCoordinates;
+		if(m_parentWidget.lock() != nullptr)
+		{
+			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
+			calcAbsoluteData(info);
+		}
+		else
+		{
+			calcAbsoluteData( UIWidgetParentInfo( Vector2f(0.0f, 0.0f), m_parentCanvas.lock()->getLayer() ) );
+		}
+	}
+
+	woodman::Vector2f UIWidget::getRelativeCoordinates() const
+	{
+		return m_relativeCoordinates;
+	}
+
+	void UIWidget::setCollisionSize( const Vector2f& size )
+	{
+		m_canvasCollisionBoxSize = size;
+		if(m_parentWidget.lock() != nullptr)
+		{
+			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
+			calcAbsoluteData(info);
+		}
+		else
+		{
+			calcAbsoluteData( UIWidgetParentInfo( Vector2f(0.0f, 0.0f), m_parentCanvas.lock()->getLayer() ) );
+		}
+	}
+
+	woodman::Vector2f UIWidget::getCollisionSize() const
+	{
+		return m_canvasCollisionBoxSize;
+	}
+
+	void UIWidget::setCollisionOffset( const Vector2f& offset )
+	{
+		m_canvasCollisionBoxOffset = offset;
+		if(m_parentWidget.lock() != nullptr)
+		{
+			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
+			calcAbsoluteData(info);
+		}
+		else
+		{
+			calcAbsoluteData( UIWidgetParentInfo( Vector2f(0.0f, 0.0f), m_parentCanvas.lock()->getLayer() ) );
+		}
+	}
+
+	woodman::Vector2f UIWidget::getCollisionOffset() const
+	{
+		return m_canvasCollisionBoxOffset;
+	}
+
+	void UIWidget::setStyle( std::shared_ptr<UIStyle> style )
+	{
+		m_style= style;
+	}
+
+	std::shared_ptr<UIStyle> UIWidget::getStyle() const
+	{
+		return m_style;
+	}
+
+	void UIWidget::setLockedToParent( bool lockToParent )
+	{
+		m_blockKeyboard = lockToParent;
+	}
+
+	bool UIWidget::getLockedToParent() const
+	{
+		return m_blockedToParent;
+	}
+
+	woodman::HashedString UIWidget::getUniqueID()
+	{
+		return m_uniqueID;
+	}
+
+	std::weak_ptr<UIWidget> UIWidget::getParentWidget()
+	{
+		return m_parentWidget;
+	}
+
+	float UIWidget::getAbsoluteLayer() const
+	{
+		return m_absoluteLayer;
+	}
+
+	woodman::Vector2f UIWidget::getAbsoluteCoordinates() const
+	{
+		return m_absoluteCoordinates;
+	}
+
+	woodman::AABB2D UIWidget::getAbsoluteCollisionBox() const
+	{
+		return m_absoluteCanvasCollisionBox;
+	}
+
+	UIController* UIWidget::getParentController() const
+	{
+		return m_parentController;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 }
