@@ -57,6 +57,7 @@ namespace woodman
 		DataType* getDataType();
 		unsigned int getTypeSize();
 		UINodeLinkCallBackBase* getCallBackRecipient();
+		std::string getTitle();
 #pragma endregion
 #pragma region UINodeLink_Setters
 		void setDraggingStrip(std::shared_ptr<UILinkStrip> linkStrip);
@@ -82,9 +83,9 @@ namespace woodman
 		UINodeLinkCallBackBase* m_callBackRecipient;
 
 		//null if unpaired
-		std::shared_ptr<UILinkStrip> m_draggingStrip;
-		std::set<std::shared_ptr<UILinkStrip> > m_outLinkStrips;
-		std::shared_ptr<UILinkStrip> m_inLinkStrip;
+		std::weak_ptr<UILinkStrip> m_draggingStrip;
+		std::list<std::weak_ptr<UILinkStrip> > m_outLinkStrips;
+		std::weak_ptr<UILinkStrip> m_inLinkStrip;
 
 		bool		 m_isOutLink;
 		DataType*    m_parentDataType;

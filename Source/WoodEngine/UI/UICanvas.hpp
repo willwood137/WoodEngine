@@ -126,7 +126,7 @@ namespace woodman
 		Vector2f m_prevMouseCanvasPosition;
 
 		//UIWidgets
-		std::set< std::shared_ptr<UIWidget> > m_UIWidgets;
+		std::list< std::weak_ptr<UIWidget> > m_UIWidgets;
 
 		float m_layer;
 

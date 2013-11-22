@@ -80,8 +80,8 @@ namespace woodman
 		unsigned int m_typeSize;
 
 		//this is true if we are updateing the end point
-		std::shared_ptr<UIWidget> m_startTarget;
-		std::shared_ptr<UIWidget> m_endTarget;
+		std::weak_ptr<UIWidget> m_startTarget;
+		std::weak_ptr<UIWidget> m_endTarget;
 
 		std::vector< Vector2f > m_controlPoints;
 

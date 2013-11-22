@@ -39,7 +39,11 @@ namespace woodman
 		const Vector2f& relativeCoordinates, 
 		const Vector2f& collisionSize )
 		: UIWidget( parentController, ParentCanvas, parentWidget, uniqueID, RelativeLayer, relativeCoordinates, collisionSize ),
-		m_title(Title)
+		m_title(Title),
+		m_numInSlots(0),
+		m_numOutSlots(0),
+		m_outLongest(0.0f),
+		m_inLongest(0.0f)
 	{
 
 	}
@@ -59,9 +63,10 @@ namespace woodman
 
 		UIWidget::Initialize();
 
-		m_titleOffset = Vector2f(0.0f, 0.0f);
-			//Vector2f( (m_canvasCollisionBoxSize.x - m_style->NodeBoxCornerSize) * .5f + m_style->NodeBoxCornerSize,
-			//m_canvasCollisionBoxSize.y - m_style->NodeBoxBorderLength - m_style->TitleSize);
+		m_titleSize.x = Font::getLengthOfString( m_title, m_style->TitleTextFont, m_style->TitleSize);
+		m_titleSize.y = m_style->TitleSize;
+
+		calcNodeBoxSize();
 	}
 
 
@@ -123,11 +128,10 @@ namespace woodman
 		//render the Title
 		//--------------------------
 		
-		Vector2f TextCanvas(getAbsoluteCoordinates() + m_titleOffset ), TextScreen;
+		Vector2f TextCanvas(getAbsoluteCoordinates() + Vector2f(getCollisionSize().x * .5f, getCollisionSize().y - ( m_style->TitleBuffer + m_style->NodeBoxBorderLength))), TextScreen;
 		m_parentCanvas.lock()->mapPointToScreenSpace(TextCanvas, TextScreen);
 
-		// 		Vector2f( (nodeBoxToRender->size.x + style->NodeBoxCornerSize) * .5f, 
-		// 			nodeBoxToRender->size.y - style->NodeBoxBorderLength - style->TitleSize) ) * zoomScale,
+		
 
 		Font::DrawTextToScreen(m_title, 
 			m_style->TitleTextFont,
@@ -193,6 +197,55 @@ namespace woodman
 		{
 			m_callBackRecipient->setDataField((*it).lock()->getUniqueID(), (*it).lock()->getValue() );
 		}
+	}
+
+	void UINodeBox::calcNodeBoxSize()
+	{
+ 		float FullTitleWidth = m_titleSize.x + m_style->NodeBoxBorderLength * 2.0f + m_style->NodeBoxCornerSize;
+		
+		float inHeight = 0.0f, outHeight = 0.0f;
+
+		inHeight = m_style->NodeBoxCornerSize + ( static_cast<float>(m_numInSlots + 1) * m_style->subTitleBuffer ) + ( static_cast<float>(m_numInSlots) * m_style->subTitleSize ) + m_style->NodeBoxBorderLength; 
+		outHeight = m_style->NodeBoxCornerSize + ( static_cast<float>(m_numOutSlots + 1) * m_style->subTitleBuffer ) + ( static_cast<float>(m_numOutSlots) * m_style->subTitleSize ) + m_style->NodeBoxBorderLength + m_titleSize.y + m_style->TitleBuffer; 
+		
+		float fullSubTitleSize = m_outLongest + m_inLongest + m_style->NodeBoxBorderLength * 2 + m_style->subTitleBuffer * 4;
+
+		float height = max(inHeight, outHeight);
+		float width = max(FullTitleWidth, fullSubTitleSize);
+		for(unsigned int i = 0; i < m_numInSlots; ++i)
+		{
+			Vector2f offset(m_style->subTitleBuffer + m_style->NodeBoxBorderLength, m_style->NodeBoxCornerSize);
+			offset.y += (i) * ( m_style->subTitleBuffer + m_style->subTitleSize);
+			m_inSlots[i].lock()->setRelativeCoordinates(offset);
+		}
+		for(unsigned int i = 0; i < m_numOutSlots; ++i)
+		{
+			Vector2f offset(width - (m_style->subTitleBuffer + m_style->NodeBoxBorderLength), m_style->NodeBoxBorderLength + m_titleSize.y + m_style->TitleBuffer);
+			offset.y += (i) * ( m_style->subTitleBuffer + m_style->subTitleSize);
+			m_outSlots[i].lock()->setRelativeCoordinates(offset);
+		}
+		setCollisionSize(Vector2f(width, height));
+	}
+
+	void UINodeBox::addLink( std::shared_ptr<UINodeLink> link )
+	{
+		if(link->IsOutLink())
+		{
+			m_outSlots.push_back(link);
+			++m_numOutSlots;
+			m_outLongest = max( m_outLongest, Font::getLengthOfString(link->getTitle(), m_style->subTitleTextFont, m_style->subTitleSize));
+
+			link->setCollisionOffset(Vector2f(10.0f, -8.0f));
+		}
+		else
+		{
+			m_inSlots.push_back(link);
+			++m_numInSlots;
+			m_inLongest = max( m_inLongest, Font::getLengthOfString(link->getTitle(), m_style->subTitleTextFont, m_style->subTitleSize));
+
+			link->setCollisionOffset(Vector2f(-34.0f, -8.0f));
+		}
+		calcNodeBoxSize();
 	}
 
 	

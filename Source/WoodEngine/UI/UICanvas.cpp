@@ -46,12 +46,19 @@ namespace woodman
 
 	void UICanvas::RegisterUIWidget( std::shared_ptr<UIWidget> widget)
 	{
-		m_UIWidgets.insert(widget);
+		m_UIWidgets.push_back(widget);
 	}
 
 	void UICanvas::UnRegisterUIWidget( std::shared_ptr<UIWidget> widget )
 	{
-		m_UIWidgets.erase( widget );
+		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
+		{
+			if( (*it).lock() == widget)
+			{
+				m_UIWidgets.erase(it);
+				break;
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -83,13 +90,13 @@ namespace woodman
 
 		glDrawArrays( GL_QUADS, 0, 4);
 
-		//m_backgroundShader->disableAttribute(HASHED_STRING_in_position);
+		m_backgroundShader->disableAttribute(HASHED_STRING_in_position);
 
 
 		//render my nodeBoxes
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->render( currentMouse );
+			(*it).lock()->render( currentMouse );
 		}
 	}
 
@@ -101,7 +108,7 @@ namespace woodman
 
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			(*it)->update(currentMouse);
+			(*it).lock()->update(currentMouse);
 		}
 
  		if(m_moveable &&  currentMouse->isPressed && currentMouse->selectedCanvas.lock().get() == this)
@@ -179,11 +186,11 @@ namespace woodman
 
 		for(auto it = m_UIWidgets.begin(); it != m_UIWidgets.end(); ++it)
 		{
-			std::weak_ptr<UIWidget> tempTopWidget = (*it)->getTopWidgetColliding(PointCanvasSpace);
+			std::weak_ptr<UIWidget> tempTopWidget = (*it).lock()->getTopWidgetColliding(PointCanvasSpace);
 
 			if( !tempTopWidget.expired() )
 			{
-				if( topWidget.expired() || tempTopWidget.lock()->getAbsoluteLayer() > topWidget.lock()->getAbsoluteLayer() )
+				if( topWidget.expired() || tempTopWidget.lock()->getAbsoluteLayer() < topWidget.lock()->getAbsoluteLayer() )
 					topWidget = tempTopWidget;
 			}
 		}

@@ -24,7 +24,6 @@ namespace woodman
 		{
 			(*it)->Initialize();
 		}
-
 		m_mouse->mouseMenuShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\MouseMenu");
 	}
 
@@ -40,7 +39,7 @@ namespace woodman
 
 		m_mouse->hoveringWidget = getUIWidgetatPoint(MouseScreenPosition);
 		
-		if( m_mouse->hoveringWidget.expired() )
+		if( !m_mouse->hoveringWidget.expired() )
 		{
 			m_mouse->hoveringCanvas = m_mouse->hoveringWidget.lock()->getParentCanvas();
 		}
@@ -51,7 +50,7 @@ namespace woodman
 
 		if(m_mouse->isPressed)
 		{
-			if(m_mouse->selectedWidget.expired())
+			if(!m_mouse->selectedWidget.expired())
 			{
 				if( !m_mouse->hoveringCanvas.expired() && m_mouse->selectedWidget.lock()->getParentCanvas().lock() == m_mouse->hoveringCanvas.lock() )
 				{
@@ -211,7 +210,8 @@ namespace woodman
 	void UIController::RegisterUIWidget( std::shared_ptr<UIWidget> widget )
 	{
 		m_widgets.insert(std::make_pair(widget->getUniqueID(), widget) );
-		widget->getParentWidget().lock()->addChild(widget);
+		if(!widget->getParentWidget().expired())
+			widget->getParentWidget().lock()->addChild(widget);
 	}
 
 	void UIController::UnRegisterUIWidget( HashedString ID )
@@ -221,8 +221,40 @@ namespace woodman
 		{
 			std::shared_ptr<UIWidget> widget = it->second;
 			m_widgets.erase(ID);
+			if(widget->getParentWidget().expired())
+			{
+				widget->getParentCanvas().lock()->UnRegisterUIWidget(widget);
+			}
+			else
+			{
+				widget->getParentWidget().lock()->removeChild(widget);
+			}
 			widget.reset();
 		}
+	}
+
+	woodman::HashedString UIController::getUniqueID( HashedString& ID )
+	{
+		bool unique = false;
+		HashedString uniqueID(ID);
+		int i = 1;
+		while(!unique)
+		{
+			auto it = m_widgets.find(ID);
+			if(it != m_widgets.end())
+			{
+				std::stringstream ss;
+				ss << i;
+				uniqueID = HashedString(ID.m_string + ss.str());
+				++i;
+			}
+			else
+			{
+				unique = true;
+			}
+		}
+
+		return uniqueID;
 	}
 
 }

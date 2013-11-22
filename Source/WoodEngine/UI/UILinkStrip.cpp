@@ -63,62 +63,61 @@ namespace woodman
 
 	void UILinkStrip::render(std::shared_ptr<UIMouse> currentMouse)
 	{
-// 		m_lineStripShader->load();
-// 
-// 
-// 		std::vector< Vector2f > canvasPoints;
-// 
-// 		//canvasPoints.resize(m_controlPoints.size());
-// 
-// 		for(auto it = m_controlPoints.begin(); it != m_controlPoints.end(); ++it)
-// 		{
-// 			canvasPoints.push_back( (*it).coordinatesCanvasSpace );
-// 		}
-// 
-// 		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen;
-// 
-// 		m_parentCanvas->mapPointToScreenSpace(m_coordinates, NodeBoxMinScreen);
-// 		m_parentCanvas->mapPointToScreenSpace(m_coordinates + m_canvasCollisionBoxSize, NodeBoxMaxScreen);
-// 
-// 		Vector2f NodeBoxSizeScreen = NodeBoxMaxScreen - NodeBoxMinScreen;
-// 		AABB2D screenSpaceBounds = m_parentCanvas->getScreenSpace();
-// 
-// 		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
-// 		glDisable(GL_CULL_FACE);
-// 		glEnable(GL_DEPTH_TEST);
-// 
-// 		int filterSlot = 0;
-// 		int numPoints = canvasPoints.size();
-// 		int numLines = numPoints - 1;
-// 		Vector2f inverseScreen( 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
-// 		Vector3f minScreenPos(NodeBoxMinScreen, layer);
-// 
-// 		m_lineStripShader->SetUniformVector3(HASHED_STRING_u_position, minScreenPos, 1);
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_size, NodeBoxSizeScreen, 1);
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMin, screenSpaceBounds.m_vMin, 1);
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMax, screenSpaceBounds.m_vMax, 1);
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMin, m_coordinates, 1);
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMax, m_coordinates + m_canvasCollisionBoxSize, 1);
-// 		m_lineStripShader->SetUniformInt(HASHED_STRING_u_filter, filterSlot, 1);
-// 
-// 		float screenLayer = layer / g_MaxLayer;
-// 		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_layer, screenLayer, 1);
-// 
-// 
-// 		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_filter), 0);
-// 		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_numLines), numLines);
-// 		//glUniform1f(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSize), m_style->LineWidth);
-// 
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_lineSegmentsStrip, canvasPoints[0], numPoints );
-// 		//glUniform2fv(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSegmentsStrip), numPoints, reinterpret_cast<GLfloat*>(canvasPoints.data()) );
-// 		m_lineStripShader->SetUniformInt(HASHED_STRING_u_numLines, numLines, 1);
-// 		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_lineSize, m_style->LineWidth, 1);
-// 
-// 		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_inverseScreenResolution, inverseScreen, 1 );
-// 
-// 		Texture::ApplyTexture(m_filterTexture);
-// 
-// 		m_lineStripShader->renderSimpleQuad();
+		m_lineStripShader->load();
+
+		std::vector< Vector2f > canvasPoints;
+
+		//canvasPoints.resize(m_controlPoints.size());
+
+		for(auto it = m_controlPoints.begin(); it != m_controlPoints.end(); ++it)
+		{
+			canvasPoints.push_back( (*it) );
+		}
+
+		Vector2f NodeBoxMinScreen, NodeBoxMaxScreen;
+
+		m_parentCanvas.lock()->mapPointToScreenSpace(getAbsoluteCoordinates(), NodeBoxMinScreen);
+		m_parentCanvas.lock()->mapPointToScreenSpace(getAbsoluteCoordinates() + getCollisionSize(), NodeBoxMaxScreen);
+
+		Vector2f NodeBoxSizeScreen = NodeBoxMaxScreen - NodeBoxMinScreen;
+		AABB2D screenSpaceBounds = m_parentCanvas.lock()->getScreenSpace();
+
+		glBindBuffer(GL_ARRAY_BUFFER, Shader::QuadBufferID);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+
+		int filterSlot = 0;
+		int numPoints = canvasPoints.size();
+		int numLines = numPoints - 1;
+		Vector2f inverseScreen( 1.0f / static_cast<float>(ScreenSize.x), 1.0f / static_cast<float>(ScreenSize.y) );
+		Vector3f minScreenPos(NodeBoxMinScreen, getAbsoluteLayer());
+
+		m_lineStripShader->SetUniformVector3(HASHED_STRING_u_position, minScreenPos, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_size, NodeBoxSizeScreen, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMin, screenSpaceBounds.m_vMin, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_screenMax, screenSpaceBounds.m_vMax, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMin, getAbsoluteCollisionBox().m_vMin, 1);
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_canvasMax, getAbsoluteCollisionBox().m_vMax, 1);
+		m_lineStripShader->SetUniformInt(HASHED_STRING_u_filter, filterSlot, 1);
+
+		float screenLayer = getAbsoluteLayer() / g_MaxLayer;
+		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_layer, screenLayer, 1);
+
+
+		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_filter), 0);
+		//glUniform1i(m_lineStripShader->getUniformID(HASHED_STRING_u_numLines), numLines);
+		//glUniform1f(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSize), m_style->LineWidth);
+
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_lineSegmentsStrip, canvasPoints[0], numPoints );
+		//glUniform2fv(m_lineStripShader->getUniformID(HASHED_STRING_u_lineSegmentsStrip), numPoints, reinterpret_cast<GLfloat*>(canvasPoints.data()) );
+		m_lineStripShader->SetUniformInt(HASHED_STRING_u_numLines, numLines, 1);
+		m_lineStripShader->SetUniformFloat(HASHED_STRING_u_lineSize, m_style->LineWidth, 1);
+
+		m_lineStripShader->SetUniformVector2(HASHED_STRING_u_inverseScreenResolution, inverseScreen, 1 );
+
+		Texture::ApplyTexture(m_filterTexture);
+
+		m_lineStripShader->renderSimpleQuad();
 
 
 		UIWidget::render(currentMouse);
@@ -154,8 +153,8 @@ namespace woodman
 			maxValues.y = max(maxValues.y, screenCoords.y);
 		}
 		
-		//m_coordinates = minValues - Vector2f(0.0f, m_style->LineWidth * .5f);
-		//m_canvasCollisionBoxSize = maxValues - minValues + Vector2f(0.0f, m_style->LineWidth);
+		setRelativeCoordinates( minValues - Vector2f(0.0f, m_style->LineWidth * .5f) );
+		setCollisionSize( maxValues - minValues + Vector2f(0.0f, m_style->LineWidth) );
 		calcFullCollisionBox();
 
 	}
@@ -164,12 +163,12 @@ namespace woodman
 
 	std::shared_ptr<UIWidget> UILinkStrip::getStartTarget()
 	{
-		return m_startTarget;
+		return m_startTarget.lock();
 	}
 
 	std::shared_ptr<UIWidget> UILinkStrip::getEndTarget()
 	{
-		return m_endTarget;
+		return m_endTarget.lock();
 	}
 
 	void UILinkStrip::updateStartPoint(const Vector2f& StartPoint)
@@ -191,7 +190,7 @@ namespace woodman
 
 	bool UILinkStrip::isGoodStrip()
 	{
-		return (m_endTarget != nullptr && m_startTarget != nullptr);
+		return (!m_endTarget.expired() && !m_startTarget.expired());
 	}
 
 	void UILinkStrip::updateStartTarget( std::shared_ptr<UIWidget> StartTarget )
@@ -206,16 +205,23 @@ namespace woodman
 
 	UILinkStrip::~UILinkStrip()
 	{
-
-		std::shared_ptr<UINodeLink> inLink = std::dynamic_pointer_cast<UINodeLink>(m_endTarget);
-		std::shared_ptr<UINodeLink> outLink = std::dynamic_pointer_cast<UINodeLink>(m_startTarget);
+		std::shared_ptr<UINodeLink> inLink = std::dynamic_pointer_cast<UINodeLink>(m_endTarget.lock());
+		std::shared_ptr<UINodeLink> outLink = std::dynamic_pointer_cast<UINodeLink>(m_startTarget.lock());
 		
 		if(inLink != nullptr && outLink != nullptr)
 		{
 			inLink->getCallBackRecipient()->CallBackLinkToNodeSlot(nullptr);
 		}
 
-		UIWidget::~UIWidget();
+		if(inLink != nullptr)
+		{
+			inLink->removeLinkStrip(std::dynamic_pointer_cast<UILinkStrip>(m_selfPtr.lock()));
+		}
+
+		if(outLink != nullptr)
+		{
+			outLink->removeLinkStrip(std::dynamic_pointer_cast<UILinkStrip>(m_selfPtr.lock()));
+		}
 	}
 
 }

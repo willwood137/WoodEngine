@@ -23,6 +23,7 @@ void main(void)
  		|| v_position.y > u_screenMax.y || v_position.y < u_screenMin.y )
  	{
  		discard;
+		//outputColor = vec4(1.0, 1.0, 1.0, 1.0);
  	}
 
 

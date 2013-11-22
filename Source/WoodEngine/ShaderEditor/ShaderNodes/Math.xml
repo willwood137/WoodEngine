@@ -1,7 +1,7 @@
 <ShaderEditor>
   <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
     
-    <Function returnType ="Vector" returnSize ="4">
+    <Function returnType ="float" returnSize ="4">
 vec4 Division( vec4 numerator, vec4 denominator )
 {
   return vec4(numerator / denominator);
@@ -9,13 +9,13 @@ vec4 Division( vec4 numerator, vec4 denominator )
     </Function>
 
     <Input name="Numerator">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Input name="Denominator">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Output name="Result">
-      <dataType  type ="vector" size ="4"/>
+      <dataType  type ="float" size ="4"/>
       <Shader_Code>Division( $Numerator , $Denominator )</Shader_Code>
     </Output>
     
@@ -23,10 +23,10 @@ vec4 Division( vec4 numerator, vec4 denominator )
   
   <NodeDefinition name="Sum1" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
-      <dataType type="vector" minSize="1" maxSize="1"/>
+      <dataType type="float" minSize="1" maxSize="1"/>
     </Input>
     <Input name="B">
-      <dataType type="vector" minSize="1" maxSize="1"/>
+      <dataType type="float" minSize="1" maxSize="1"/>
     </Input>
     <Output name="Sum">
       <dataType type="float" size="1"/>
@@ -36,49 +36,49 @@ vec4 Division( vec4 numerator, vec4 denominator )
 
   <NodeDefinition name="Sum4" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Input name="B">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Output name="Sum">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>$A + $B</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Subtracion4" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="Minuend">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Input name="Subtrahend">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Output name="Difference">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>$Minuend - $Subtrahend</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Multiply4" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Input name="B">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Output name="Sum">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>$A * $B</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Multiply1" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
-      <dataType type="vector" minSize="1" maxSize="1"/>
+      <dataType type="float" minSize="1" maxSize="1"/>
     </Input>
     <Input name="B">
-      <dataType type="vector" minSize="1" maxSize="1"/>
+      <dataType type="float" minSize="1" maxSize="1"/>
     </Input>
     <Output name="Sum">
       <dataType type="float" size="1"/>
@@ -98,62 +98,62 @@ vec4 Division( vec4 numerator, vec4 denominator )
 
   <NodeDefinition name="Transform_Vector" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="Vector">
-      <dataType type="vector" minSize="4" maxSize="4"/>
+      <dataType type="float" minSize="4" maxSize="4"/>
     </Input>
     <Input name="Matrix">
       <dataType type="matrix" minSize ="4" maxSize="4"/>
     </Input>
     <Output name="OutVector">
-      <dataType type="vector" smartSize="$Vector"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>$Matrix * $Vector</Shader_Code>
     </Output>
   </NodeDefinition>
   
   <NodeDefinition name="3DVectorField" category="Math" canBeVertex="true" canBeFrag="true">
 
-    <Function returnType ="Vector" returnSize ="3">
+    <Function returnType ="float" returnSize ="3">
       vec4 VectorField( vec3 position, float seed )
       {
       return vec3( cos(position.x) * 2.0 - 1.0, sin(position.y)*2.0 - 1.0, sin(position.z) * 2.0 - 1.0); 
       }
     </Function>
     <Input name="Position">
-      <dataType type="vector" size="3"/>
+      <dataType type="float" size="3"/>
     </Input>
     <Input name="Seed">
       <dataType type="float" size="1"/>
     </Input>
     <Output name="OutVector">
-      <dataType type="vector" smartSize="$Vector"/>
+      <dataType type="float" size="3"/>
       <Shader_Code>VectorField( $Position , $Seed )</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Interpolate" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Input name="B">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Input name="Interpolation">
       <dataType type="float" size="1"/>
     </Input>
     <Output name="OutVector">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>mix( $A , $B , $Interpolation )</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Modulo" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="dividend">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Input name="divisor">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Output name="Remainder">
-      <dataType type="vector" size="1"/>
+      <dataType type="float" size="1"/>
       <Shader_Code>mod( $dividend , $divisor )</Shader_Code>
     </Output>
   </NodeDefinition>

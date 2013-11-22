@@ -33,6 +33,7 @@ namespace woodman
 		void catchLMouseDown(NamedPropertyContainer& parameters);
 		void catchLMouseUp(NamedPropertyContainer& parameters);
 		void catchRMouseDown(NamedPropertyContainer& parameters);
+		HashedString getUniqueID(HashedString& ID);
 
 	protected:
 

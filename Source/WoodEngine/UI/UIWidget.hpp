@@ -102,7 +102,7 @@ namespace woodman
 		
 		
 
-		std::set< std::shared_ptr<UIWidget> > m_children;  
+		std::list< std::weak_ptr<UIWidget> > m_children;  
 		std::weak_ptr<UIWidget> m_parentWidget;
 		std::weak_ptr<UICanvas> m_parentCanvas;
 		UIController* m_parentController;
@@ -111,6 +111,7 @@ namespace woodman
 
 		bool m_blockKeyboard;			//do we want to prevent other things from using the keyboard when we are selected
 		bool m_blockedToParent;			//is it locked to its parent
+		std::weak_ptr<UIWidget> m_selfPtr;
 		
 	private:
 
@@ -124,7 +125,6 @@ namespace woodman
 		Vector2f m_absoluteCoordinates;
 		AABB2D m_absoluteCanvasCollisionBox;
 		AABB2D m_fullCanvasCollisionBox;				//This is the collision Box that encompasses all the children
-		std::weak_ptr<UIWidget> m_selfPtr;
 
 
 	};

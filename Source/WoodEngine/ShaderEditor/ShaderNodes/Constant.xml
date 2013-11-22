@@ -10,7 +10,7 @@
     <DataField name="x"/>
     <DataField name="y"/>
     <Output name="Vec2">
-      <dataType type="vector" size="2"/>
+      <dataType type="float" size="2"/>
       <Shader_Code> vec2( #x , #y )</Shader_Code>
     </Output>
   </NodeDefinition>
@@ -19,7 +19,7 @@
     <DataField name="y"/>
     <DataField name="z"/>
     <Output name="Vec3">
-      <dataType type="vector" size="3"/>
+      <dataType type="float" size="3"/>
       <Shader_Code>vec4( #x , #y ,  #z )</Shader_Code>
     </Output>
   </NodeDefinition>
@@ -29,7 +29,7 @@
     <DataField name="z"/>
     <DataField name="w"/>
     <Output name="Vec4">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>vec4( #x , #y ,  #z , #w )</Shader_Code>
     </Output>
   </NodeDefinition>

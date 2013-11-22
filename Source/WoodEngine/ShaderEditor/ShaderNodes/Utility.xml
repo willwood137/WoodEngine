@@ -39,13 +39,13 @@
     </Function>
     
     <Input name="World_Position">
-      <dataType type="vector" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4"/>
     </Input>
     <Input name="TwistAmount">
       <dataType type="float" size="1"/>
     </Input>
     <Output name="Twisted_Position">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>Twist( $World_Position , $TwistAmount )</Shader_Code>
     </Output>
   </NodeDefinition>

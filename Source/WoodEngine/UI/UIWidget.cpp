@@ -14,18 +14,25 @@ namespace woodman
 		const Vector2f& relativeCoordinates,
 		const Vector2f& collisionSize )
 		: m_uniqueID(uniqueID),
+		m_parentController(parentController),
 		m_parentCanvas( ParentCanvas ),
 		m_parentWidget( parentWidget ),
 		m_relativeLayer( RelativeLayer ),
 		m_relativeCoordinates( relativeCoordinates ),
-		m_canvasCollisionBoxSize( collisionSize)
+		m_canvasCollisionBoxSize( collisionSize),
+		m_canvasCollisionBoxOffset(0.0f, 0.0f)
 	{
-
+		m_uniqueID = parentController->getUniqueID(uniqueID);
 	}
 
 	void UIWidget::Initialize( )
 	{
 		m_selfPtr = m_parentController->getUIWidgetByID(m_uniqueID);
+		if(m_style == nullptr)
+		{
+			m_style = UIStyle::DefaultUIStyle;
+		}
+
 		if(m_parentWidget.lock() != nullptr)
 		{
 			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
@@ -43,28 +50,43 @@ namespace woodman
 
 	void UIWidget::addChild( std::shared_ptr<UIWidget> child )
 	{
-		m_children.insert(child);
+		m_children.push_back( child );
 	}
 
 	void UIWidget::removeChild( std::shared_ptr<UIWidget> child )
 	{
 		//we need to get rid of this
-		m_children.erase(child);
+		for(auto it = m_children.begin(); it != m_children.end(); ++it)
+		{
+			if( (*it).lock() == child)
+			{
+				m_children.erase(it);
+				break;
+			}
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 
 	void UIWidget::move( const Vector2f& amountToMove )
 	{
-		m_relativeCoordinates += amountToMove;
-		
-		calcFullCollisionBox();
+		setRelativeCoordinates( m_relativeCoordinates + amountToMove );
+
+		if(m_parentWidget.lock() != nullptr)
+		{
+			UIWidgetParentInfo info(m_parentWidget.lock()->getAbsoluteCoordinates(), m_parentWidget.lock()->getAbsoluteLayer() );
+			calcAbsoluteData(info);
+		}
+		else
+		{
+			calcAbsoluteData( UIWidgetParentInfo( Vector2f(0.0f, 0.0f), m_parentCanvas.lock()->getLayer() ) );
+		}
 	}
 
 
 	void UIWidget::calcAbsoluteData( const UIWidgetParentInfo& info )
 	{
-		m_absoluteLayer = info.Layer + m_relativeLayer;
+		m_absoluteLayer = info.Layer - m_relativeLayer;
 		m_absoluteCoordinates = info.Position + m_relativeCoordinates;
 		m_absoluteCanvasCollisionBox.m_vMin = m_absoluteCoordinates + m_canvasCollisionBoxOffset;
 		m_absoluteCanvasCollisionBox.m_vMax = m_absoluteCanvasCollisionBox.m_vMin + m_canvasCollisionBoxSize;
@@ -72,7 +94,7 @@ namespace woodman
 		UIWidgetParentInfo pInfo(m_absoluteCoordinates, m_absoluteLayer);
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->calcAbsoluteData(pInfo);
+			(*it).lock()->calcAbsoluteData(pInfo);
 		}
 
 		calcFullCollisionBox();
@@ -86,7 +108,7 @@ namespace woodman
 
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			m_fullCanvasCollisionBox.stretchToIncludeAABB2D( (*it)->calcFullCollisionBox() );
+			m_fullCanvasCollisionBox.stretchToIncludeAABB2D( (*it).lock()->calcFullCollisionBox() );
 		}
 
 		return m_fullCanvasCollisionBox;
@@ -98,7 +120,7 @@ namespace woodman
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->render(currentMouse);
+			(*it).lock()->render(currentMouse);
 		}
 	}
 
@@ -106,13 +128,12 @@ namespace woodman
 	{
 		for(auto it = m_children.begin(); it != m_children.end(); ++it)
 		{
-			(*it)->update(currentMouse);		
+			(*it).lock()->update(currentMouse);		
 		}
 	}
 
 	UIWidget::~UIWidget()
 	{
-
 	}
 
 	bool UIWidget::isPointInBounds(const Vector2f& point)
@@ -138,8 +159,8 @@ namespace woodman
 			//check if theres anything lower in the children
 			for(auto it = m_children.begin(); it != m_children.end(); ++it)
 			{
-				std::weak_ptr<UIWidget> tempTopWidget = (*it)->getTopWidgetColliding(PointCanvasSpace);
-				
+				std::weak_ptr<UIWidget> tempTopWidget = (*it).lock()->getTopWidgetColliding(PointCanvasSpace);
+
 				if( !tempTopWidget.expired() )
 				{
 					if( TopWidget.expired() || tempTopWidget.lock()->getAbsoluteLayer() < TopWidget.lock()->getAbsoluteLayer() )
@@ -152,7 +173,7 @@ namespace woodman
 
 	void UIWidget::MouseDrag( std::shared_ptr<UIMouse> currentMouse )
 	{
-	
+
 	}
 	void UIWidget::MouseClick( std::shared_ptr<UIMouse> currentMouse )
 	{
@@ -169,7 +190,7 @@ namespace woodman
 
 
 
-	
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//			Getters / Setters											//

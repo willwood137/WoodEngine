@@ -46,7 +46,7 @@ namespace woodman
 		//load default shader work file
 		std::vector<std::shared_ptr<NodeInstanceData> > nodeInstanceData;
 
-		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkfiles\\" + "temp.xml", nodeInstanceData);
+		m_shaderInstance.LoadShaderInstance(ASSETS + "ShaderWorkfiles\\" + "default.xml", nodeInstanceData);
 
 		// create Nodes
 		for(auto it = nodeInstanceData.begin(); it != nodeInstanceData.end(); ++it)
@@ -153,7 +153,7 @@ namespace woodman
 
 		std::weak_ptr<UINodeLink> outLink =  std::dynamic_pointer_cast<UINodeLink>(getUIWidgetByID( HashedString( info->PartnerLinkName ) ).lock() );
 
-		//inLink->Pair(outLink);
+		UINodeLink::pair(outLink.lock(), inLink.lock());
 
 	}
 
@@ -204,7 +204,17 @@ namespace woodman
 
 	void ShaderEditor::render()
 	{
-		UIController::render();
+
+		if(m_vertexToFragmentRatio != 0.0f)
+			m_vertexCanvas.lock()->RenderCanvas(m_mouse);
+		if(m_vertexToFragmentRatio != 1.0f)
+			m_fragmentCanvas.lock()->RenderCanvas(m_mouse);
+		m_dividerCanvas.lock()->RenderCanvas(m_mouse);
+
+		if(m_mouse->menuOpen)
+		{
+			m_mouse->render();
+		}
 	}
 
 
@@ -437,123 +447,32 @@ namespace woodman
 		
 		
 
-		std::weak_ptr<UINodeBox> NodeBox( UINodeBox::CreateUINodeBox( node->getName(), this, canvasToPutOn, std::weak_ptr<UIWidget>(), node->getUniqueID(), 100, node->getPosition(), Vector2f(20.0f, 20.0f) ) );
-
-// 		NodeBox->setCallBackRecipient(node);
-// 
-// 		//get all the nodes
-// 		std::map< HashedString, std::unique_ptr< NodeLinkInstance > >* links = node->getUINodeLinkInstances();
-// 
-// 
-// 		std::shared_ptr<UIStyle> style = UIStyle::DefaultUIStyle;
-// 		NodeBox->setStyle( style );
-// 
-// 
-// 		float TitleWidth = Font::getLengthOfString( node->getName(), Font::CreateOrGetFont(HASHED_STRING_tahoma), style->TitleSize) + style->NodeBoxBorderLength * 2.0f + style->NodeBoxCornerSize;
-// 		unsigned int numInSlots = 0;
-// 		unsigned int numOutSlots = 0;
-// 		float outLongest = 0.0f;
-// 		float inLongest = 0.0f;
-// 		
-// 		//Calculate the size of the NodeBox
-// 		for(auto it = links->begin(); it != links->end(); ++it)
-// 		{
-// 			Vector2f Offset(0.0f, 0.0f);
-// 
-// 			//add in Title/title buffer
-// 			Offset.y += style->TitleSize + style->TitleBuffer;
-// 
-// 			float textlength = Font::getLengthOfString((it->second)->parentLink->name, Font::CreateOrGetFont(HASHED_STRING_tahoma), style->subTitleSize);
-// 			if(!(it->second)->exitNode)
-// 			{
-// 				//this is an entrance node, so its on the left side
-// 				numInSlots++;
-// 				if(textlength > inLongest)
-// 					inLongest = textlength;
-// 			}
-// 			else
-// 			{
-// 				if(textlength > outLongest)
-// 					outLongest = textlength;
-// 				numOutSlots++;
-// 			}
-// 		}
-// 		float totalSubLength = outLongest + inLongest + style->NodeBoxBorderLength * 2.2f + 10.0f;
-// 		
-// 		Vector2f boxSize;
-// 		boxSize.x = max(totalSubLength, TitleWidth);
-// 
-// 		//get height
-// 		boxSize.y = style->NodeBoxBorderLength * 2 + style->NodeBoxCornerSize + style->TitleSize + style->TitleBuffer + static_cast<float>(max( numInSlots, numOutSlots)) * (style->subTitleSize + style->subTitleBuffer);
-// 		NodeBox->setCollisionSize(boxSize);
-// 
-// 			//titleMax length
-// 
-// 		numInSlots = 0;
-// 		numOutSlots = 0;
-// 		//Calculate the size of the NodeBox
-// 		for(auto it = links->begin(); it != links->end(); ++it)
-// 		{
-// 			Vector2f Offset(0.0f, 0.0f);
-// 			Offset.y += boxSize.y;
-// 			Offset.y -= (style->NodeBoxBorderLength + style->TitleBuffer + style->TitleSize);
-// 			if(!(it->second)->exitNode)
-// 			{
-// 				//this is an entrance node, so its on the left side
-// 
-// 				//add in TL corner
-// 
-// 				Offset.y -= style->NodeBoxCornerSize;
-// 
-// 				//add subtile size for each slot
-// 				Offset.y -= static_cast<float>(numInSlots) * ( style->subTitleSize + style->subTitleBuffer);
-// 				numInSlots++;
-// 			}
-// 			else
-// 			{
-// 				Offset.x += boxSize.x;
-// 				//this is an exit node
-// 				Offset.y -= static_cast<float>(numOutSlots) * ( style->subTitleSize + style->subTitleBuffer);
-// 				numOutSlots++;
-// 			}
-// 			UIWidget* newSlot;
-// 			if((it->second)->exitNode)
-// 			{
-// 				newSlot = new UIOutLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
-// 			}
-// 			else
-// 			{
-// 				newSlot = new UIInLink(canvasToPutOn, NodeBox, (it->second)->parentLink->name, (it->second)->m_uniqueID, 10.0f, (node->getPosition() + Offset), &(it->second->parentLink->typeData), it->second.get() );
-// 			}
-// 			newSlot->setStyle(UIStyle::DefaultUIStyle);
-// 			newSlot->setCollisionSize(Vector2f(style->subTitleSize * 1.2f, style->subTitleSize*1.2f) );
-// 			newSlot->setCollisionOffset(Vector2f(style->subTitleSize * -.6f, style->subTitleSize * -.6f) );
-// 			newSlot->setLockedToParent(true);
-// 			newSlot->setParentOffset(Offset);
-// 			newSlot->Initialize();
-// 			newSlot->calcFullCollisionBox();
-// 			NodeBox->addChild(newSlot);
-// 		}
-// 
-// 		//add the data fields
-// 		std::map< HashedString, std::unique_ptr<DataFieldInstance> >* fields = node->getDataFields();
-// 		unsigned int n = 1;
-// 		for( auto it = fields->begin(); it != fields->end(); ++it )
-// 		{
-// 			UITextEntry* text(new UITextEntry(m_dividerCanvas, nullptr, (it->second)->m_name, (it->second)->m_uniqueID, 20.0f, p_eventSystem) );
-// 			text->setCanvasCoordinates(Vector2f(-200, 450.0 - 500 - 50 * n) );
-// 			NodeBox->addDataField(text);
-// 			text->Initialize();
-// 			text->setCollisionOffset(Vector2f(40.0f, -6.0f));
-// 			text->setCollisionSize(Vector2f(180.0f, 30.0f));
-// 			text->calcFullCollisionBox();
-// 			m_dividerCanvas->RegisterUIWidget(text);
-// 			n++;
-// 		}
-// 
-// 		NodeBox->calcFullCollisionBox();
-// 		NodeBox->Initialize();
-// 		canvasToPutOn->RegisterUIWidget(NodeBox);
+		std::shared_ptr<UINodeBox> NodeBox( UINodeBox::CreateUINodeBox( node->getName(), this, canvasToPutOn, std::weak_ptr<UIWidget>(), node->getUniqueID(), 100, node->getPosition(), Vector2f(20.0f, 20.0f) ).lock() );
+ 		NodeBox->setCallBackRecipient(node);
+ 
+ 		//get all the nodes
+ 		std::map< HashedString, std::unique_ptr< NodeLinkInstance > >* links = node->getUINodeLinkInstances();
+ 		//Calculate the size of the NodeBox
+ 		for(auto it = links->begin(); it != links->end(); ++it)
+ 		{
+ 			std::shared_ptr<UINodeLink> newSlot = UINodeLink::CreateUINodeLink( (it->second)->parentLink->name, (it->second)->exitNode, it->second.get(), this, canvasToPutOn, std::dynamic_pointer_cast<UIWidget>(NodeBox), (it->second)->m_uniqueID, 10.0f, Vector2f(0.0f, 0.0f), Vector2f(26.0f, 26.0f)).lock();
+ 			newSlot->setLockedToParent(true);
+			newSlot->setDataType(&(it->second)->m_dType);
+ 			NodeBox->addLink(newSlot);
+ 		}
+ 
+ 		//add the data fields
+ 		std::map< HashedString, std::unique_ptr<DataFieldInstance> >* fields = node->getDataFields();
+ 		unsigned int n = 1;
+ 		for( auto it = fields->begin(); it != fields->end(); ++it )
+ 		{
+ 			std::shared_ptr<UITextEntry> text = UITextEntry::CreateUITextEntry((it->second)->m_name, p_eventSystem, this, m_dividerCanvas, std::dynamic_pointer_cast<UIWidget>(NodeBox), (it->second)->m_uniqueID, 20.0f, Vector2f(-200, 450.0 - 500 - 50 * n), Vector2f(180.0f, 30.0f) ).lock();
+ 			NodeBox->addDataField(text);
+ 			text->setCollisionOffset(Vector2f(40.0f, -6.0f));
+ 			m_dividerCanvas.lock()->RegisterUIWidget(text);
+ 			n++;
+ 		}
+ 		canvasToPutOn.lock()->RegisterUIWidget(NodeBox);
 
 	}
 

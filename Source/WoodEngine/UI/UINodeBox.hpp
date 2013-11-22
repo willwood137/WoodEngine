@@ -69,7 +69,7 @@ namespace woodman
 
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
 		void addDataField( std::weak_ptr<UITextEntry> field);
-		void addLink( std::weak_ptr<UINodeLink> link);
+		void addLink( std::shared_ptr<UINodeLink> link);
 
 	private:
 
@@ -82,14 +82,21 @@ namespace woodman
 			const Vector2f& relativeCoordinates,
 			const Vector2f& collisionSize );
 
+
+		void calcNodeBoxSize();
+
 		//TL Corner
 		Vector2f									m_titleOffset;
+		Vector2f									m_titleSize;
 		std::string									m_title;
 		std::list<std::string>						n_data;
-		std::set< std::weak_ptr<UINodeLink> >		m_linkSlots;
+		std::vector< std::weak_ptr<UINodeLink> >	m_inSlots;
+		std::vector< std::weak_ptr<UINodeLink> >	m_outSlots;
 		std::vector< std::weak_ptr<UITextEntry> >	m_dataFields;
 		unsigned int								m_numInSlots;
 		unsigned int								m_numOutSlots;
+		float										m_outLongest;
+		float										m_inLongest;
 
 		UINodeBoxCallBackRecipient* m_callBackRecipient;
 

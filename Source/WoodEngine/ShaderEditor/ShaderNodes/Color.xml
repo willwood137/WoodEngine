@@ -1,6 +1,6 @@
 <ShaderEditor>
   <NodeDefinition name="GrayScale" category ="Color" canBeVertex="true" canBeFrag="true">
-    <Function returnType ="Vector" returnSize ="4">
+    <Function returnType ="float" returnSize ="4">
       vec4 GrayScale( vec4 Color )
       {
       float grayValue = Color.r * .2989 + Color.g * .5870 + Color.b * .1140;
@@ -8,16 +8,16 @@
       }
     </Function>
     <Input name="Color">
-      <dataType type ="vector" size="4"/>
+      <dataType type ="float" size="4"/>
     </Input>
     <Output name="GrayScale">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>GrayScale( $Color )</Shader_Code>
     </Output>
   </NodeDefinition>
 
   <NodeDefinition name="Phong_Lighting" category ="Color" canBeVertex="false" canBeFrag="true">
-    <Function returnType="Vector" returnSize="4">
+    <Function returnType="float" returnSize="4">
       vec4 Phong_Lighting( sampler2D diffuse, vec2 textureCoordinates, vec3 normal, vec3 worldPosition, vec3 lightPosition)
       {
       float LightIntensity = dot( normal, normalize(lightPosition - worldPosition) );
@@ -27,22 +27,22 @@
 
     </Function>
     <Input name="Light_Position">
-      <dataType type ="vector" size="3"/>
+      <dataType type ="float" size="3"/>
     </Input>
     <Input name="World_Position">
-      <dataType type ="vector" size="3"/>
+      <dataType type ="float" size="3"/>
     </Input>
     <Input name="Diffuse_Map">
       <dataType type ="sampler2D" size="1"/>
     </Input>
     <Input name="Texture_Coordinates">
-      <dataType type ="vector" size="2"/>
+      <dataType type ="float" size="2"/>
     </Input>
     <Input name="Normal">
-      <dataType type ="vector" size="3"/>
+      <dataType type ="float" size="3"/>
     </Input>
     <Output name="Color">
-      <dataType type="vector" size="4"/>
+      <dataType type="float" size="4"/>
       <Shader_Code>Phong_Lighting( $Diffuse_Map , $Texture_Coordinates , $Normal , $World_Position , $Light_Position )</Shader_Code>
     </Output>
   </NodeDefinition>

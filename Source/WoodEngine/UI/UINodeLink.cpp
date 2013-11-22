@@ -45,7 +45,8 @@ namespace woodman
 		const Vector2f& _CollisionSize )
 		: UIWidget( _ParentController, _ParentCanvas, _ParentWidget, _ID, _RelativeLayer, _RelativeCoordinates, _CollisionSize ),
 		m_title(_Title),
-		m_callBackRecipient(callbackRecipient)
+		m_callBackRecipient(callbackRecipient),
+		m_isOutLink(_outLink)
 	{
 		assert(m_callBackRecipient != nullptr);
 	}
@@ -53,6 +54,7 @@ namespace woodman
 	void UINodeLink::Initialize()
 	{
 		m_slotShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\LinkNode");
+		UIWidget::Initialize();
 	}
 
 	void UINodeLink::render(std::shared_ptr<UIMouse> currentMouse )
@@ -61,23 +63,18 @@ namespace woodman
 
 
 		ALIGNMENT ali;
-		float boxOffset;
-		float textOffset;
-
+		
 		if(m_isOutLink)
 		{
 			ali = ALIGNMENT_RIGHT;
-			boxOffset = -10.0f;
-			textOffset = -m_style->NodeBoxBorderLength -4.0f;
 		}
 		else
 		{
 			ali = ALIGNMENT_LEFT;
-			boxOffset = -8.0f;
-			textOffset = m_style->NodeBoxBorderLength + 4.0f;
 		}
 
-		Vector2f TextCanvas( getAbsoluteCoordinates() + Vector2f(textOffset, 0.0f)), TextScreen;
+
+		Vector2f TextCanvas( getAbsoluteCoordinates() ), TextScreen;
 		m_parentCanvas.lock()->mapPointToScreenSpace(TextCanvas, TextScreen);
 
 		Font::DrawTextToScreen( m_title, 
@@ -88,7 +85,7 @@ namespace woodman
 			ali);
 
 		//due canvas to screen conversions
-		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin( getAbsoluteCoordinates() + Vector2f(boxOffset, -5) ), LinkBoxMax(LinkBoxMin + getCollisionSize() );
+		Vector2f LinkBoxMinScreen, LinkBoxMaxScreen, LinkBoxMin( getAbsoluteCollisionBox().m_vMin ), LinkBoxMax(getAbsoluteCollisionBox().m_vMax);
 
 		m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMin, LinkBoxMinScreen);
 		m_parentCanvas.lock()->mapPointToScreenSpace(LinkBoxMax, LinkBoxMaxScreen);
@@ -140,11 +137,48 @@ namespace woodman
 
 	void UINodeLink::MouseRelease( std::shared_ptr<UIMouse> currentMouse)
 	{
+
+		bool deleteDrag = true;
+		if(!currentMouse->hoveringWidget.expired())
+		{
+			std::shared_ptr<UINodeLink> partner = std::dynamic_pointer_cast<UINodeLink>(currentMouse->hoveringWidget.lock());
+
+			if(partner != nullptr)
+			{
+				if(m_isOutLink)
+				{
+					if(!partner->m_isOutLink)
+					{
+						pair(std::dynamic_pointer_cast<UINodeLink>(m_selfPtr.lock()), partner);
+					}
+				}
+				else
+				{
+					if(partner->m_isOutLink)
+					{
+						pair(partner, std::dynamic_pointer_cast<UINodeLink>(m_selfPtr.lock()));
+					}
+				}
+			}
+		}
+
+		if(deleteDrag)
+		{
+			HashedString ID(m_draggingStrip.lock()->getUniqueID());
+			getParentController()->UnRegisterUIWidget(ID);
+		}
+		else
+		{
+			m_draggingStrip = std::weak_ptr<UILinkStrip>();
+		}
+
+
 		UIWidget::MouseRelease(currentMouse);
 	}
 
 	void UINodeLink::MouseRClick( std::shared_ptr<UIMouse> currentMouse)
 	{
+		unPair(std::dynamic_pointer_cast<UINodeLink>(m_selfPtr.lock()));
 		UIWidget::MouseRClick(currentMouse);
 	}
 
@@ -155,13 +189,25 @@ namespace woodman
 
 	void UINodeLink::MouseDrag( std::shared_ptr<UIMouse> currentMouse)
 	{
-		if(m_draggingStrip != nullptr)
+		if( m_draggingStrip.expired())
 		{
-			if(m_isOutLink)
-				m_draggingStrip->updateEndPoint(m_parentCanvas.lock()->getCurrentMouseCanvasPosition());
-			else
-				m_draggingStrip->updateStartPoint(m_parentCanvas.lock()->getCurrentMouseCanvasPosition());
+			m_draggingStrip = UILinkStrip::CreateUILinkStrip(getAbsoluteCollisionBox().calcCenter(), 
+				getAbsoluteCollisionBox().calcCenter(),
+				getParentController(),
+				getParentCanvas(),
+				std::weak_ptr<UIWidget>(),
+				HashedString( "LINK_" + getUniqueID().m_string + "_DRAG"),
+				10,
+				Vector2f(0.0f, 0.0f),
+				Vector2f(0.0f, 0.0f) ).lock();
+
+			getParentCanvas().lock()->RegisterUIWidget(m_draggingStrip.lock());
 		}
+
+		if(m_isOutLink)
+			m_draggingStrip.lock()->updateEndPoint(m_parentCanvas.lock()->getCurrentMouseCanvasPosition());
+		else
+			m_draggingStrip.lock()->updateStartPoint(m_parentCanvas.lock()->getCurrentMouseCanvasPosition());
 
 		UIWidget::MouseDrag(currentMouse);
 	}
@@ -174,6 +220,16 @@ namespace woodman
 
 	void UINodeLink::update(std::shared_ptr<UIMouse> currentMouse)
 	{
+		for(auto it = m_outLinkStrips.begin(); it != m_outLinkStrips.end(); ++it)
+		{
+			(*it).lock()->updateStartPoint( getAbsoluteCollisionBox().calcCenter());
+		}
+
+		if(!m_inLinkStrip.expired())
+		{
+			m_inLinkStrip.lock()->updateEndPoint(getAbsoluteCollisionBox().calcCenter());
+		}
+
 		UIWidget::update(currentMouse);
 	}
 
@@ -226,26 +282,30 @@ namespace woodman
 		if(isPairLegal(outLink, inLink))
 		{
 
+			unPair(inLink);
 			if(strip == nullptr)			//strip is nullptr so we have to make one
 			{
-				strip = UILinkStrip::CreateUILinkStrip(outLink->getAbsoluteCoordinates(), 
-					inLink->getAbsoluteCoordinates(),
+				strip = UILinkStrip::CreateUILinkStrip(outLink->getAbsoluteCollisionBox().calcCenter(), 
+					inLink->getAbsoluteCollisionBox().calcCenter(),
 					outLink->getParentController(),
 					outLink->getParentCanvas(),
 					std::weak_ptr<UIWidget>(),
 					HashedString( "LINK_" + outLink->getUniqueID().m_string + inLink->getUniqueID().m_string),
-					100,
+					10,
 					Vector2f(0.0f, 0.0f),
 					Vector2f(0.0f, 0.0f) ).lock();
+
+				outLink->getParentCanvas().lock()->RegisterUIWidget(strip);
 			}
 			strip->updateEndTarget(inLink);
 			strip->updateEndTarget(outLink);
+
+			strip->calcControlPoints();
 			
 			//pair outLink
-			outLink->m_outLinkStrips.insert(strip);
+			outLink->m_outLinkStrips.push_back(strip);
 
 			//pair inLink
-			unPair(inLink);
 			inLink->m_inLinkStrip = strip;
 			inLink->m_callBackRecipient->CallBackLinkToNodeSlot(outLink->m_callBackRecipient);    // update its data member
 
@@ -284,19 +344,18 @@ namespace woodman
 	{
 		if(Link->m_isOutLink)
 		{
-			for(auto it = Link->m_outLinkStrips.begin(); it != Link->m_outLinkStrips.end(); )
+			while( !Link->m_outLinkStrips.empty() )
 			{
-				std::shared_ptr<UILinkStrip> strip =  *(Link->m_outLinkStrips.erase(it++));
-				(strip)->getParentController()->UnRegisterUIWidget( (strip)->getUniqueID() );
+				auto it = Link->m_outLinkStrips.begin();
+				(*it).lock()->getParentController()->UnRegisterUIWidget( ( (*it).lock() )->getUniqueID() );
 			}
 		}
 		else
 		{
-			if(Link->m_inLinkStrip != nullptr)
+			if(!Link->m_inLinkStrip.expired())
 			{
 
-				Link->getParentController()->UnRegisterUIWidget( Link->m_inLinkStrip->getUniqueID() );
-				Link->m_inLinkStrip = nullptr;
+				Link->getParentController()->UnRegisterUIWidget( Link->m_inLinkStrip.lock()->getUniqueID() );
 			}
 		}
 	}
@@ -305,15 +364,27 @@ namespace woodman
 	{
 		if( m_isOutLink)
 		{
-			m_outLinkStrips.erase(strip);
+			for(auto it = m_outLinkStrips.begin(); it != m_outLinkStrips.end(); ++it )
+			{
+				if( strip == (*it).lock() )
+				{
+					m_outLinkStrips.erase(it);
+					break;
+				}
+			}
 		}
 		else
 		{
-			if(m_inLinkStrip == strip)
+			if(m_inLinkStrip.lock() == strip)
 			{
-				m_inLinkStrip = nullptr;
+				m_inLinkStrip = std::weak_ptr<UILinkStrip>();
 			}
 		}
+	}
+
+	std::string UINodeLink::getTitle()
+	{
+		return m_title;
 	}
 
 
