@@ -1,24 +1,28 @@
 <ShaderEditor>
-  <NodeDefinition name="Division" category ="Math" canBeVertex="true" canBeFrag="true">
-    
-    <Function returnType ="float" returnSize ="4">
-vec4 Division( vec4 numerator, vec4 denominator )
-{
-  return vec4(numerator / denominator);
-}
-    </Function>
+  <NodeDefinition name="Division1" category ="Math" canBeVertex="true" canBeFrag="true">
+      <Input name="Numerator">
+      <dataType type="float" minSize="1" maxSize="4" size="1"/>
+    </Input>
+    <Input name="Denominator">
+      <dataType type="float" minSize="1" maxSize="4" size="1"/>
+    </Input>
+    <Output name="Quotient">
+      <dataType  type ="float" size ="1"/>
+      <Shader_Code>$Numerator / $Denominator</Shader_Code>
+    </Output>
+  </NodeDefinition>
 
+  <NodeDefinition name="Division4" category ="Math" canBeVertex="true" canBeFrag="true">
     <Input name="Numerator">
       <dataType type="float" minSize="1" maxSize="4" size="4"/>
     </Input>
     <Input name="Denominator">
       <dataType type="float" minSize="1" maxSize="4" size="4"/>
     </Input>
-    <Output name="Result">
+    <Output name="Quotient">
       <dataType  type ="float" size ="4"/>
-      <Shader_Code>Division( $Numerator , $Denominator )</Shader_Code>
+      <Shader_Code>$Numerator / $Denominator</Shader_Code>
     </Output>
-    
   </NodeDefinition>
   
   <NodeDefinition name="Sum1" category="Math" canBeVertex="true" canBeFrag="true">
@@ -44,6 +48,19 @@ vec4 Division( vec4 numerator, vec4 denominator )
     <Output name="Sum">
       <dataType type="float" size="4"/>
       <Shader_Code>$A + $B</Shader_Code>
+    </Output>
+  </NodeDefinition>
+
+  <NodeDefinition name="Subtracion1" category="Math" canBeVertex="true" canBeFrag="true">
+    <Input name="Minuend">
+      <dataType type="float" minSize="1" maxSize="4" size="1"/>
+    </Input>
+    <Input name="Subtrahend">
+      <dataType type="float" minSize="1" maxSize="4" size="1"/>
+    </Input>
+    <Output name="Difference">
+      <dataType type="float" size="1"/>
+      <Shader_Code>$Minuend - $Subtrahend</Shader_Code>
     </Output>
   </NodeDefinition>
 

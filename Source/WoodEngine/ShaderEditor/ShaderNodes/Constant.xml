@@ -3,7 +3,7 @@
     <DataField name="X"/>    
     <Output name="Constant">
       <dataType type="float" size="1"/>
-      <Shader_Code>#Constant</Shader_Code>
+      <Shader_Code>#X</Shader_Code>
     </Output>
   </NodeDefinition>
   <NodeDefinition name="Constant2" category ="Constant" canBeVertex="true" canBeFrag="true">
