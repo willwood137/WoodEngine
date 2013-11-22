@@ -1,6 +1,6 @@
 <ShaderEditor>
   <NodeDefinition name="Constant" category ="Constant" canBeVertex="true" canBeFrag="true">
-    <DataField name="Constant"/>    
+    <DataField name="X"/>    
     <Output name="Constant">
       <dataType type="float" size="1"/>
       <Shader_Code>#Constant</Shader_Code>

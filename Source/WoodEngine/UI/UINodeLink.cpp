@@ -332,7 +332,8 @@ namespace woodman
 			return false;
 		}
 
-		if( outLink->m_dataTypeSize != inLink->m_dataTypeSize )
+		int outSize = outLink->m_parentDataType->currentSize;
+		if( !(outSize >= inLink->m_parentDataType->minSize && outSize <= inLink->m_parentDataType->maxSize) )
 		{
 			return false;
 		}

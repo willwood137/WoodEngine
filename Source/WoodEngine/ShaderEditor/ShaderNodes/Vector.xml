@@ -19,14 +19,38 @@
       <Uniform name="time" />
     </Input>
     <Output name="Vector4">
-      <dataType type="vector" size="4" />
+      <dataType type="float" size="4" />
       <Shader_Code> vec4( $x , $y , $z , $w )</Shader_Code>
     </Output>
 
   </NodeDefinition>
 
-  
-  
+  <NodeDefinition name="Vector4_Components" category ="Vector" canBeVertex="true" canBeFrag="true">
+
+    <Input name="Vector">
+      <dataType type="float" minSize="1" maxSize="4" size="4" />
+      <Uniform name="time" />
+    </Input>
+    <Output name="X">
+      <dataType type="float" size="1" />
+      <Shader_Code>$Vector .x</Shader_Code>
+    </Output>
+    <Output name="Y">
+      <dataType type="float" size="1" />
+      <Shader_Code>$Vector .y</Shader_Code>
+    </Output>
+    <Output name="Z">
+      <dataType type="float" size="1" />
+      <Shader_Code>$Vector .z</Shader_Code>
+    </Output>
+    <Output name="W">
+      <dataType type="float" size="1" />
+      <Shader_Code>$Vector .w</Shader_Code>
+    </Output>
+    
+  </NodeDefinition>
+
+
 
 
 </ShaderEditor>

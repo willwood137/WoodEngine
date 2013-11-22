@@ -102,12 +102,13 @@ namespace woodman
 				case PROPERTYTYPE_MATRIX:
 					LinkIt->second->varInfo.variablePrefix = "mat" + sizeString;
 					break;
-				case PROPERTYTYPE_FLOAT:
-					LinkIt->second->varInfo.variablePrefix = "float";
-					break;
 				default:
 				case PROPERTYTYPE_VECTOR:
-					LinkIt->second->varInfo.variablePrefix = "vec" + sizeString;
+				case PROPERTYTYPE_FLOAT:
+					if( LinkIt->second->m_dType.currentSize == 1)
+						LinkIt->second->varInfo.variablePrefix = "float";
+					else
+						LinkIt->second->varInfo.variablePrefix = "vec" + sizeString;
 					break;
 				}
 

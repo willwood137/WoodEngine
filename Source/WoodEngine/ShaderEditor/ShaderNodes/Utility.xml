@@ -39,7 +39,7 @@
     </Function>
     
     <Input name="World_Position">
-      <dataType type="float" minSize="1" maxSize="4"/>
+      <dataType type="float" minSize="1" maxSize="4" size="4"/>
     </Input>
     <Input name="TwistAmount">
       <dataType type="float" size="1"/>
@@ -50,7 +50,7 @@
     </Output>
   </NodeDefinition>
 
-  <NodeDefinition name="Max" category ="Utility" canBeVertex="true" canBeFrag="true">
+  <NodeDefinition name="Max1" category ="Utility" canBeVertex="true" canBeFrag="true">
     <Input name="A">
       <dataType type="float" size="1" />
     </Input>

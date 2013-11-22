@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Model_Header>
+<Model name="sphere" VertexSize="32">
+<Attribute name="Normal" numValues="3" offsetOf="0" />
+<Attribute name="Position" numValues="3" offsetOf="12" />
+<Attribute name="TextureCoordinates" numValues="2" offsetOf="24" />
+<Batch OffsetStart="0" numVerts="1262" numIndices="6624" />
+<Batch OffsetStart="66880" numVerts="1262" numIndices="6624" />
+</Model>
+</Model_Header>

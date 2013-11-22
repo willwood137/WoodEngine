@@ -384,11 +384,11 @@ namespace woodman
 		return false;
 	}
 
-	bool Shader::SetUniformMatrix(const HashedString& uniformName, Matrix4f& matrices, unsigned int numValues)
+	bool Shader::SetUniformMatrix( const HashedString& uniformName, Matrix4f& matrices, unsigned int numValues, bool transpose /*= false*/ )
 	{
 		if(m_uniforms.find(uniformName) != m_uniforms.end() )
 		{
-			glUniformMatrix4fv(m_uniforms[uniformName], numValues, false, reinterpret_cast<GLfloat*>( &matrices ) );
+			glUniformMatrix4fv(m_uniforms[uniformName], numValues, transpose, reinterpret_cast<GLfloat*>( &matrices ) );
 			return true;
 		}
 

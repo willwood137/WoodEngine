@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Model_Header>
-<Model name="Jax" VertexSize="32">
+<Model name="Jax" VertexSize="32" scale="1">
   <Material name="Diffuse" fileName="zax.png"/>
   <Attribute name="Position" numValues="3" offsetOf="0" />
   <Attribute name="Normal" numValues="3" offsetOf="12" />

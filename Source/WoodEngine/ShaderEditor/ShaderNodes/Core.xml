@@ -22,11 +22,11 @@
   <NodeDefinition name="Final_Position" category ="Core" canBeVertex="true" canBeFrag="false">
 
     <Input name="ScreenPosition">
-      <dataType type="float" size="4"/>
+      <dataType type="float" minSize="2" maxSize="4" size="4"/>
       <GLVariable name ="gl_Position" />
     </Input>
     <Input name="worldPosition">
-      <dataType type="float" size="3"/>
+      <dataType type="float" minSize="2" maxSize="4" size="3"/>
       <Varying name ="worldPosition" />
     </Input>
     
@@ -90,7 +90,7 @@
   <NodeDefinition name="OutputColor" category ="Core" canBeVertex="false" canBeFrag="true">
 
     <Input name="OutputColor">
-      <dataType type="float" size="4" />
+      <dataType type="float" minSize="3" maxSize="4" size="4" />
       <Out name="OutputColor" />
     </Input>
 

@@ -5,6 +5,8 @@
 
 namespace woodman
 {
+	class UINodeBox;
+
 	class UITextEntry : public UIWidget, public EventRecipient<UITextEntry>
 	{
 	public:
@@ -20,7 +22,7 @@ namespace woodman
 			const Vector2f& _RelativeCoordinates,
 			const Vector2f& _CollisionSize );
 
-		virtual void render( std::shared_ptr<UIMouse> currentMouse, float ParentLayer );
+		virtual void render( std::shared_ptr<UIMouse> currentMouse);
 		virtual void update( std::shared_ptr<UIMouse> currentMouse);
 		virtual void Initialize();
 		virtual void MouseClick( std::shared_ptr<UIMouse> currentMouse );
@@ -30,6 +32,8 @@ namespace woodman
 		void setToRender(bool renderThisFrame);
 		void readValue();
 		float getValue();
+
+		UINodeBox* parentNodeBox;
 
 	private:
 	

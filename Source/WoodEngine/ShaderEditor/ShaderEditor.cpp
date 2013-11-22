@@ -267,7 +267,7 @@ namespace woodman
 
 							if(sType.compare("vector") == 0)
 							{
-								def.returnType.type = PROPERTYTYPE_VECTOR;
+								def.returnType.type = PROPERTYTYPE_FLOAT;
 							}
 							else if( sType.compare("float") == 0)
 							{
@@ -313,7 +313,7 @@ namespace woodman
 
 									if(sType.compare("vector") == 0)
 									{
-										dType.type = PROPERTYTYPE_VECTOR;
+										dType.type = PROPERTYTYPE_FLOAT;
 									}
 									else if( sType.compare("float") == 0)
 									{
@@ -331,21 +331,23 @@ namespace woodman
 									//get sizes
 									pugi::xml_attribute attrib = codeNode.first_attribute();
 
+									bool sizeRangeFound = false;
 									while(attrib)
 									{
 
 										if(std::string(attrib.name()).compare("minSize") == 0)
 										{
+											sizeRangeFound = true;
 											dType.minSize = attrib.as_uint();
 										}
 										else if(std::string(attrib.name()).compare("maxSize") == 0)
 										{
+											sizeRangeFound = true;
 											dType.maxSize = attrib.as_uint();
 										}
 										else if(std::string(attrib.name()).compare("size") == 0)
 										{
-											dType.minSize = attrib.as_uint();
-											dType.maxSize = dType.minSize;
+											dType.currentSize = attrib.as_uint();	
 										}
 										else if(std::string(attrib.name()).compare("smartSize") == 0)
 										{
@@ -354,6 +356,12 @@ namespace woodman
 										}
 									
 										attrib = attrib.next_attribute();
+									}
+
+									if(!sizeRangeFound)
+									{
+										dType.minSize = dType.currentSize;
+										dType.maxSize = dType.currentSize;
 									}
 
 									newLink->typeData = dType;
@@ -466,9 +474,10 @@ namespace woodman
  		unsigned int n = 1;
  		for( auto it = fields->begin(); it != fields->end(); ++it )
  		{
- 			std::shared_ptr<UITextEntry> text = UITextEntry::CreateUITextEntry((it->second)->m_name, p_eventSystem, this, m_dividerCanvas, std::dynamic_pointer_cast<UIWidget>(NodeBox), (it->second)->m_uniqueID, 20.0f, Vector2f(-200, 450.0 - 500 - 50 * n), Vector2f(180.0f, 30.0f) ).lock();
+ 			std::shared_ptr<UITextEntry> text = UITextEntry::CreateUITextEntry((it->second)->m_name, p_eventSystem, this, m_dividerCanvas, std::weak_ptr<UIWidget>(), (it->second)->m_uniqueID, 20.0f, Vector2f(-200, 450.0 - 500 - 50 * n), Vector2f(180.0f, 30.0f) ).lock();
  			NodeBox->addDataField(text);
  			text->setCollisionOffset(Vector2f(40.0f, -6.0f));
+			text->parentNodeBox = NodeBox.get();
  			m_dividerCanvas.lock()->RegisterUIWidget(text);
  			n++;
  		}

@@ -240,7 +240,7 @@ namespace woodman
 		int i = 1;
 		while(!unique)
 		{
-			auto it = m_widgets.find(ID);
+			auto it = m_widgets.find(uniqueID);
 			if(it != m_widgets.end())
 			{
 				std::stringstream ss;

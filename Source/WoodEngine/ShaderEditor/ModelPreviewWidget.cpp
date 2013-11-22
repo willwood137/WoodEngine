@@ -103,9 +103,12 @@ namespace woodman
 			}
 			Matrix4f modelMatrix, viewMatrix;
 
+			ConstructScaleMatrix(modelMatrix, m_model->m_scale);
+
+
 			m_camera->update(.016f);
 			viewMatrix = m_camera->getMatrix();
-			modelView = viewMatrix * modelMatrix;
+			modelView = modelMatrix * viewMatrix;
 			mvpMatrix = modelView * projectionMatrix;
 
  			glEnable(GL_DEPTH_TEST);
@@ -116,7 +119,7 @@ namespace woodman
 
 			m_previewShader->load();
 
-			m_previewShader->SetUniformMatrix(HASHED_STRING_u_viewMatrix, viewMatrix, 1 );
+			m_previewShader->SetUniformMatrix(HASHED_STRING_u_viewMatrix, viewMatrix, 1, false );
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_modelMatrix, modelMatrix, 1 );
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_MVP, mvpMatrix, 1 );
 			m_previewShader->SetUniformMatrix(HASHED_STRING_u_projection, projectionMatrix, 1 );

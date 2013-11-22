@@ -54,6 +54,7 @@ namespace woodman
 			return &m_batchDatas;
 		}
 
+		float m_scale;
 	private:
 		std::string m_modelHeaderPath;
 		std::string m_modelDataPath;

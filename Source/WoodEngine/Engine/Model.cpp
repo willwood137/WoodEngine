@@ -35,6 +35,7 @@ namespace woodman
 			m_name = ModelNode.attribute("name").as_string();
 			pugi::xml_node ModelChild = ModelNode.first_child();
 			m_vertexSize = ModelNode.attribute("VertexSize").as_uint();
+			m_scale = ModelNode.attribute("scale").as_float();
 			while( ModelChild)
 			{
 

@@ -14,7 +14,6 @@ namespace woodman
 		if(instance != nullptr)
 		{
 			partnerLinkInstance = instance;
-			m_dType.currentSize = m_dType.maxSize;
 		}
 		else
 		{
@@ -57,7 +56,6 @@ namespace woodman
 			newNodeLink->parentNodeInstance = this;
 			newNodeLink->exitNode = true;
 			newNodeLink->m_dType = (*it)->typeData;
-			newNodeLink->m_dType.currentSize = newNodeLink->m_dType.maxSize;
 			//newNodeLink->typeSize = (*it)->typeData.maxSize;
 			m_linkInstances.insert( std::make_pair(LinkuniqueID, std::unique_ptr<NodeLinkInstance>(newNodeLink) ) );
 		}
@@ -128,9 +126,16 @@ namespace woodman
 								{
 									tempLinkInstance->partnerLinkInstance->parentNodeInstance->CompileLink(tempLinkInstance, compilation, compileCounter);
 								}
-								std::string variableConversion;
-								ConvertToType(	tempLinkInstance->partnerLinkInstance->m_dType,	tempLinkInstance->m_dType,	tempLinkInstance->varInfo.VariableName.m_string, variableConversion );
-								insertString += variableConversion; 
+								if( tempLinkInstance->m_dType.type == PROPERTYTYPE_FLOAT)
+								{
+									std::string variableConversion;
+									ConvertToType(	tempLinkInstance->partnerLinkInstance->m_dType,	tempLinkInstance->m_dType,	tempLinkInstance->varInfo.VariableName.m_string, variableConversion );
+									insertString += variableConversion; 
+								}
+								else
+								{
+									insertString += tempLinkInstance->varInfo.VariableName.m_string;
+								}
 							}
 						}
 						else if(tempString[0] == '#')

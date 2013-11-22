@@ -25,7 +25,7 @@ namespace woodman
 		return std::weak_ptr<UITextEntry>(newWidget);
 	}
 
-	void UITextEntry::render( std::shared_ptr<UIMouse> currentMouse, float ParentLayer )
+	void UITextEntry::render( std::shared_ptr<UIMouse> currentMouse )
 	{
 
 		if(m_renderThisFrame)
@@ -94,6 +94,8 @@ namespace woodman
 		m_boxShader = Shader::CreateOrGetShader(ASSETS + "Shaders\\UI\\TextBox");
 		p_eventSystem->RegisterObjectForEvent( this, &UITextEntry::catchKeyDown, "KeyDown" );
 		m_blockKeyboard = true;
+
+		UIWidget::Initialize();
 	}
 
 	void UITextEntry::MouseClick( std::shared_ptr<UIMouse> currentMouse )
@@ -189,7 +191,7 @@ namespace woodman
 
 	void UITextEntry::update( std::shared_ptr<UIMouse> currentMouse )
 	{
-		if(currentMouse->selectedWidget.expired())
+		if(!currentMouse->selectedWidget.expired() && currentMouse->selectedWidget.lock() == m_selfPtr.lock())
 		{
 			m_selectedThisFrame = true;
 		}
@@ -197,7 +199,14 @@ namespace woodman
 		{
 			m_selectedThisFrame = false;
 		}
-		m_renderThisFrame = false;
+		if(currentMouse->selectedNodeBox.lock().get() == parentNodeBox)
+		{
+			m_renderThisFrame = true;
+		}
+		else
+		{
+			m_renderThisFrame = false;
+		}
 		UIWidget::update(currentMouse);
 	}
 
