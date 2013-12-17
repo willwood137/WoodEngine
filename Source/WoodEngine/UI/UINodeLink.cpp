@@ -4,6 +4,7 @@
 #include "UICanvas.hpp"
 #include "UIWidget.hpp"
 #include "UIController.hpp"
+#include "UINodeBox.hpp"
 #include "..\Math\Vector2.hpp"
 
 namespace woodman
@@ -255,18 +256,26 @@ namespace woodman
 		return m_callBackRecipient;
 	}
 
+	std::shared_ptr<UINodeLink> UINodeLink::getPartnerSlot()
+	{
+		if(m_inLinkStrip.lock() == nullptr)
+			return nullptr;
+		return std::dynamic_pointer_cast<UINodeLink>(m_inLinkStrip.lock()->getStartTarget());
+	}
+
 #pragma endregion
 #pragma region UINodeLink_Setters
 
 	void UINodeLink::setDataType(DataType* dType)
 	{
 		m_parentDataType = dType;
-		m_dataTypeSize = dType->maxSize;
+		setDataSize( dType->currentSize);
 	}
 
 	void UINodeLink::setDataSize(unsigned int size)
 	{
 		m_dataTypeSize = size;
+		m_callBackRecipient->CallBackUpdateSize(size);
 	}
 
 
@@ -308,6 +317,12 @@ namespace woodman
 			//pair inLink
 			inLink->m_inLinkStrip = strip;
 			inLink->m_callBackRecipient->CallBackLinkToNodeSlot(outLink->m_callBackRecipient);    // update its data member
+			
+			UINodeBox* parentBox = dynamic_cast<UINodeBox*>(inLink->getParentWidget().lock().get());
+			
+			assert(parentBox);
+
+			parentBox->updateLinkData();
 
 			return true;
 		}

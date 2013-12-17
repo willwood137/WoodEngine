@@ -16,6 +16,7 @@ namespace woodman
 	class UINodeLink;
 	class UITextEntry;
 
+
 	enum MOUSE_STATUS
 	{
 		MOUSE_STATUS_IDLE,
@@ -41,7 +42,20 @@ namespace woodman
 	{
 		std::vector< LinkDefinition > inLinks;
 		std::vector< LinkDefinition > outLinks;
+	};
 
+	enum LINK_SLOT_TYPE
+	{
+		LINK_SLOT_TYPE_LARGEST,
+		LINK_SLOT_TYPE_SMALLEST,
+		LINK_SLOT_TYPE_SUM,
+		LINK_SLOT_TYPE_SIZE,
+	};
+
+	struct LinkSlot
+	{
+		LINK_SLOT_TYPE type;
+		std::vector<std::weak_ptr<UINodeLink> > links;
 	};
 
 	class UINodeBox : public UIWidget
@@ -70,6 +84,8 @@ namespace woodman
 		void setCallBackRecipient( UINodeBoxCallBackRecipient* recipient );
 		void addDataField( std::weak_ptr<UITextEntry> field);
 		void addLink( std::shared_ptr<UINodeLink> link);
+		void updateLinkData();
+		void addLinkSlotDefinition( LINK_SLOT_TYPE type, const std::vector<std::string>& slots);
 
 	private:
 
@@ -93,6 +109,7 @@ namespace woodman
 		std::vector< std::weak_ptr<UINodeLink> >	m_inSlots;
 		std::vector< std::weak_ptr<UINodeLink> >	m_outSlots;
 		std::vector< std::weak_ptr<UITextEntry> >	m_dataFields;
+		std::vector< LinkSlot >						m_linkSlots;
 		unsigned int								m_numInSlots;
 		unsigned int								m_numOutSlots;
 		float										m_outLongest;

@@ -38,6 +38,14 @@ namespace woodman
 		std::string name;
 	};
 
+	enum LINK_SLOT_TYPE;
+
+	struct NodeLinkSlot
+	{
+		LINK_SLOT_TYPE type;
+		std::vector<std::string> linkNames;
+	};
+
 	struct ShaderNode
 	{
 		NodeLink* getLinkByName(const std::string& name)
@@ -58,6 +66,7 @@ namespace woodman
 		std::vector< DataField > dataFields;
 		std::vector<std::unique_ptr<NodeLink> > inLinks;
 		std::vector<std::unique_ptr<NodeLink> > outLinks;
+		std::vector<NodeLinkSlot> linkSlots;
 		std::vector<FunctionDefinition> functions;
 		bool canBeVert;
 		bool canBeFrag;

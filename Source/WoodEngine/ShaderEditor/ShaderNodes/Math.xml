@@ -25,7 +25,7 @@
     </Output>
   </NodeDefinition>
   
-  <NodeDefinition name="Sum1" category="Math" canBeVertex="true" canBeFrag="true">
+  <NodeDefinition name="Sum" category="Math" canBeVertex="true" canBeFrag="true">
     <Input name="A">
       <dataType type="float" minSize="1" maxSize="4" size="1"/>
     </Input>
@@ -36,19 +36,11 @@
       <dataType type="float" size="1"/>
       <Shader_Code>$A + $B</Shader_Code>
     </Output>
-  </NodeDefinition>
-
-  <NodeDefinition name="Sum4" category="Math" canBeVertex="true" canBeFrag="true">
-    <Input name="A">
-      <dataType type="float" minSize="1" maxSize="4" size="4"/>
-    </Input>
-    <Input name="B">
-      <dataType type="float" minSize="1" maxSize="4" size="4"/>
-    </Input>
-    <Output name="Sum">
-      <dataType type="float" size="4"/>
-      <Shader_Code>$A + $B</Shader_Code>
-    </Output>
+    <LinkSlots type="Largest">
+      A
+      B
+      Sum
+    </LinkSlots>
   </NodeDefinition>
 
   <NodeDefinition name="Subtracion1" category="Math" canBeVertex="true" canBeFrag="true">

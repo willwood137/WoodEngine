@@ -248,6 +248,58 @@ namespace woodman
 		calcNodeBoxSize();
 	}
 
+	void UINodeBox::updateLinkData()
+	{
+		for( auto it = m_linkSlots.begin(); it != m_linkSlots.end(); ++it)
+		{
+			if( it->type == LINK_SLOT_TYPE_LARGEST )
+			{
+				unsigned int largestSize = 1;
+
+				for( auto linkIt = it->links.begin(); linkIt != it->links.end(); ++linkIt )
+				{
+					if(! (linkIt->lock()->IsOutLink()) )
+					{
+						std::shared_ptr<UINodeLink> partner = linkIt->lock()->getPartnerSlot();
+						if(partner != nullptr)
+						{
+							if(partner->getTypeSize() > largestSize)
+								largestSize = partner->getTypeSize();
+						}
+					}
+				}
+				for( auto linkIt = it->links.begin(); linkIt != it->links.end(); ++linkIt )
+				{
+					linkIt->lock()->setDataSize(largestSize);
+				}
+				
+			}
+		}
+	}
+
 	
+	void UINodeBox::addLinkSlotDefinition( LINK_SLOT_TYPE type, const std::vector<std::string>& slots)
+	{
+		LinkSlot newSlot;
+
+		newSlot.type = type;
+
+		for(auto it = slots.begin(); it != slots.end(); ++it)
+		{
+			for(auto linkIt = m_inSlots.begin(); linkIt != m_inSlots.end(); ++linkIt)
+			{
+				if( it->compare( linkIt->lock()->getTitle() ) == 0)
+					newSlot.links.push_back(*linkIt);
+			}
+
+			for(auto linkIt = m_outSlots.begin(); linkIt != m_outSlots.end(); ++linkIt)
+			{
+				if( it->compare( linkIt->lock()->getTitle() ) == 0)
+					newSlot.links.push_back(*linkIt);
+			}
+		}
+
+		m_linkSlots.push_back(newSlot);
+	}
 
 }

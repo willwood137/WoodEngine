@@ -21,6 +21,11 @@ namespace woodman
 		}
 	}
 
+	void NodeLinkInstance::CallBackUpdateSize(unsigned int size)
+	{
+		m_dType.currentSize = size;
+	}
+
 	void NodeInstance::render()
 	{
 

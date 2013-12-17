@@ -13,6 +13,7 @@ namespace woodman
 	struct UINodeLinkCallBackBase
 	{
 		virtual void CallBackLinkToNodeSlot(UINodeLinkCallBackBase* partner) = 0;
+		virtual void CallBackUpdateSize(unsigned int size ) = 0;
 	};
 
 

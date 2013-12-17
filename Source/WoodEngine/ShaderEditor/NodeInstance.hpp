@@ -39,6 +39,7 @@ namespace woodman
 
 		//CallBackFunctions
 		virtual void CallBackLinkToNodeSlot(UINodeLinkCallBackBase* partner); 
+		virtual void CallBackUpdateSize(unsigned int size);
 
 		HashedString m_uniqueID;
 		std::string m_linkName;

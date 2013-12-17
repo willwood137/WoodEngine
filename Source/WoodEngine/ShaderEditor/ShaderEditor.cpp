@@ -288,11 +288,35 @@ namespace woodman
 							currentDefinition->functions.push_back(def);
 
 						}
-						if(std::string(dataNode.name()).compare(std::string("DataField") ) == 0 )
+						else if(std::string(dataNode.name()).compare(std::string("DataField") ) == 0 )
 						{
 							DataField field;
 							field.name = dataNode.attribute("name").as_string();
 							currentDefinition->dataFields.push_back(field);
+						}
+						else if(std::string(dataNode.name()).compare(std::string("LinkSlots") ) == 0 )
+						{
+							NodeLinkSlot newSlot;
+							if(std::string(dataNode.attribute("type").as_string()).compare("Largest") == 0)
+								newSlot.type = LINK_SLOT_TYPE_LARGEST;
+							
+							pugi::xml_node linkNode = dataNode.first_child();
+
+							std::stringstream ss;
+
+							ss << linkNode.value();
+
+							while(ss.good())
+							{
+								std::string s;
+								ss >> s;
+									
+								if(!s.empty())
+								{
+									newSlot.linkNames.push_back(s);
+								}
+							}
+							currentDefinition->linkSlots.push_back(newSlot);
 						}
 						else if(std::string(dataNode.name()).compare(std::string("Input") ) == 0 || std::string(dataNode.name()).compare(std::string("Output") ) == 0)
 						{
@@ -469,6 +493,11 @@ namespace woodman
  			NodeBox->addLink(newSlot);
  		}
  
+		for( auto it = node->getDefinitionNode()->linkSlots.begin(); it != node->getDefinitionNode()->linkSlots.end(); ++ it)
+		{
+			NodeBox->addLinkSlotDefinition( (*it).type, it->linkNames);
+		}
+
  		//add the data fields
  		std::map< HashedString, std::unique_ptr<DataFieldInstance> >* fields = node->getDataFields();
  		unsigned int n = 1;
